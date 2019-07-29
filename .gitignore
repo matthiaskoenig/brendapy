@@ -1,0 +1,4 @@
+*.pyc
+.idea
+data
+brendapy.egg-info

@@ -1,0 +1,4 @@
+pip>=19.1
+numpy>=1.16.3
+pandas>=0.24.2
+matplotlib>=3.0.3
