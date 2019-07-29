@@ -8,8 +8,8 @@
 """
 import cPickle
 import files
-import parseBRENDA
-import filterBRENDA
+import brendapy.parser
+import brendapy.misc.filterBRENDA
 import HEPATOSYS.enzymes
 
 output_ecs = files.install_dir + "/data/output/brenda_ecs_file.dat"
@@ -30,7 +30,7 @@ def createAllBrendaProteinFiles(create_files=True):
     # Load all ec data
     ec_filehandler = open(output_ecs, "w")
     if create_files:
-        ecs = parseBRENDA.createAllECStringFiles()
+        ecs = brendapy.parser.create_ec_files()
         cPickle.dump(ecs, ec_filehandler)
         ec_filehandler.close()
     else:
@@ -40,7 +40,7 @@ def createAllBrendaProteinFiles(create_files=True):
     for ec in ecs:
         output_file = output_proteins + ec
         out = open(output_file, "w")
-        proteins = parseBRENDA.getBrendaProteinsFromEC(ec)
+        proteins = brendapy.parser.getBrendaProteinsFromEC(ec)
         cPickle.dump(proteins, out)
         print ec.ljust(20) + "[%s Protein entries]" % len(proteins)
         out.close
@@ -121,7 +121,7 @@ def createLocalisationsFile(filename):
     """ Creates file fo all localisation attributes used in the Brenda database
         and writes the data to file 'filename'
     """
-    localisations = filterBRENDA.getLocalisationVocabulary(brenda_proteins)
+    localisations = brendapy.misc.filterBRENDA.getLocalisationVocabulary(brenda_proteins)
     #print localisations
     output = open(filename, "w")
     for loc in localisations:
@@ -133,7 +133,7 @@ def createSourceTissueFile(filename):
     """ Creates file fo all source tissue attributes used in the Brenda database
         and writes the data to file 'filename'
     """
-    source_tissues = filterBRENDA.getSourceTissueVocabulary(brenda_proteins)
+    source_tissues = brendapy.misc.filterBRENDA.getSourceTissueVocabulary(brenda_proteins)
     output = open(filename, "w")
     #print source_tissues
     for st in source_tissues:
@@ -201,7 +201,8 @@ def main():
         print " -> Tissue 1:\t", tissue_2
         result = []
         for p in brenda_proteins:
-            if filterBRENDA.isSpecies(p, species) and (filterBRENDA.isSourceTissue(p, tissue_1) or filterBRENDA.isSourceTissue(p, tissue_2)):
+            if brendapy.misc.filterBRENDA.isSpecies(p, species) and (
+                    brendapy.misc.filterBRENDA.isSourceTissue(p, tissue_1) or brendapy.misc.filterBRENDA.isSourceTissue(p, tissue_2)):
                 result.append(p)
         return result
     
@@ -215,7 +216,8 @@ def main():
         print " -> Tissue 1:\t", tissue_2
         result = []
         for p in brenda_proteins:
-            if filterBRENDA.isDescendantSpecies(p, species) and (filterBRENDA.isSourceTissue(p, tissue_1) or filterBRENDA.isSourceTissue(p, tissue_2)):
+            if brendapy.misc.filterBRENDA.isDescendantSpecies(p, species) and (
+                    brendapy.misc.filterBRENDA.isSourceTissue(p, tissue_1) or brendapy.misc.filterBRENDA.isSourceTissue(p, tissue_2)):
                 result.append(p)
         return result
     
@@ -227,7 +229,7 @@ def main():
         print " -> Tissue 1:\t", tissue_2
         result = []
         for p in brenda_proteins:
-            if filterBRENDA.isSourceTissue(p, tissue_1) or filterBRENDA.isSourceTissue(p, tissue_2):
+            if brendapy.misc.filterBRENDA.isSourceTissue(p, tissue_1) or brendapy.misc.filterBRENDA.isSourceTissue(p, tissue_2):
                 result.append(p)
         return result
     

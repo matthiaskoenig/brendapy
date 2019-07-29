@@ -8,7 +8,7 @@
 """
 
 import tools.taxonomy as taxonomy
-import parseBRENDA
+import brendapy.parser
 
 def isSpecies(p, species):
     """
@@ -107,8 +107,8 @@ def getSourceTissueVocabulary(proteins):
 def test():
     print "Test BRENDA.filterBRENDA"
     ec = "5.3.1.9"
-    ec_string = parseBRENDA.getStringFromEC(ec)
-    proteins = parseBRENDA.getBrendaProteinsFromEC(ec, ec_string) 
+    ec_string = brendapy.parser.get_brenda_info(ec)
+    proteins = brendapy.parser.getBrendaProteinsFromEC(ec, ec_string)
     
     def basicTest():
         def testIsSpecies():

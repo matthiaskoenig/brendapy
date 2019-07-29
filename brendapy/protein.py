@@ -1,19 +1,14 @@
 # -*- coding: latin-1 -*-
 """
-    Parsed protein information from the BRENDA database.
-    
-    For every ec number one or more (in most cases multiple) protein entries
-    exist. The information for one protein entry is stored in 
-    a BRENDAProtein() object.
-    
-    author: Matthias Koenig
-    version: 0.1
-    date 06.08
-    
+Parsed protein information from the BRENDA database.
+
+For every ec number one or more (in most cases multiple) protein entries
+exist. The information for one protein entry is stored in
+a BRENDAProtein() object.
 """
 import re
-import parseBRENDA
-import tools.taxonomy
+import parser
+
 
 class BRENDAProtein(object):
     """ Stores all BRENDA information for a given EC number.
@@ -66,9 +61,9 @@ class BRENDAProtein(object):
     
     def getOrganism(self):
         """ Sets organism information from protein """
-        pr_entries = parseBRENDA.getEntryFromString("PR", self.ec_string)
+        pr_entries = parser.getEntryFromString("PR", self.ec_string)
         # Get Entries for id
-        entry = parseBRENDA.getEntryWithID(self.id, pr_entries)
+        entry = parser.getEntryWithID(self.id, pr_entries)
         items = entry[0].split(" ")
         if (len(items[2]) > 0 and items[2][0] != "Q"):
             organism = items[1] + " " + items[2]
@@ -88,9 +83,9 @@ class BRENDAProtein(object):
     def getSwissProtGene(self):
         """ Sets gene information for protein """
         #print "BRENDAProtein.getSwissProtGene()"
-        pr_entries = parseBRENDA.getEntryFromString("PR", self.ec_string)
+        pr_entries = parser.getEntryFromString("PR", self.ec_string)
         # Get Entries for id
-        entry = parseBRENDA.getEntryWithID(self.id, pr_entries)
+        entry = parser.getEntryWithID(self.id, pr_entries)
         items = entry[0].split(" ")
         gene = [items[-3], items[-2]]
         return gene
@@ -98,9 +93,9 @@ class BRENDAProtein(object):
     def getReferences(self):
         """ Sets references for protein """
         #print "BRENDAProtein.getReferences()"
-        pr_entries = parseBRENDA.getEntryFromString("PR", self.ec_string)
+        pr_entries = parser.getEntryFromString("PR", self.ec_string)
         # Get Entries for id
-        entry = parseBRENDA.getEntryWithID(self.id, pr_entries)
+        entry = parser.getEntryWithID(self.id, pr_entries)
         items = entry[0].split(" ")
         references = items[-1].replace("<", "").replace(">","").split(",") 
         return references
@@ -112,8 +107,8 @@ class BRENDAProtein(object):
 
     def getSourceTissue(self):
         """ Sets source tissue for protein """
-        st_entries = parseBRENDA.getEntryFromString("ST", self.ec_string)
-        entries = parseBRENDA.getEntryWithID(self.id, st_entries)  
+        st_entries = parser.getEntryFromString("ST", self.ec_string)
+        entries = parser.getEntryWithID(self.id, st_entries)
         tissues = []
         def getTissue(entry):
             pattern = r"#.*# .* \("
@@ -130,8 +125,8 @@ class BRENDAProtein(object):
         
     def getLocalication(self):
         """ Sets localisation for protein """
-        lo_entries = parseBRENDA.getEntryFromString("LO", self.ec_string)
-        entries = parseBRENDA.getEntryWithID(self.id, lo_entries)  
+        lo_entries = parser.getEntryFromString("LO", self.ec_string)
+        entries = parser.getEntryWithID(self.id, lo_entries)
         localisation = []
         
         def getLoc(entry):
@@ -150,8 +145,8 @@ class BRENDAProtein(object):
         
     def getNaturalSubstrateProduct(self):
         """ Sets natural substrate, product for protein """
-        nsp_entries = parseBRENDA.getEntryFromString("NSP", self.ec_string)
-        entries = parseBRENDA.getEntryWithID(self.id, nsp_entries)  
+        nsp_entries = parser.getEntryFromString("NSP", self.ec_string)
+        entries = parser.getEntryWithID(self.id, nsp_entries)
         nsp = []
         def getReaction(entry):
             """ Gets the natural reaction equation """
@@ -174,7 +169,7 @@ class BRENDAProtein(object):
                 info = tmp[0][1:-1]
             else:
                 info = ''
-            if not parseBRENDA.isIDinEntry(self.id, info):
+            if not parser.isIDinEntry(self.id, info):
                 info = ''
             return info
                
@@ -187,16 +182,16 @@ class BRENDAProtein(object):
             Additional substrate, product information
             TODO: not implemented (information not very important)
         """
-        sp_entries = parseBRENDA.getEntryFromString("SP", self.ec_string)
-        entries = parseBRENDA.getEntryWithID(self.id, sp_entries)  
+        sp_entries = parser.getEntryFromString("SP", self.ec_string)
+        entries = parser.getEntryWithID(self.id, sp_entries)
         #print entries
         sp = []
         return []
     
     def getTurnoverNumber(self):
         """ Sets the turnover numbers for the proteins """
-        tn_entries = parseBRENDA.getEntryFromString("TN", self.ec_string)
-        entries = parseBRENDA.getEntryWithID(self.id, tn_entries)  
+        tn_entries = parser.getEntryFromString("TN", self.ec_string)
+        entries = parser.getEntryWithID(self.id, tn_entries)
         #print entries
         tn = []
         def getTN(entry):
@@ -219,7 +214,7 @@ class BRENDAProtein(object):
             tmp = re.findall(pattern, entry)
             if tmp:
                 info = tmp[0][1:-1].replace("\xb0", "")
-            if not parseBRENDA.isIDinEntry(self.id, info):
+            if not parser.isIDinEntry(self.id, info):
                 info = ''
             else:
                 info = re.sub("#.*#", "", info).strip()
@@ -232,8 +227,8 @@ class BRENDAProtein(object):
     
     def getKm(self):
         """ Sets the Km values of the proteins """
-        km_entries = parseBRENDA.getEntryFromString("KM", self.ec_string)
-        entries = parseBRENDA.getEntryWithID(self.id, km_entries)  
+        km_entries = parser.getEntryFromString("KM", self.ec_string)
+        entries = parser.getEntryWithID(self.id, km_entries)
         # print entries
         km = []
         def getKM(entry):
@@ -256,7 +251,7 @@ class BRENDAProtein(object):
             tmp = re.findall(pattern, entry)
             if tmp:
                 info = tmp[0][1:-1].replace("\xb0", "")
-            if not parseBRENDA.isIDinEntry(self.id, info):
+            if not parser.isIDinEntry(self.id, info):
                 info = ''
             else:
                 info = re.sub("#.*#", "", info).strip()
@@ -269,8 +264,8 @@ class BRENDAProtein(object):
         
     def getSpecificActivity(self):
         """ Sets the specific activity of the proteins """
-        km_entries = parseBRENDA.getEntryFromString("SA", self.ec_string)
-        entries = parseBRENDA.getEntryWithID(self.id, km_entries)  
+        km_entries = parser.getEntryFromString("SA", self.ec_string)
+        entries = parser.getEntryWithID(self.id, km_entries)
         #print entries
         sa = []
     
@@ -295,7 +290,7 @@ class BRENDAProtein(object):
             tmp = re.findall(pattern, entry)
             if tmp:
                 info = tmp[0][1:-1]
-            if not parseBRENDA.isIDinEntry(self.id, info):
+            if not parser.isIDinEntry(self.id, info):
                 info = ''
             else:
                 info = re.sub("#.*#", "", info).strip()
@@ -308,8 +303,8 @@ class BRENDAProtein(object):
     
     def getCofactors(self):
         """ Sets the cofactors of the proteins """
-        co_entries = parseBRENDA.getEntryFromString("CF", self.ec_string)
-        entries = parseBRENDA.getEntryWithID(self.id, co_entries)  
+        co_entries = parser.getEntryFromString("CF", self.ec_string)
+        entries = parser.getEntryWithID(self.id, co_entries)
         #print entries
         co = []
         
@@ -331,7 +326,7 @@ class BRENDAProtein(object):
             tmp = re.findall(pattern, entry)
             if tmp:
                 info = tmp[0][1:-1]
-                info = [item for item in info.split(';') if parseBRENDA.isIDinEntry(self.id, item)]
+                info = [item for item in info.split(';') if parser.isIDinEntry(self.id, item)]
                 info = [re.sub(r"#.*#", "", item).strip() for item in info]
             return "; ".join(info)
                         
@@ -342,8 +337,8 @@ class BRENDAProtein(object):
         
     def getInhibitors(self):
         """ Sets the inhinitors of the proteins """
-        in_entries = parseBRENDA.getEntryFromString("IN", self.ec_string)
-        entries = parseBRENDA.getEntryWithID(self.id, in_entries)  
+        in_entries = parser.getEntryFromString("IN", self.ec_string)
+        entries = parser.getEntryWithID(self.id, in_entries)
         #print entries
         inhibitors = []
         def getIN(entry):
@@ -364,7 +359,7 @@ class BRENDAProtein(object):
             tmp = re.findall(pattern, entry)
             if tmp:
                 info = tmp[0][1:-1]
-                info = [item for item in info.split(';') if parseBRENDA.isIDinEntry(self.id, item)]
+                info = [item for item in info.split(';') if parser.isIDinEntry(self.id, item)]
                 info = [re.sub(r"#.*#", "", item).strip() for item in info]
             return "; ".join(info)
                         
@@ -375,8 +370,8 @@ class BRENDAProtein(object):
               
     def getKi(self):
         """ Sets the Ki values of the proteins """
-        ki_entries = parseBRENDA.getEntryFromString("KI", self.ec_string)
-        entries = parseBRENDA.getEntryWithID(self.id, ki_entries)  
+        ki_entries = parser.getEntryFromString("KI", self.ec_string)
+        entries = parser.getEntryWithID(self.id, ki_entries)
         #print entries
         ki = []
         def getKI(entry):
@@ -400,7 +395,7 @@ class BRENDAProtein(object):
             tmp = re.findall(pattern, entry)
             if tmp:
                 info = tmp[0][1:-1].replace("\xb0", "")
-            if not parseBRENDA.isIDinEntry(self.id, info):
+            if not parser.isIDinEntry(self.id, info):
                 info = ''
             else:
                 info = re.sub("#.*#", "", info).strip()
@@ -412,8 +407,8 @@ class BRENDAProtein(object):
         
     def getMetalIons(self):
         """ Sets the metal ions of the proteins """
-        me_entries = parseBRENDA.getEntryFromString("ME", self.ec_string)
-        entries = parseBRENDA.getEntryWithID(self.id, me_entries)  
+        me_entries = parser.getEntryFromString("ME", self.ec_string)
+        entries = parser.getEntryWithID(self.id, me_entries)
         #print entries
         me = []
         
@@ -435,7 +430,7 @@ class BRENDAProtein(object):
             tmp = re.findall(pattern, entry)
             if tmp:
                 info = tmp[0][1:-1]
-                info = [item for item in info.split(';') if parseBRENDA.isIDinEntry(self.id, item)]
+                info = [item for item in info.split(';') if parser.isIDinEntry(self.id, item)]
                 info = [re.sub(r"#.*#", "", item).strip() for item in info]
             return "; ".join(info)
                         
@@ -450,8 +445,8 @@ class BRENDAProtein(object):
             TODO: Parse the given references (can be down in the output of the protein 
                   information
         """
-        rf_entries = parseBRENDA.getEntryFromString("RF", self.ec_string)
-        entries = parseBRENDA.getEntryWithID(self.id, rf_entries)  
+        rf_entries = parser.getEntryFromString("RF", self.ec_string)
+        entries = parser.getEntryWithID(self.id, rf_entries)
         #print entries
         rf = []
         
@@ -475,19 +470,50 @@ class BRENDAProtein(object):
     
     def printInformation(self):
         """ Prints the information for a given object """
-        print self.createInformation()
+        print(self.createInformation())
 
 
 def test():
     """ Test the proteinBRENDA module """
-    print "Test proteinBRENDA module"
-    #ec = "1.1.1.10"
     ec = "5.3.1.9"
+    print(f"Test proteinBRENDA module: {ec}")
+
     # BRENDA information for ec
     # In the process all BRENDAprotein objects for the different
     # protein entities are created
-    BI = parseBRENDA.BRENDAInformation(ec)
+    BI = parser.BRENDAInformation(ec)
     BI.printInformationString()
+
+
+def numberOfProteins(self, ec):
+    """ Get the number of protein entries in the BRENDA database for ec number."""
+    ec_str = self.ec_str[ec]
+    proteins = self.parse_info_for_bid("PR", ec_str)
+    return len(proteins)
+
+
+def getBrendaProteinsFromEC(ec, ec_string=None):
+    """ getBrendaProteinsFromEC(ec, ec_string)
+        Creates list of all BRENDA Protein entries for given ec number 'ec' and
+        'ec_data'. 'ec_data' is part of brenda information file for the given ec
+        number.
+        Returns protein list.
+    """
+    if not ec_string:
+        filename = files.install_dir + "/data/output/brenda_ecs/" + ec
+        # print filename
+        input = open(filename, "r")
+        ec_string = input.read()
+        input.close()
+
+    proteins = []
+    # number of proteins in entry
+    protein_count = numberOfProteins(ec_string)
+    # create list of Protein entries
+    for id in range(1, protein_count + 1):
+        proteins.append(protein.BRENDAProtein(ec, id, ec_string))
+    return proteins
+
 
 if __name__ == "__main__":
     test()
