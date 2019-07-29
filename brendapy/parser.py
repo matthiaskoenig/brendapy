@@ -76,8 +76,7 @@ class BRENDAparser(object):
 	@staticmethod
 	def parse_info(bid, ec_info):
 		""" Get information from ec_str for given BRENDA id (bids are listed below).
-		Reads 'info' from BRENDA string for ec and returns list of entries associated with
-		Brenda entry identifier. 'ID' is an two character identifier in the Brenda file.
+
 			PR: Protein
 			RN: Recommended name
 			SN: Systematic name
@@ -111,6 +110,10 @@ class BRENDAparser(object):
 			SS: storage stability
 			TS: temperature stability
 			RF: reference
+
+		:param bid: BRENDA key
+		:param ec_info: BRENDA information string for EC
+		:return:
 		"""
 		def starts_with_string(line, string):
 			start = [string + "\t", string + " "]
@@ -146,6 +149,65 @@ class BRENDAparser(object):
 					break
 
 		return [item.replace('\t', ' ') for item in results]
+
+	def parse_info_dict(self, ec_str):
+		"""
+		:return:
+		"""
+		keys = {"PR", "RN", "SN", "SY", "CR", "RE", "RT", "ST", "LO", "NSP", "SP", "TN", "KM",
+				"PHO", "PHR", "SA", "TO", "CF", "IN", "KI", "ME", "MW", "SU", "AP", "EN", "CL",
+				"CR", "PU", "GS", "PHS", "SS", "TS", "RF"}
+
+		from collections import defaultdict
+		results = defaultdict(list)
+
+		def parse_bid_item(line):
+			tokens = line.split("\t")
+			bid = tokens[0].strip()
+			item = "\t".join(tokens[1:])
+			print(bid, item)
+			return bid, item
+
+
+		lines = ec_str.split("\n")
+		in_item = False
+
+		for line in lines:
+			print(line)
+			# read initial line of entry
+			if not in_item:
+				if len(line) > 0 and not line.startswith("\t"):
+					bid, item = parse_bid_item(line)
+					if bid in keys:
+						in_item = True
+					else:
+						in_item = False
+						item = None
+
+			elif in_item:
+				# entries longer than one line
+				if line.startswith("\t"):
+					item += " " + line.strip()
+
+				# write entries if next entry begins
+				elif len(line) > 0 and not line.startswith("\t"):
+					# store old entry
+					results[bid].append(item.replace('\t', ' '))
+
+					# create new entry
+					bid, item = parse_bid_item(line)
+					if bid in keys:
+						in_item = True
+					else:
+						in_item = False
+						item = None
+
+				# write last entry
+				elif len(line) == 0:
+					results[bid].append(item.replace('\t', ' '))
+
+		return results
+
 
 	@staticmethod
 	def is_id_in_entry(id, entry):

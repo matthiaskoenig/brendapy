@@ -55,3 +55,13 @@ def test_all_proteins():
 	for ec in brenda.keys():
 		print(ec)
 		proteins = brenda.parse_proteins(ec)
+
+def test_info_dict():
+	brenda = parser.BRENDAparser(brenda_file)
+	ec = "1.1.1.2"
+	ec_str = brenda.ec_text[ec]
+	d = brenda.parse_info_dict(ec_str)
+	from pprint import pprint
+	pprint(d)
+	import json
+	assert False
