@@ -3,7 +3,9 @@ Module for parsing the BRENDA ENZYME information from flat file
 """
 import os
 import re
+from collections import OrderedDict
 from brendapy import utils
+from pprint import pprint
 
 
 class BRENDAparser(object):
@@ -26,7 +28,7 @@ class BRENDAparser(object):
 		:param filename: BRENDA file
 		:return: dict (ec, brenda_info)
 		"""
-		ec_data = {}
+		ec_data = OrderedDict()
 		start = "ID\t"
 		end = "///"
 		in_entry = False
@@ -51,6 +53,13 @@ class BRENDAparser(object):
 					ec_data[ec] = entry
 
 		return ec_data
+
+	@property
+	def keys(self):
+		""" Available ec keys.
+		:return:
+		"""
+		return self.ec_text.keys()
 
 	@staticmethod
 	def _get_ec_from_line(line):
@@ -117,22 +126,25 @@ class BRENDAparser(object):
 
 		for line in lines:
 			# read first entry
-			if in_item == False and starts_with_string(line, bid):
+			if not in_item and starts_with_string(line, bid):
 				item = line[L+1:]
 				in_item = True
 
 			elif in_item is True:
 				# entries longer than one line
 				if starts_with_string(line, ''):
-					item += " " + line.replace("\t", "").strip()
+					item += " " + line.strip()
+
 				# write entries if next entry begins
 				elif starts_with_string(line, bid):
 					results.append(item)
+
 					item = line[L+1:]
 				# write last entry
 				elif len(line) == 0:
 					results.append(item)
 					break
+
 		return [item.replace('\t', ' ') for item in results]
 
 	@staticmethod
@@ -169,17 +181,17 @@ class BRENDAparser(object):
 
 	def parse_proteins(self, ec):
 		ec_str = self.ec_text[ec]
-		print(f"*** {ec} ***")
 		entries = self.parse_info("PR", ec_str)
-		protein_count = len(entries)
-		print(f"protein_count: {protein_count}")
-		from pprint import pprint
-		pprint(entries)
+
+		# get the protein ids from the proteins
+		protein_keys = set()
+		for entry in entries:
+			tokens = entry.split("#")
+			protein_keys.add(int(tokens[1]))
 
 		proteins = {}
-		for k in range(1, protein_count + 1):
-			print(k)
-			proteins[k] = BRENDAProtein(ec, k, ec_str)
+		for key in protein_keys:
+			proteins[key] = BRENDAProtein(ec, key, ec_str)
 		return proteins
 
 
@@ -272,12 +284,14 @@ class BRENDAProtein(object):
 	def get_source_tissue(self):
 		""" Sets source tissue for protein """
 		st_entries = BRENDAparser.parse_info("ST", self.ec_string)
+
 		entries = BRENDAparser.get_entry_with_id(self.id, st_entries)
 		tissues = []
 
 		def get_tissue(entry):
-			pattern = r"#.*# .* \("
+			pattern = r"#.*?# .*? \("
 			tmp = re.findall(pattern, entry)
+			print(tmp)
 			if not tmp:
 				pattern = r"#.*# .* <"
 				tmp = re.findall(pattern, entry)
@@ -286,6 +300,7 @@ class BRENDAProtein(object):
 			return tissue
 
 		for entry in entries:
+			print(entry)
 			tissues.append(get_tissue(entry))
 		return tissues
 
@@ -631,26 +646,28 @@ class BRENDAProtein(object):
 
 		return rf
 
-	def createInformation(self):
+	def __str__(self):
 		""" creates InformationString for object"""
 		lines = []
-		names = ["EC", "ID", "Organism", "Taxonomy", "Taxonomy Human", "Source Tissue",
-				 "Localisation",
-				 "NSP", "Turnover Number", "Km",
-				 "Specific Activity", "Cofactors", "Inhibitors", "Ki",
-				 "Metal Ions", "Pubmed"]
-		infos = [self.ec, self.id, self.organism, self.taxonomy,
-				 self.taxonomyHuman, self.source_tissue, self.localisation,
-				 self.natural_substrate_product, self.turnover_number,
-				 self.km, self.specific_activity, self.cofactors, self.inhibitors,
-				 self.ki, self.metal_ions, self.references]
-		for (name, info) in zip(names, infos):
-			lines.append(name.ljust(20) + str(info) + "\n")
+		data = OrderedDict([
+			("ec", self.ec),
+			("id", self.id),
+			("Organism", self.organism),
+			("Source Tissue", self.source_tissue),
+			("Localisation", self.localisation),
+			("NSP", self.natural_substrate_product),
+			("Turnover Number", self.turnover_number),
+			("Km", self.km),
+			("Specific Activity", self.specific_activity),
+			("Cofactors", self.cofactors),
+			("Inhibitors", self.inhibitors),
+			("Ki", self.ki),
+			("Metal Ions", self.metal_ions),
+			("Pubmed", self.pubmed),
+		])
+		for (field, info) in data.items():
+			lines.append(field.ljust(20) + str(info) + "\n")
 		return "".join(lines)
-
-	def printInformation(self):
-		""" Prints the information for a given object """
-		print(self.createInformation())
 
 
 if __name__ == "__main__":
@@ -658,4 +675,15 @@ if __name__ == "__main__":
 	base_path = os.path.dirname(os.path.realpath(__file__))
 	filename = os.path.join(base_path, "..", 'data', 'brenda_download.txt')
 	brenda = BRENDAparser(filename)
-	print(brenda.ec_data["1.1.1.1"])
+	# print(brenda.ec_text["1.1.1.1"])
+
+	ec_str = brenda.ec_text["1.1.1.1"]
+	for k in range(1, 168):
+		protein = BRENDAProtein(ec="1.1.1.1", id=k, ec_string=ec_str)
+		print(protein)
+
+	for ec in brenda.keys():
+		print(ec)
+		proteins = brenda.parse_proteins(ec)
+
+
