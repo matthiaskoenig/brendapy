@@ -239,7 +239,7 @@ class BRENDAProtein(object):
 		self.inhibitors = self.getInhibitors()
 		self.ki = self.getKi()
 		self.metal_ions = self.getMetalIons()
-		self.pubmed = self.getPubMedReferences()
+		self.pubmed = self.get_pubmed()
 
 	def get_organism(self):
 		""" Sets organism information from protein """
@@ -265,15 +265,6 @@ class BRENDAProtein(object):
 		gene = [items[-3], items[-2]]
 		return gene
 
-	def get_references(self):
-		""" Sets references for protein """
-		pr_entries = BRENDAparser.parse_info("PR", self.ec_string)
-		# Get Entries for id
-		entry = BRENDAparser.get_entry_with_id(self.id, pr_entries)
-		items = entry[0].split(" ")
-		references = items[-1].replace("<", "").replace(">", "").split(",")
-		return references
-
 	def get_reaction(self):
 		""" Sets reaction for protein
 
@@ -293,7 +284,7 @@ class BRENDAProtein(object):
 			tmp = re.findall(pattern, entry)
 			print(tmp)
 			if not tmp:
-				pattern = r"#.*# .* <"
+				pattern = r"#.*?# .* <"
 				tmp = re.findall(pattern, entry)
 			tmp = tmp[0].split("#")
 			tissue = tmp[-1][:-1].strip()
@@ -311,10 +302,10 @@ class BRENDAProtein(object):
 		localisation = []
 
 		def get_loc(entry):
-			pattern = r"^#.*# .* <"
+			pattern = r"^#.*?# .* <"
 			tmp = re.findall(pattern, entry)
 			if not tmp:
-				pattern = r"^#.*# .* ("
+				pattern = r"^#.*?# .* ("
 				tmp = re.findall(pattern, entry)
 			tmp = tmp[0].split("#")
 			loc = tmp[2][:-1].strip()
@@ -332,13 +323,13 @@ class BRENDAProtein(object):
 
 		def get_reaction(entry):
 			""" Gets the natural reaction equation """
-			pattern = r"#.*# .* \("
+			pattern = r"#.*?# .* \("
 			tmp = re.findall(pattern, entry)
 			if not tmp:
-				pattern = r"#.*# .* <"
+				pattern = r"#.*?# .* <"
 				tmp = re.findall(pattern, entry)
 			if not tmp:
-				tmp = re.findall(r"#.*# .*", entry)
+				tmp = re.findall(r"#.*?# .*", entry)
 			tmp = tmp[0].split("#")
 			reaction = tmp[-1][:-1].strip()
 			return reaction
@@ -376,11 +367,16 @@ class BRENDAProtein(object):
 		""" Sets the turnover numbers for the proteins """
 		tn_entries = BRENDAparser.parse_info("TN", self.ec_string)
 		entries = BRENDAparser.get_entry_with_id(self.id, tn_entries)
+		for entry in entries:
+			print("-" * 80)
+			print(entry)
+			print("-" * 80)
+
 		tn = []
 
 		def getTN(entry):
 			""" gets the turnover value """
-			pattern = r"#.*# \d*.\d*.* {"
+			pattern = r"#.*?# \d*.\d*.* {"
 			tmp = re.findall(pattern, entry)
 			tmp = tmp[0].split("#")
 			tn = tmp[-1][:-1].strip()
@@ -403,7 +399,7 @@ class BRENDAProtein(object):
 			if not BRENDAparser.is_id_in_entry(self.id, info):
 				info = ''
 			else:
-				info = re.sub("#.*#", "", info).strip()
+				info = re.sub("#.*?#", "", info).strip()
 			return info
 
 		# Get the information from the entries
@@ -420,7 +416,7 @@ class BRENDAProtein(object):
 
 		def getKM(entry):
 			""" gets the turnover value """
-			pattern = r"#.*# \d*.\d*.* {"
+			pattern = r"#.*?# \d*.\d*.* {"
 			tmp = re.findall(pattern, entry)
 			tmp = tmp[0].split("#")
 			km = tmp[-1][:-1].strip()
@@ -443,7 +439,7 @@ class BRENDAProtein(object):
 			if not BRENDAparser.is_id_in_entry(self.id, info):
 				info = ''
 			else:
-				info = re.sub("#.*#", "", info).strip()
+				info = re.sub("#.*?#", "", info).strip()
 			return info
 
 		for entry in entries:
@@ -453,8 +449,8 @@ class BRENDAProtein(object):
 
 	def getSpecificActivity(self):
 		""" Sets the specific activity of the proteins """
-		km_entries = BRENDAparser.parse_info("SA", self.ec_string)
-		entries = BRENDAparser.get_entry_with_id(self.id, km_entries)
+		sa_entries = BRENDAparser.parse_info("SA", self.ec_string)
+		entries = BRENDAparser.get_entry_with_id(self.id, sa_entries)
 		# print entries
 		sa = []
 
@@ -463,11 +459,11 @@ class BRENDAProtein(object):
 			pattern = r"#.*# \d*.\d*.* \("
 			tmp = re.findall(pattern, entry)
 			if not tmp:
-				tmp = re.findall(r"#.*# \d*.\d*.* <", entry)
+				tmp = re.findall(r"#.*?# \d*.\d*.* <", entry)
 			if not tmp:
-				tmp = re.findall(r"#.*# -\d*.\d*.* \(", entry)
+				tmp = re.findall(r"#.*?# -\d*.\d*.* \(", entry)
 			if not tmp:
-				tmp = re.findall(r"#.*# -\d*.\d*.* <", entry)
+				tmp = re.findall(r"#.*?# -\d*.\d*.* <", entry)
 			tmp = tmp[0].split("#")
 			sa = tmp[-1][:-1].strip()
 			return sa
@@ -482,7 +478,7 @@ class BRENDAProtein(object):
 			if not BRENDAparser.is_id_in_entry(self.id, info):
 				info = ''
 			else:
-				info = re.sub("#.*#", "", info).strip()
+				info = re.sub("#.*?#", "", info).strip()
 			return info
 
 		for entry in entries:
@@ -499,10 +495,10 @@ class BRENDAProtein(object):
 
 		def getCF(entry):
 			""" Gets the cofactor from entry. """
-			pattern = r"#.*# .* \("
+			pattern = r"#.*?# .* \("
 			tmp = re.findall(pattern, entry)
 			if not tmp:
-				pattern = r"#.*# .* <"
+				pattern = r"#.*?# .* <"
 				tmp = re.findall(pattern, entry)
 			tmp = tmp[0].split("#")
 			cf = tmp[-1][:-1].strip()
@@ -516,7 +512,7 @@ class BRENDAProtein(object):
 			if tmp:
 				info = tmp[0][1:-1]
 				info = [item for item in info.split(';') if BRENDAparser.is_id_in_entry(self.id, item)]
-				info = [re.sub(r"#.*#", "", item).strip() for item in info]
+				info = [re.sub(r"#.*?#", "", item).strip() for item in info]
 			return "; ".join(info)
 
 		for entry in entries:
@@ -533,10 +529,10 @@ class BRENDAProtein(object):
 
 		def getIN(entry):
 			""" Gets the inhibitor from entry. """
-			pattern = r"#.*# .* \("
+			pattern = r"#.*?# .* \("
 			tmp = re.findall(pattern, entry)
 			if not tmp:
-				pattern = r"#.*# .* <"
+				pattern = r"#.*?# .* <"
 				tmp = re.findall(pattern, entry)
 			tmp = tmp[0].split("#")
 			inhibitor = tmp[-1][:-1].strip()
@@ -550,7 +546,7 @@ class BRENDAProtein(object):
 			if tmp:
 				info = tmp[0][1:-1]
 				info = [item for item in info.split(';') if BRENDAparser.is_id_in_entry(self.id, item)]
-				info = [re.sub(r"#.*#", "", item).strip() for item in info]
+				info = [re.sub(r"#.*?#", "", item).strip() for item in info]
 			return "; ".join(info)
 
 		for entry in entries:
@@ -567,7 +563,7 @@ class BRENDAProtein(object):
 
 		def getKI(entry):
 			""" gets the turnover value """
-			pattern = r"#.*# \d*.\d*.* {"
+			pattern = r"#.*?# \d*.\d*.* {"
 			tmp = re.findall(pattern, entry)
 			# print entry
 			tmp = tmp[0].split("#")
@@ -591,7 +587,7 @@ class BRENDAProtein(object):
 			if not BRENDAparser.is_id_in_entry(self.id, info):
 				info = ''
 			else:
-				info = re.sub("#.*#", "", info).strip()
+				info = re.sub("#.*?#", "", info).strip()
 			return info
 
 		for entry in entries:
@@ -608,10 +604,10 @@ class BRENDAProtein(object):
 
 		def getME(entry):
 			""" Gets the metal ions from entry. """
-			pattern = r"#.*# .* \("
+			pattern = r"#.*?# .* \("
 			tmp = re.findall(pattern, entry)
 			if not tmp:
-				pattern = r"#.*# .* <"
+				pattern = r"#.*?# .* <"
 				tmp = re.findall(pattern, entry)
 			tmp = tmp[0].split("#")
 			me_ion = tmp[-1][:-1].strip()
@@ -625,7 +621,7 @@ class BRENDAProtein(object):
 			if tmp:
 				info = tmp[0][1:-1]
 				info = [item for item in info.split(';') if BRENDAparser.is_id_in_entry(self.id, item)]
-				info = [re.sub(r"#.*#", "", item).strip() for item in info]
+				info = [re.sub(r"#.*?#", "", item).strip() for item in info]
 			return "; ".join(info)
 
 		for entry in entries:
@@ -633,18 +629,26 @@ class BRENDAProtein(object):
 		# print me[-1]
 		return me
 
-	def getPubMedReferences(self):
-		""" Gets information about the cited references. So the given data in the
-            protein objects can be validated
-            TODO: Parse the given references (can be down in the output of the protein
-                  information
-        """
-		rf_entries = BRENDAparser.parse_info("RF", self.ec_string)
-		entries = BRENDAparser.get_entry_with_id(self.id, rf_entries)
-		# print entries
-		rf = []
+	def get_references(self):
+		""" Parse the reference intigers from the protein entries."""
+		pr_entries = BRENDAparser.parse_info("PR", self.ec_string)
+		# Get Entries for id
+		entry = BRENDAparser.get_entry_with_id(self.id, pr_entries)
+		items = entry[0].split(" ")
+		references = items[-1].replace("<", "").replace(">", "").split(",")
+		return [int(ref) for ref in references]
 
-		return rf
+	def get_pubmed(self):
+		""" Gets information about the cited pubmed references.
+		So the given data in the protein objects can be validated
+		"""
+		rf_entries = BRENDAparser.parse_info("RF", self.ec_string)
+		pubmeds = {}
+		for ref_id in self.references:
+			entry = rf_entries[ref_id-1]
+			pubmeds[ref_id] = entry
+
+		return pubmeds
 
 	def __str__(self):
 		""" creates InformationString for object"""
@@ -663,6 +667,7 @@ class BRENDAProtein(object):
 			("Inhibitors", self.inhibitors),
 			("Ki", self.ki),
 			("Metal Ions", self.metal_ions),
+			("References", self.references),
 			("Pubmed", self.pubmed),
 		])
 		for (field, info) in data.items():
