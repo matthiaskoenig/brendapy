@@ -1,20 +1,18 @@
+
 import pytest
-import os
+
 from brendapy import parser
-
-base_path = os.path.dirname(os.path.realpath(__file__))
-brenda_file = os.path.join(base_path, "..", "..", 'data', 'brenda_download.txt')
-
+from brendapy.settings import BRENDA_FILE
 
 def test_parsing():
-	brenda = parser.BRENDAparser(brenda_file)
+	brenda = parser.BRENDAparser(BRENDA_FILE)
 	assert brenda
 	assert "1.1.1.1" in brenda.ec_text
 
 
 def test_protein():
 	""" Test the proteinBRENDA module """
-	brenda = parser.BRENDAparser(brenda_file)
+	brenda = parser.BRENDAparser(BRENDA_FILE)
 
 	ec = "1.1.1.1"
 	proteins = brenda.parse_proteins(ec)
@@ -23,7 +21,7 @@ def test_protein():
 
 
 def test_protein_detail1():
-	brenda = parser.BRENDAparser(brenda_file)
+	brenda = parser.BRENDAparser(BRENDA_FILE)
 	ec = "1.1.1.1"
 	ec_str = brenda.ec_text[ec]
 	protein = parser.BRENDAProtein(ec=ec, id=1, ec_string=ec_str)
@@ -37,7 +35,7 @@ def test_protein_detail1():
 
 
 def test_protein_detail2():
-	brenda = parser.BRENDAparser(brenda_file)
+	brenda = parser.BRENDAparser(BRENDA_FILE)
 	ec = "1.1.1.1"
 	ec_str = brenda.ec_text[ec]
 	protein = parser.BRENDAProtein(ec=ec, id=4, ec_string=ec_str)
@@ -56,8 +54,9 @@ def test_all_proteins():
 		print(ec)
 		proteins = brenda.parse_proteins(ec)
 
+
 def test_info_dict():
-	brenda = parser.BRENDAparser(brenda_file)
+	brenda = parser.BRENDAparser(BRENDA_FILE)
 	ec = "1.1.1.2"
 	ec_str = brenda.ec_text[ec]
 	d = brenda.parse_info_dict(ec_str)
