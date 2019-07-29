@@ -2,3 +2,4 @@
 .idea
 data
 brendapy.egg-info
+.pytest_cache
