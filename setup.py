@@ -72,7 +72,8 @@ setup(
     packages=find_packages(),
     # package_dir={'': ''},
     package_data={
-      '': ['../requirements.txt',],
+      '': ['../requirements.txt',
+           'resources'],
     },
     include_package_data=True,
     zip_safe=False,

@@ -6,7 +6,9 @@ import re
 from collections import OrderedDict
 from brendapy import utils
 from pprint import pprint
-
+from collections import defaultdict
+from brendapy.settings import BRENDA_FILE
+import zipfile
 
 class BRENDAparser(object):
 	""" Parser for BRENDA information."""
@@ -22,7 +24,7 @@ class BRENDAparser(object):
 		# self.ec_proteins = self.parse_proteins()
 
 	@classmethod
-	def parse_entry_strings(cls, filename):
+	def parse_entry_strings(cls, filename=BRENDA_FILE):
 		""" Reads the string entries from given BRENDA file.
 
 		:param filename: BRENDA file
@@ -34,23 +36,30 @@ class BRENDAparser(object):
 		in_entry = False
 		data_lines = []
 
-		with open(filename, 'r') as bf:
-			for line in bf.readlines():
-				# start of entry
-				if line.startswith(start):
-					in_entry = True
-					ec = BRENDAparser._get_ec_from_line(line)
-					data_lines = [line]
-					# print(ec)
-				# in entry
-				if in_entry:
-					data_lines.append(line)
-				# end of entry
-				if in_entry and line.startswith(end):
-					in_entry = False
-					entry = "".join(data_lines)
-					entry.replace('\xef\xbf\xbd', " ")
-					ec_data[ec] = entry
+		if filename.endswith(".zip"):
+			archive = zipfile.ZipFile(BRENDA_FILE, 'rb')
+			data = archive.read('brenda_download.txt')
+			lines = data.split("\n")
+		else:
+			with open(filename, 'r') as bf:
+				lines = [line for line in bf.readlines()]
+
+		for line in lines:
+			# start of entry
+			if line.startswith(start):
+				in_entry = True
+				ec = BRENDAparser._get_ec_from_line(line)
+				data_lines = [line]
+				# print(ec)
+			# in entry
+			if in_entry:
+				data_lines.append(line)
+			# end of entry
+			if in_entry and line.startswith(end):
+				in_entry = False
+				entry = "".join(data_lines)
+				entry.replace('\xef\xbf\xbd', " ")
+				ec_data[ec] = entry
 
 		return ec_data
 
@@ -77,39 +86,50 @@ class BRENDAparser(object):
 	def parse_info(bid, ec_info):
 		""" Get information from ec_str for given BRENDA id (bids are listed below).
 
-			PR: Protein
-			RN: Recommended name
-			SN: Systematic name
-			SY: Synonyms
-			CR: CAS Registry number
-			RE: Reaction
-			RT: Reaction Type
-			ST: Source Tissue
-			LO: Localization
-			NSP: Natural Substrate Product
-			SP: Substrate Product
-			TN: Turnover number
-			KM: Km value
-			PHO: ph optimum
-			PHR: ph range
-			SA: specific activity
-			TO: temperature optimum
-			CF: cofactor
-			IN: inhibitors
-			KI: Ki values
-			ME: Metal ions
-			MW: Molecular weight
-			SU: Subunits
-			AP: application
-			EN: engineering
-			CL: cloned
-			CR: crystallization
-			PU: purification
-			GS: general stability
-			PHS: ph stability
-			SS: storage stability
-			TS: temperature stability
-			RF: reference
+		AC	activating compound
+		AP	application
+		CF	cofactor
+		CL	cloned
+		CR	crystallization
+		EN	engineering
+		EXP	expression
+		GI	general information on enzyme
+		GS	general stability
+		IC50	IC-50 Value
+		ID	EC-class
+		IN	inhibitors
+		KKM	Kcat/KM-Value substrate in {...}
+		KI	Ki-value	inhibitor in {...}
+		KM	KM-value	substrate in {...}
+		LO	localization
+		ME	metals/ions
+		MW	molecular weight
+		NSP	natural substrates/products	reversibilty information in {...}
+		OS	oxygen stability
+		OSS	organic solvent stability
+		PHO	pH-optimum
+		PHR	pH-range
+		PHS	pH stability
+		PI	isoelectric point
+		PM	posttranslation modification
+		PR	protein
+		PU	purification
+		RE	reaction catalyzed
+		RF	references
+		REN	renatured
+		RN	accepted name (IUPAC)
+		RT	reaction type
+		SA	specific activity
+		SN	synonyms
+		SP	substrates/products	reversibilty information in {...}
+		SS	storage stability
+		ST	source/tissue
+		SU	subunits
+		SY	systematic name
+		TN	turnover number	substrate in {...}
+		TO	temperature optimum
+		TR	temperature range
+		TS	temperature	stability
 
 		:param bid: BRENDA key
 		:param ec_info: BRENDA information string for EC
@@ -150,15 +170,18 @@ class BRENDAparser(object):
 
 		return [item.replace('\t', ' ') for item in results]
 
-	def parse_info_dict(self, ec_str):
+	@staticmethod
+	def parse_info_dict(ec_str):
 		"""
 		:return:
 		"""
-		keys = {"PR", "RN", "SN", "SY", "CR", "RE", "RT", "ST", "LO", "NSP", "SP", "TN", "KM",
-				"PHO", "PHR", "SA", "TO", "CF", "IN", "KI", "ME", "MW", "SU", "AP", "EN", "CL",
-				"CR", "PU", "GS", "PHS", "SS", "TS", "RF"}
-
-		from collections import defaultdict
+		keys = {
+			"AC", "AP", "CF", "CL", "CR", "EN", "EXP", "GI", "GS", "IC50",
+			"ID", "IN", "KKM", "KI", "KM", "LO", "ME", "MW", "NSP", "OS",
+			"OSS", "PHO", "PHR", "PHS", "PI", "PM", "PR", "PU", "RE", "RF",
+			"REN", "RN", "RT", "SA", "SN", "SP", "SS", "ST", "SU", "SY", "TN",
+			"TO", "TR", "TS"
+		}
 		results = defaultdict(list)
 
 		def parse_bid_item(line):
@@ -168,8 +191,11 @@ class BRENDAparser(object):
 			print(bid, item)
 			return bid, item
 
-
+		# combine lines into entries
 		lines = ec_str.split("\n")
+
+
+
 		in_item = False
 
 		for line in lines:
