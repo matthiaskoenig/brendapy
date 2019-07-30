@@ -72,9 +72,8 @@ class BrendaParser(object):
         "REN", "RN", "RT", "SA", "SN", "SP", "SS", "ST", "SU", "SY", "TN",
         "TO", "TR", "TS"
     }
-    PATTERNS = {
-        'RF': re.compile(r"^<(\d+?)> (.+) {Pubmed:(\d*)}")
-    }
+    PATTERN_RF = re.compile(r"^<(\d+?)> (.+) {Pubmed:\s*(\d*)\s*}")
+    PATTERN_ALL = re.compile(r"^#([,\d\s]+?)#(.+)<([,\d\s]+)>")
 
     def __init__(self, brenda_file=BRENDA_FILE):
         """ Initialize parser and parse BRENDA file.
@@ -83,6 +82,7 @@ class BrendaParser(object):
         """
         self.brenda_file = brenda_file
         self.ec_text = BrendaParser.parse_entry_strings(self.brenda_file)
+        self.ec_data = self.parse_entry_dicts()
         # self.ec_proteins = self.parse_proteins()
 
     def keys(self):
@@ -95,8 +95,8 @@ class BrendaParser(object):
         """
         return self.ec_text.keys()
 
-    @classmethod
-    def parse_entry_strings(cls, filename):
+    @staticmethod
+    def parse_entry_strings(filename):
         """ Reads the string entries from BRENDA file.
 
         :param filename: BRENDA database download
@@ -104,8 +104,7 @@ class BrendaParser(object):
         """
         logging.info(f"`parse_entry_strings` from `{filename}`")
         ec_data = OrderedDict()
-        start = "ID\t"
-        end = "///"
+
         in_entry = False
         data_lines = []
 
@@ -116,7 +115,7 @@ class BrendaParser(object):
                     continue
 
                 # start of entry
-                if line.startswith(start):
+                if line.startswith("ID\t"):
                     in_entry = True
                     ec = BrendaParser._get_ec_from_line(line)
                     data_lines = [line]
@@ -124,19 +123,25 @@ class BrendaParser(object):
                 if in_entry:
                     data_lines.append(line)
                 # end of entry
-                if in_entry and line.startswith(end):
+                if in_entry and line.startswith("///"):
                     in_entry = False
                     entry = "".join(data_lines)
                     entry.replace('\xef\xbf\xbd', " ")
+                    # store entry
                     ec_data[ec] = entry
+                    data_lines = []
 
         return ec_data
 
-
+    @utils.timeit
+    def parse_entry_dicts(self):
+        d = OrderedDict()
+        for ec, ec_string in self.ec_text.items():
+            d[ec] = BrendaParser._parse_info_dict(ec, ec_string)
+        return d
 
     @staticmethod
-    @utils.timeit
-    def _parse_info_dict(ec_str):
+    def _parse_info_dict(ec, ec_str):
         """
         :return:
         """
@@ -148,16 +153,15 @@ class BrendaParser(object):
             :param item:
             :return:
             """
-            print(f"store: {bid} : {item}")
             if bid == "ID":
                 results[bid] = item
             elif bid in {"RN", "RE", "RT", "SN"}:
                 if isinstance(results[bid], OrderedDict):
-                    results[bid] = {item}
+                    results[bid] = { item }
                 else:
                     results[bid].add(item)
             elif bid == "RF":
-                match = BrendaParser.PATTERNS['RF'].match(item)
+                match = BrendaParser.PATTERN_RF.match(item)
                 if match:
                     rid, info, pubmed = match.group(1), match.group(2), match.group(3)
                     results[bid][rid] = {
@@ -166,24 +170,24 @@ class BrendaParser(object):
                         'pubmed': pubmed,
                     }
                 else:
-                    logging.error(f"{bid}: could not be parsed: `{item}`")
+                    logging.error(f"{ec}_{bid}: could not be parsed: `{item}`")
             else:
-                pattern = re.compile(r"^#([,\d]+?)#(.+)<([,\d]+)>")
-                match = pattern.match(item)
+                match = BrendaParser.PATTERN_ALL.match(item)
                 if match:
                     ids, data, refs = match.group(1), match.group(2), match.group(3)
-
+                    ids = ids.replace(' ', ",")  # fix the missing comma in ids
+                    refs = ids.replace(' ', ",")  # fix the missing comma in refs
                     ids = [int(token) for token in ids.split(',')]
                     # get rid of brackets
                     info = {
                         'data': data.split('(')[0].strip(),
                         'refs': [int(token) for token in refs.split(',')]
                     }
-                    if info['data'] in ['more', 'more = ?', '-999 {more}']:
-                        logging.warning(f"{bid}: `more` information not stored: {info}")
+                    if info['data'] in ['more', 'more = ?', '-999 {more}', '-999']:
+                        logging.info(f"{ec}_{bid}: `more` information not stored: {info}")
                         return
                     if len(info['data']) == 0:
-                        logging.warning(f"{bid}: `empty` information not stored: {info}")
+                        logging.info(f"{ec}_{bid}: `empty` information not stored: {info}")
                         return
 
                     for pid in ids:
@@ -192,8 +196,10 @@ class BrendaParser(object):
                         else:
                             results[bid][pid] = [info]
                 else:
-                    logging.error(f"{bid}: could not be parsed: `{item}`")
-
+                    if bid == "SY" and item[0] != '#':
+                        logging.info(f"{ec}_{bid}: generic synonyms are not stored: {item}")
+                    else:
+                        logging.error(f"{ec}_{bid}: could not be parsed: `{item}`")
 
         def parse_bid_item(line):
             tokens = line.split("\t")
@@ -206,8 +212,6 @@ class BrendaParser(object):
         in_item = False
 
         for line in lines:
-            print("-" * 80)
-            print(line)
             if not in_item:
                 if len(line) > 0 and not line.startswith("\t"):
                     bid, item = parse_bid_item(line)
@@ -233,7 +237,7 @@ class BrendaParser(object):
                     if bid in BrendaParser.BRENDA_KEYS:
                         in_item = True
                     else:
-                        logging.error(f"{bid}: BRENDA key not supported")
+                        logging.error(f"{ec}_{bid}: BRENDA key not supported in line: `{line}`")
                         item = None
 
                 # write last entry
