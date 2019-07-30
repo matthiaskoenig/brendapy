@@ -6,7 +6,6 @@ python:
 sudo: required
 
 install:
-  pip install -r requirements.txt
   pip install -r requirements-develop.txt
 
 script:

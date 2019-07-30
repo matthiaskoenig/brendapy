@@ -39,7 +39,6 @@ class BrendaParser(object):
         data_lines = []
 
         # read BRENDA file
-
         with open(filename, 'r') as bf:
             for line in bf.readlines():
                 # start of entry
@@ -47,7 +46,6 @@ class BrendaParser(object):
                     in_entry = True
                     ec = BrendaParser._get_ec_from_line(line)
                     data_lines = [line]
-                    # print(ec)
                 # in entry
                 if in_entry:
                     data_lines.append(line)
