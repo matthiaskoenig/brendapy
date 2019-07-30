@@ -9,6 +9,6 @@ database flat file and makes it accessible in a simple manner.
 This package was developed in the context of building kinetic pathway models
 with source code at https://github.com/matthiaskoenig/brendapy
 
-``brendapy`` support has been tested on `py36` and `py37`.
+``brendapy`` support has been tested on ``py36`` and ``py37``.
 
 © 2019 Matthias König
