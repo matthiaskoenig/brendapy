@@ -122,6 +122,9 @@ Matthias König is supported by the Federal Ministry of Education and Research (
 within the research network Systems Medicine of the Liver (**LiSyM**, grant number 031L0054).
 
 ## Release notes
+### 0.2.0
+* unittests and continuous integration
+
 ### 0.1.0
 * initial release of updated parser
 ---

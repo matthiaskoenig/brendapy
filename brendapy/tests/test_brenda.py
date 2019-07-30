@@ -1,5 +1,6 @@
 
 import pytest
+import logging
 from brendapy import BrendaParser, BrendaProtein
 from brendapy.settings import BRENDA_FILE
 
@@ -50,12 +51,12 @@ def test_protein_detail2():
     assert len(protein.pubmed) == 7
 
 
-'''
-def test_all_proteins():
-    brenda = BrendaParser()
-    for ec in brenda.keys():
-        print(ec)
-        proteins = brenda.parse_proteins(ec)
+@pytest.mark.parametrize("ec", BrendaParser().keys())
+def test_proteins_for_ec(ec):
+    logging.info(ec)
+    proteins = BrendaParser().parse_proteins(ec)
+    assert proteins is not None
+
 
 def test_info_dict():
     brenda = BrendaParser()
@@ -66,4 +67,4 @@ def test_info_dict():
     pprint(d)
     import json
     assert False
-'''
+

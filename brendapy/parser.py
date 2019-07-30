@@ -1,5 +1,51 @@
 """
-Module for parsing the BRENDA ENZYME information from flat file
+Module for parsing the BRENDA ENZYME information from flat file.
+The following information is available:
+
+    AC    activating compound
+    AP    application
+    CF    cofactor
+    CL    cloned
+    CR    crystallization
+    EN    engineering
+    EXP    expression
+    GI    general information on enzyme
+    GS    general stability
+    IC50    IC-50 Value
+    ID    EC-class
+    IN    inhibitors
+    KKM    Kcat/KM-Value substrate in {...}
+    KI    Ki-value    inhibitor in {...}
+    KM    KM-value    substrate in {...}
+    LO    localization
+    ME    metals/ions
+    MW    molecular weight
+    NSP    natural substrates/products    reversibilty information in {...}
+    OS    oxygen stability
+    OSS    organic solvent stability
+    PHO    pH-optimum
+    PHR    pH-range
+    PHS    pH stability
+    PI    isoelectric point
+    PM    posttranslation modification
+    PR    protein
+    PU    purification
+    RE    reaction catalyzed
+    RF    references
+    REN    renatured
+    RN    accepted name (IUPAC)
+    RT    reaction type
+    SA    specific activity
+    SN    synonyms
+    SP    substrates/products    reversibilty information in {...}
+    SS    storage stability
+    ST    source/tissue
+    SU    subunits
+    SY    systematic name
+    TN    turnover number    substrate in {...}
+    TO    temperature optimum
+    TR    temperature range
+    TS    temperature stability
 """
 import os
 import re
@@ -12,17 +58,42 @@ from brendapy.settings import BRENDA_FILE
 
 
 class BrendaParser(object):
-    """ Parser for BRENDA information."""
+    """ Parser for BRENDA information.
+
+    The parser reads the BRENDA flat file into the
+    parts for the ec numbers. Via the BrendaParser the
+    information for the ec numbers can be accesses.
+    """
+
+    BRENDA_KEYS = {
+        "AC", "AP", "CF", "CL", "CR", "EN", "EXP", "GI", "GS", "IC50",
+        "ID", "IN", "KKM", "KI", "KM", "LO", "ME", "MW", "NSP", "OS",
+        "OSS", "PHO", "PHR", "PHS", "PI", "PM", "PR", "PU", "RE", "RF",
+        "REN", "RN", "RT", "SA", "SN", "SP", "SS", "ST", "SU", "SY", "TN",
+        "TO", "TR", "TS"
+    }
+    PATTERNS = {
+        'RF': re.compile(r"^<(\d+?)> (.+) {Pubmed:(\d*)}")
+    }
 
     def __init__(self, brenda_file=BRENDA_FILE):
-        """ Initialize the parser.
-        Parses the BRENDA file
+        """ Initialize parser and parse BRENDA file.
 
         :param brenda_file: BRENDA text file
         """
         self.brenda_file = brenda_file
         self.ec_text = BrendaParser.parse_entry_strings(self.brenda_file)
         # self.ec_proteins = self.parse_proteins()
+
+    def keys(self):
+        """ Available ec keys.
+
+        Information for these EC numbers is available in the
+        parser object.
+
+        :return: list of ec numbers
+        """
+        return self.ec_text.keys()
 
     @classmethod
     def parse_entry_strings(cls, filename):
@@ -41,6 +112,9 @@ class BrendaParser(object):
         # read BRENDA file
         with open(filename, 'r') as bf:
             for line in bf.readlines():
+                if line.startswith("*") or len(line) == 0:
+                    continue
+
                 # start of entry
                 if line.startswith(start):
                     in_entry = True
@@ -58,12 +132,108 @@ class BrendaParser(object):
 
         return ec_data
 
-    @property
-    def keys(self):
-        """ Available ec keys.
+
+
+    @staticmethod
+    @utils.timeit
+    def _parse_info_dict(ec_str):
+        """
         :return:
         """
-        return self.ec_text.keys()
+        results = defaultdict(OrderedDict)
+
+        def store_item(bid, item):
+            """ Store parsed item for bid.
+            :param bid:
+            :param item:
+            :return:
+            """
+            if bid == "ID":
+                results[bid] = item
+            elif bid in {"RN", "RE", "RT", "SN"}:
+                if isinstance(results[bid], OrderedDict):
+                    results[bid] = {item}
+                else:
+                    results[bid].add(item)
+            elif bid == "RF":
+                match = BrendaParser.PATTERNS['RF'].match(item)
+                if match:
+                    rid, info, pubmed = match.group(1), match.group(2), match.group(3)
+                    results[bid][rid] = {
+                        # 'id': rid,
+                        'info': info,
+                        'pubmed': pubmed,
+                    }
+                else:
+                    logging.error(f"RF could not be parsed: `{item}`")
+            else:
+                pattern = re.compile(r"^#([.\d]+?)#(.+)<([,\d]+)>")
+                match = pattern.match(item)
+                if match:
+                    ids, data, refs = match.group(1), match.group(2), match.group(3)
+
+                    ids = [int(token) for token in ids.split(',')]
+                    # get rid of brackets
+                    data = data.split('(')[0].strip()
+                    refs = [int(token) for token in refs.split(',')]
+
+                    for pid in ids:
+                        results[bid][pid] = {
+                            'data': data,
+                            'refs': refs,
+                        }
+                else:
+                    logging.error(f"{bid} could not be parsed: `{item}`")
+
+
+                # results[bid].append(item.replace('\t', ' '))
+
+        def parse_bid_item(line):
+            tokens = line.split("\t")
+            bid = tokens[0].strip()
+            item = "\t".join(tokens[1:])
+            return bid, item
+
+        # combine lines into entries
+        lines = ec_str.split("\n")
+
+        in_item = False
+
+        for line in lines:
+            # print(line)
+            # read initial line of entry
+            if not in_item:
+                if len(line) > 0 and not line.startswith("\t"):
+                    bid, item = parse_bid_item(line)
+                    if bid in BrendaParser.BRENDA_KEYS:
+                        in_item = True
+                    else:
+                        in_item = False
+                        item = None
+
+            elif in_item:
+                # entries longer than one line
+                if line.startswith("\t"):
+                    item += " " + line.strip()
+
+                # write entries if next entry begins
+                elif len(line) > 0 and not line.startswith("\t"):
+                    # store old entry
+                    store_item(bid, item)
+
+                    # create new entry
+                    bid, item = parse_bid_item(line)
+                    if bid in BrendaParser.BRENDA_KEYS:
+                        in_item = True
+                    else:
+                        in_item = False
+                        item = None
+
+                # write last entry
+                elif len(line) == 0:
+                    store_item(bid, item)
+
+        return results
 
     @staticmethod
     def _get_ec_from_line(line):
@@ -74,57 +244,9 @@ class BrendaParser(object):
         else:
             return None
 
-    # ------------------------------
-    # Parse information from entry
-    # ------------------------------
     @staticmethod
     def parse_info(bid, ec_info):
         """ Get information from ec_str for given BRENDA id (bids are listed below).
-
-        AC    activating compound
-        AP    application
-        CF    cofactor
-        CL    cloned
-        CR    crystallization
-        EN    engineering
-        EXP    expression
-        GI    general information on enzyme
-        GS    general stability
-        IC50    IC-50 Value
-        ID    EC-class
-        IN    inhibitors
-        KKM    Kcat/KM-Value substrate in {...}
-        KI    Ki-value    inhibitor in {...}
-        KM    KM-value    substrate in {...}
-        LO    localization
-        ME    metals/ions
-        MW    molecular weight
-        NSP    natural substrates/products    reversibilty information in {...}
-        OS    oxygen stability
-        OSS    organic solvent stability
-        PHO    pH-optimum
-        PHR    pH-range
-        PHS    pH stability
-        PI    isoelectric point
-        PM    posttranslation modification
-        PR    protein
-        PU    purification
-        RE    reaction catalyzed
-        RF    references
-        REN    renatured
-        RN    accepted name (IUPAC)
-        RT    reaction type
-        SA    specific activity
-        SN    synonyms
-        SP    substrates/products    reversibilty information in {...}
-        SS    storage stability
-        ST    source/tissue
-        SU    subunits
-        SY    systematic name
-        TN    turnover number    substrate in {...}
-        TO    temperature optimum
-        TR    temperature range
-        TS    temperature    stability
 
         :param bid: BRENDA key
         :param ec_info: BRENDA information string for EC
@@ -166,68 +288,6 @@ class BrendaParser(object):
         return [item.replace('\t', ' ') for item in results]
 
     @staticmethod
-    def parse_info_dict(ec_str):
-        """
-        :return:
-        """
-        keys = {
-            "AC", "AP", "CF", "CL", "CR", "EN", "EXP", "GI", "GS", "IC50",
-            "ID", "IN", "KKM", "KI", "KM", "LO", "ME", "MW", "NSP", "OS",
-            "OSS", "PHO", "PHR", "PHS", "PI", "PM", "PR", "PU", "RE", "RF",
-            "REN", "RN", "RT", "SA", "SN", "SP", "SS", "ST", "SU", "SY", "TN",
-            "TO", "TR", "TS"
-        }
-        results = defaultdict(list)
-
-        def parse_bid_item(line):
-            tokens = line.split("\t")
-            bid = tokens[0].strip()
-            item = "\t".join(tokens[1:])
-            print(bid, item)
-            return bid, item
-
-        # combine lines into entries
-        lines = ec_str.split("\n")
-
-        in_item = False
-
-        for line in lines:
-            print(line)
-            # read initial line of entry
-            if not in_item:
-                if len(line) > 0 and not line.startswith("\t"):
-                    bid, item = parse_bid_item(line)
-                    if bid in keys:
-                        in_item = True
-                    else:
-                        in_item = False
-                        item = None
-
-            elif in_item:
-                # entries longer than one line
-                if line.startswith("\t"):
-                    item += " " + line.strip()
-
-                # write entries if next entry begins
-                elif len(line) > 0 and not line.startswith("\t"):
-                    # store old entry
-                    results[bid].append(item.replace('\t', ' '))
-
-                    # create new entry
-                    bid, item = parse_bid_item(line)
-                    if bid in keys:
-                        in_item = True
-                    else:
-                        in_item = False
-                        item = None
-
-                # write last entry
-                elif len(line) == 0:
-                    results[bid].append(item.replace('\t', ' '))
-
-        return results
-
-    @staticmethod
     def is_id_in_entry(id, entry):
         """ Returns True if ID is in Entry, False otherwise.
 
@@ -245,6 +305,7 @@ class BrendaParser(object):
                  if id != '' and id.isdigit()]
             )
         # Is ID in IDlist ?
+        # FIXME: via sets for O(1) lookup
         ids = [int(id) for id in ids]
         return id in ids
 
