@@ -1,5 +1,6 @@
 # Release info
 Steps for release are
+
 ## github release
 * github: close and update issues/milestone
 * update version number in develop branch
@@ -10,7 +11,7 @@ Steps for release are
 * github: create release from master branch
 
 ## pypi
-* release on [pypi](https://pypi.python.org/pypi/sbmlutils)
+* release on [pypi](https://pypi.python.org/pypi/brendapy)
 ```
 git branch master
 git pull
@@ -20,7 +21,7 @@ twine upload dist/*
 * test installation in virtualenv from pypi
 ```
 mkvirtualenv test --python=python3.6
-(test) pip install sbmlutils
+(test) pip install brendapy
 ```
 
 ## version bump
