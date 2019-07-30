@@ -148,6 +148,7 @@ class BrendaParser(object):
             :param item:
             :return:
             """
+            print(f"store: {bid} : {item}")
             if bid == "ID":
                 results[bid] = item
             elif bid in {"RN", "RE", "RT", "SN"}:
@@ -165,28 +166,34 @@ class BrendaParser(object):
                         'pubmed': pubmed,
                     }
                 else:
-                    logging.error(f"RF could not be parsed: `{item}`")
+                    logging.error(f"{bid}: could not be parsed: `{item}`")
             else:
-                pattern = re.compile(r"^#([.\d]+?)#(.+)<([,\d]+)>")
+                pattern = re.compile(r"^#([,\d]+?)#(.+)<([,\d]+)>")
                 match = pattern.match(item)
                 if match:
                     ids, data, refs = match.group(1), match.group(2), match.group(3)
 
                     ids = [int(token) for token in ids.split(',')]
                     # get rid of brackets
-                    data = data.split('(')[0].strip()
-                    refs = [int(token) for token in refs.split(',')]
+                    info = {
+                        'data': data.split('(')[0].strip(),
+                        'refs': [int(token) for token in refs.split(',')]
+                    }
+                    if info['data'] in ['more', 'more = ?', '-999 {more}']:
+                        logging.warning(f"{bid}: `more` information not stored: {info}")
+                        return
+                    if len(info['data']) == 0:
+                        logging.warning(f"{bid}: `empty` information not stored: {info}")
+                        return
 
                     for pid in ids:
-                        results[bid][pid] = {
-                            'data': data,
-                            'refs': refs,
-                        }
+                        if pid in results[bid]:
+                            results[bid][pid].append(info)
+                        else:
+                            results[bid][pid] = [info]
                 else:
-                    logging.error(f"{bid} could not be parsed: `{item}`")
+                    logging.error(f"{bid}: could not be parsed: `{item}`")
 
-
-                # results[bid].append(item.replace('\t', ' '))
 
         def parse_bid_item(line):
             tokens = line.split("\t")
@@ -194,14 +201,13 @@ class BrendaParser(object):
             item = "\t".join(tokens[1:])
             return bid, item
 
-        # combine lines into entries
+        # parse entries from line
         lines = ec_str.split("\n")
-
         in_item = False
 
         for line in lines:
-            # print(line)
-            # read initial line of entry
+            print("-" * 80)
+            print(line)
             if not in_item:
                 if len(line) > 0 and not line.startswith("\t"):
                     bid, item = parse_bid_item(line)
@@ -220,18 +226,20 @@ class BrendaParser(object):
                 elif len(line) > 0 and not line.startswith("\t"):
                     # store old entry
                     store_item(bid, item)
+                    in_item = False
 
                     # create new entry
                     bid, item = parse_bid_item(line)
                     if bid in BrendaParser.BRENDA_KEYS:
                         in_item = True
                     else:
-                        in_item = False
+                        logging.error(f"{bid}: BRENDA key not supported")
                         item = None
 
                 # write last entry
                 elif len(line) == 0:
                     store_item(bid, item)
+                    in_item = False
 
         return results
 
