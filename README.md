@@ -12,6 +12,8 @@ enzyme information. The parser extracts the protein information from the
  database flat file and makes it accessible in a simple manner. 
  
  This package was developed in the context of building kinetic pathway models.
+ 
+ `brendapy` support has been tested on `py36` and `py37`.
 
 
 **License**
@@ -25,26 +27,37 @@ If you use brendapy in your project cite
 > BRENDA in 2019: a European ELIXIR core data resource
 > Jeske L., Placzek S., Schomburg I., Chang A., Schomburg D., Nucleic Acids Res., in print (2019)
 
-and the `brendapy` project [![DOI](https://zenodo.org/badge/199438774.svg)](https://zenodo.org/badge/latestdoi/199438774)
+and  
+[![DOI](https://zenodo.org/badge/199438774.svg)](https://zenodo.org/badge/latestdoi/199438774)
 
 ## Installation
-`brendapy` is available from [pypi](https://pypi.python.org/pypi/brendapy). To use `brendapy` in your project install via pip
+`brendapy` is available from [pypi](https://pypi.python.org/pypi/brendapy)
 ```
 pip install brendapy
 ```
 
 ## Usage
+Examples are provided in [./brendapy/examples.py](./brendapy/examples.py) or in the tests [./brendapy/tests/test_brenda.py](./brendapy/tests/test_brenda.py) 
+
 ```python
 from brendapy import BrendaParser, BrendaProtein
 
 def parse_proteins_for_ec():
-    """Parse the protein entries for a given EC number in BRENDA."""
+    """Parse the protein entries for a given EC number in BRENDA.
+
+    Prints overview of proteins, protein ids, and Human proteins.
+    """
     brenda = BrendaParser()
     ec = "1.1.1.1"
     proteins = brenda.parse_proteins(ec)
+
     print(f"{len(proteins)} proteins for EC {ec} in BRENDA")
-    print(f"protein keys: {proteins.keys()}")
-    print(proteins[1])
+    print(f"Protein identifier: {proteins.keys()}")
+    print("-"*80)
+    for p in proteins.values():
+        if p.organism == "Homo sapiens":
+            print(p)
+            print("-" * 80)
 
 
 if __name__ == "__main__":
@@ -70,6 +83,7 @@ Ki                  [['0.014', '5alpha-androstan-17beta-ol-3-one', 'pH 7.3, 37C,
 Metal Ions          [['Zn2+', 'catalytic zinc <109>'], ['Zinc', 'enzyme contains 7.59 zinc atoms per molecule <96>; contains 3.8 mol of Zn per mol of protein <16,45>; zinc containing enzyme <12>; from beta1gamma1 and gamma1gamma1 isoenzyme the active-site zinc is extracted much more slowly than from beta1beta1 isoenzyme. Characterization of active-site-specific zinc-depleted and reconstituted cobalt(II) alcohol dehydrogenase <19>; contains 3.7 gatom of zinc per mol of enzyme <23>; 3.6-4.2 gatom of zinc per mol <21>']]
 References          [124, 150, 180, 186, 191, 194, 206, 228, 229, 273]
 Pubmed              {124: '<124> Chou, C.F.; Lai, C.L.; Chang, Y.C.; Duester, G.; Yin, S.J.: Kinetic mechanism of human class IV alcohol dehydrogenase functioning as retinol dehydrogenase. J. Biol. Chem. (2002) 277, 25209-25216. {Pubmed:11997393}', 150: '<150> Jelski, W.; Chrostek, L.; Markiewicz, W.; Szmitkowski, M.: Activity of alcohol dehydrogenase (ADH) isoenzymes and aldehyde dehydrogenase (ALDH) in the sera of patients with breast cancer. J. Clin. Lab. Anal. (2006) 20, 105-108. {Pubmed:16721836}', 180: '<180> Jelski, W.; Zalewski, B.; Szmitkowski, M.: The activity of class I, II, III, and IV alcohol dehydrogenase (ADH) isoenzymes and aldehyde dehydrogenase (ALDH) in liver cancer. Digest. Dis. Sci. (2008) 53, 2550-2555. {Pubmed:18224440}', 186: '<186> Jelski, W.; Zalewski, B.; Szmitkowski, M.: Alcohol dehydrogenase (ADH) isoenzymes and aldehyde dehydrogenase (ALDH) activity in the sera of patients with liver cancer. J. Clin. Lab. Anal. (2008) 22, 204-209. {Pubmed:18484658}', 191: '<191> Jelski, W.; Chrostek, L.; Szmitkowski, M.: The activity of class I, II, III, and IV of alcohol dehydrogenase isoenzymes and aldehyde dehydrogenase in pancreatic cancer. Pancreas (2007) 35, 142-146. {Pubmed:17632320}', 194: '<194> Jelski, W.; Szmitkowski, M.: Alcohol dehydrogenase (ADH) and aldehyde dehydrogenase (ALDH) in the cancer diseases. Clin. Chim. Acta (2008) 395, 1-5. {Pubmed:18505683}', 206: '<206> Jelski, W.; Orywal, K.; Panek, B.; Gacko, M.; Mroczko, B.; Szmitkowski, M.: The activity of class I, II, III and IV of alcohol dehydrogenase (ADH) isoenzymes and aldehyde dehydrogenase (ALDH) in the wall of abdominal aortic aneurysms. Exp. Mol. Pathol. (2009) 87, 59-62. {Pubmed:19332052}', 228: '<228> Ostberg, L.J.; Stroemberg, P.; Hedberg, J.J.; Persson, B.; Hoeoeg, J.O.: Analysis of mammalian alcohol dehydrogenase 5 (ADH5): Characterisation of rat ADH5 with comparisons to the corresponding human variant. Chem. Biol. Interact. (2013) 202, 97-103. {Pubmed:23159888}', 229: '<229> Orywal, K.; Jelski, W.; Zdrodowski, M.; Szmitkowski, M.: The activity of class I, II, III and IV alcohol dehydrogenase isoenzymes and aldehyde dehydrogenase in cervical cancer. Clin. Biochem. (2011) 44, 1231-1234. {Pubmed:21784063}', 273: '<273> Chi, Y.C.; Lee, S.L.; Lai, C.L.; Lee, Y.P.; Lee, S.P.; Chiang, C.P.; Yin, S.J.: Ethanol oxidation and the inhibition by drugs in human liver, stomach and small intestine: Quantitative assessment with numerical organ modeling of alcohol dehydrogenase isozymes. Chem. Biol. Interact. (2016) 258, 134-141. {Pubmed:27544634}'}
+--------------------------------------------------------------------------------
 Protein ID          106
 EC                  1.1.1.1
 Organism            Homo sapiens
@@ -85,6 +99,7 @@ Ki                  [['1.7', 'ethanol', 'isozyme ADH1C, using 1-hydroxymethylpyr
 Metal Ions          []
 References          [214]
 Pubmed              {214: '<214> Kollock, R.; Frank, H.; Seidel, A.; Meinl, W.; Glatt, H.: Oxidation of alcohols and reduction of aldehydes derived from methyl- and dimethylpyrenes by cDNA-expressed human alcohol dehydrogenases. Toxicology (2008) 245, 65-75. {Pubmed:18242813}'}
+--------------------------------------------------------------------------------
 Protein ID          109
 EC                  1.1.1.1
 Organism            Homo sapiens
