@@ -72,8 +72,11 @@ setup(
     packages=find_packages(),
     # package_dir={'': ''},
     package_data={
-      '': ['../requirements.txt',
-           'resources'],
+      '': [
+          '../requirements.txt',
+           'resources/README.txt',
+           'resources/brenda_download_2019-07-2019.txt',
+           ],
     },
     include_package_data=True,
     zip_safe=False,
