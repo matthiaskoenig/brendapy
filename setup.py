@@ -41,12 +41,12 @@ try:
 except Exception as e:
     print('Could not read version: {}'.format(e))
 
-# descripion from markdown
+# description from markdown
 try:
     import pypandoc
     long_description = pypandoc.convert('README.md', 'rst')
 except(IOError, ImportError):
-    long_description = open('README.md').read()
+    long_description = open('README.rst').read()
 setup_kwargs['long_description'] = long_description
 
 setup(
@@ -63,20 +63,18 @@ setup(
         'Operating System :: OS Independent',
         'Programming Language :: Python :: 3.6',
         'Programming Language :: Python :: 3.7',
-        'Programming Language :: Cython',
-        'Programming Language :: Python :: Implementation :: CPython',
         'Topic :: Scientific/Engineering',
         'Topic :: Scientific/Engineering :: Bio-Informatics'
     ],
     keywords='BRENDA',
     packages=find_packages(),
-    # package_dir={'': ''},
     package_data={
       '': [
           '../requirements.txt',
-           'resources/README.txt',
-           'resources/brenda_download_2019-07-2019.txt',
-           ],
+          'resources/README.txt',
+          'resources/README.rst',
+          'resources/brenda_download_2019-07-2019.txt',
+          ],
     },
     include_package_data=True,
     zip_safe=False,
