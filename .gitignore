@@ -3,3 +3,5 @@
 data
 brendapy.egg-info
 .pytest_cache
+.tox
+brendapy/resources/brenda_download.txt

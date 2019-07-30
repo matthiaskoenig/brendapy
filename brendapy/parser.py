@@ -3,12 +3,13 @@ Module for parsing the BRENDA ENZYME information from flat file
 """
 import os
 import re
-from collections import OrderedDict
-from brendapy import utils
+from collections import OrderedDict, defaultdict
 from pprint import pprint
-from collections import defaultdict
-from brendapy.settings import BRENDA_FILE
 import zipfile
+
+from brendapy import utils
+from brendapy.settings import BRENDA_FILE
+
 
 class BRENDAparser(object):
 	""" Parser for BRENDA information."""
@@ -36,30 +37,25 @@ class BRENDAparser(object):
 		in_entry = False
 		data_lines = []
 
-		if filename.endswith(".zip"):
-			archive = zipfile.ZipFile(BRENDA_FILE, 'rb')
-			data = archive.read('brenda_download.txt')
-			lines = data.split("\n")
-		else:
-			with open(filename, 'r') as bf:
-				lines = [line for line in bf.readlines()]
+		# read BRENDA file
 
-		for line in lines:
-			# start of entry
-			if line.startswith(start):
-				in_entry = True
-				ec = BRENDAparser._get_ec_from_line(line)
-				data_lines = [line]
-				# print(ec)
-			# in entry
-			if in_entry:
-				data_lines.append(line)
-			# end of entry
-			if in_entry and line.startswith(end):
-				in_entry = False
-				entry = "".join(data_lines)
-				entry.replace('\xef\xbf\xbd', " ")
-				ec_data[ec] = entry
+		with open(filename, 'r') as bf:
+			for line in bf.readlines():
+				# start of entry
+				if line.startswith(start):
+					in_entry = True
+					ec = BRENDAparser._get_ec_from_line(line)
+					data_lines = [line]
+					# print(ec)
+				# in entry
+				if in_entry:
+					data_lines.append(line)
+				# end of entry
+				if in_entry and line.startswith(end):
+					in_entry = False
+					entry = "".join(data_lines)
+					entry.replace('\xef\xbf\xbd', " ")
+					ec_data[ec] = entry
 
 		return ec_data
 

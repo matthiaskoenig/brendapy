@@ -1,4 +1,6 @@
 include requirements.txt
 include README.md
 
-recursive-include brendapy/resources *
+include brendapy/resources/README.md
+include brendapy/resources/brenda_download_2019-07-29.zip
+# recursive-include brendapy/resources *
