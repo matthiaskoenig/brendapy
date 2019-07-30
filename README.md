@@ -2352,6 +2352,8 @@ OrderedDict([('protein_id', 8),
 ## Release notes
 ### 0.2.0
 * unittests and continuous integration
+* complete refactoring of parser
+* supporting full set of information
 
 ### 0.1.0
 * initial release of updated parser
