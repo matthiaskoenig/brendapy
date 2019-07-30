@@ -11,11 +11,11 @@ def parse_proteins_for_ec():
     """
     brenda = BrendaParser()
     ec = "1.1.1.1"
-    proteins = brenda.parse_proteins(ec)
+    proteins = brenda.get_proteins(ec)
 
     print(f"{len(proteins)} proteins for EC {ec} in BRENDA")
     print(f"Protein identifier: {proteins.keys()}")
-    print("-"*80)
+    print("-" * 80)
     for p in proteins.values():
         if p.organism == "Homo sapiens":
             print(p)
