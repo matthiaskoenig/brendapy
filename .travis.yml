@@ -1,0 +1,15 @@
+language: python
+cache: pip
+python:
+  - "3.5"
+  - "3.6"
+sudo: required
+
+install:
+  pip install -r requirements.txt
+
+script:
+  pytest --cov=brendapy
+
+after_success:
+   pip install codecov; codecov
