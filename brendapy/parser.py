@@ -160,7 +160,7 @@ class BrendaParser(object):
                 results[bid] = item
             elif bid in {"RN", "RE", "RT", "SN"}:
                 if isinstance(results[bid], OrderedDict):
-                    results[bid] = { item }
+                    results[bid] = {item}
                 else:
                     results[bid].add(item)
             elif bid == "RF":
@@ -311,7 +311,7 @@ class BrendaProtein(object):
         """
         self.data = OrderedDict([
             ('protein_id', key),
-            ('ec',  ec),
+            ('ec', ec),
             ('organism', data['PR'][key]['data']),
         ])
         reference_ids = set(data['PR'][key]['refs'])

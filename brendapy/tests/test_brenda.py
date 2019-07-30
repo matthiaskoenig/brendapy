@@ -4,6 +4,8 @@ import logging
 from brendapy import BrendaParser, BrendaProtein
 from brendapy.settings import BRENDA_FILE
 
+BRENDA_PARSER = BrendaParser()
+
 
 def test_parsing():
     brenda = BrendaParser()
@@ -19,18 +21,14 @@ def test_parsing_from_file():
 
 def test_protein1():
     """ Test the proteinBRENDA module """
-    brenda = BrendaParser()
-
     ec = "1.1.1.1"
-    proteins = brenda.get_proteins(ec)
+    proteins = BRENDA_PARSER.get_proteins(ec)
     assert proteins
     assert len(proteins) == 167
 
 
 def test_protein_detail1():
-    brenda = BrendaParser()
-    ec = "1.1.1.1"
-    proteins = brenda.get_proteins(ec)
+    proteins = BRENDA_PARSER.get_proteins(ec="1.1.1.1")
     protein = proteins[1]
 
     assert protein
@@ -40,9 +38,7 @@ def test_protein_detail1():
 
 
 def test_protein_detail2():
-    brenda = BrendaParser()
-    ec = "1.1.1.1"
-    proteins = brenda.get_proteins(ec)
+    proteins = BRENDA_PARSER.get_proteins("1.1.1.1")
     protein = proteins[4]
 
     assert protein
@@ -50,18 +46,14 @@ def test_protein_detail2():
     assert 8 in protein.references
 
 
-brenda_parser = BrendaParser()
-@pytest.mark.parametrize("ec", BrendaParser().keys())
-def test_proteins_for_ec(ec):
-    proteins = brenda_parser.get_proteins(ec)
-    assert proteins is not None
-
-
 def test_info_dict():
-    brenda = BrendaParser()
     ec = "1.1.1.2"
-    ec_str = brenda.ec_text[ec]
-    d = brenda._parse_info_dict(ec, ec_str)
+    ec_str = BRENDA_PARSER.ec_text[ec]
+    d = BRENDA_PARSER._parse_info_dict(ec, ec_str)
     assert d
 
 
+@pytest.mark.parametrize("ec", BRENDA_PARSER.keys())
+def test_proteins_for_ec(ec):
+    proteins = BRENDA_PARSER.get_proteins(ec)
+    assert proteins is not None
