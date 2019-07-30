@@ -17,12 +17,12 @@ def test_parsing_from_file():
     assert "1.1.1.1" in brenda.ec_text
 
 
-def test_protein():
+def test_protein1():
     """ Test the proteinBRENDA module """
     brenda = BrendaParser()
 
     ec = "1.1.1.1"
-    proteins = brenda.parse_proteins(ec)
+    proteins = brenda.get_proteins(ec)
     assert proteins
     assert len(proteins) == 167
 
@@ -30,31 +30,30 @@ def test_protein():
 def test_protein_detail1():
     brenda = BrendaParser()
     ec = "1.1.1.1"
-    ec_str = brenda.ec_text[ec]
-    protein = BrendaProtein(ec=ec, id=1, ec_string=ec_str)
+    proteins = brenda.get_proteins(ec)
+    protein = proteins[1]
+
     assert protein
-    assert 'liver' in protein.source_tissue
+    assert 'liver' in protein.source_tissues
     assert protein.organism == "Gallus gallus"
     assert 44 in protein.references
-    assert len(protein.pubmed) == 1
 
 
 def test_protein_detail2():
     brenda = BrendaParser()
     ec = "1.1.1.1"
-    ec_str = brenda.ec_text[ec]
-    protein = BrendaProtein(ec=ec, id=4, ec_string=ec_str)
+    proteins = brenda.get_proteins(ec)
+    protein = proteins[4]
+
     assert protein
     assert protein.organism == "Drosophila melanogaster"
-
     assert 8 in protein.references
-    assert len(protein.pubmed) == 7
 
 
+brenda_parser = BrendaParser()
 @pytest.mark.parametrize("ec", BrendaParser().keys())
 def test_proteins_for_ec(ec):
-    logging.info(ec)
-    proteins = BrendaParser().parse_proteins(ec)
+    proteins = brenda_parser.get_proteins(ec)
     assert proteins is not None
 
 
@@ -62,9 +61,7 @@ def test_info_dict():
     brenda = BrendaParser()
     ec = "1.1.1.2"
     ec_str = brenda.ec_text[ec]
-    d = brenda.parse_info_dict(ec_str)
-    from pprint import pprint
-    pprint(d)
-    import json
-    assert False
+    d = brenda._parse_info_dict(ec, ec_str)
+    assert d
+
 

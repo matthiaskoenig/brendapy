@@ -27,19 +27,10 @@ if __name__ == "__main__":
     # parse_proteins_for_ec()
 
     brenda = BrendaParser()
-    ec = "1.14.13.29"
-    ec = "1.1.1.1"
+    # ec = "1.14.13.29"
+    ec = "1.14.14.1"  # CYP2D6
 
-    ec_str = brenda.ec_text[ec]
-    with open(f"{ec}.txt", "w") as f_ec:
-        f_ec.write(ec_str)
-
-    # d = brenda._parse_info_dict(ec, ec_str)
-    from pprint import pprint
-
-    # print(ec_str)
-    # print("---")
-    # pprint(d["RN"])
-    # pprint(d)
-    # print("---")
-    import json
+    proteins = brenda.get_proteins(ec)
+    for key, protein in proteins.items():
+        print(protein)
+        print("---")
