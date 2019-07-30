@@ -1,8 +1,8 @@
 
 import pytest
-
 from brendapy import parser
 from brendapy.settings import BRENDA_FILE
+
 
 def test_parsing():
 	brenda = parser.BRENDAparser(BRENDA_FILE)

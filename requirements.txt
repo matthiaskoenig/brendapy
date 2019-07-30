@@ -1,3 +1,4 @@
 pip>=19.1
 pandas>=0.24.2
 pytest
+pyparsing>=2.4.2
