@@ -2,24 +2,29 @@
 [![GitHub version](https://badge.fury.io/gh/matthiaskoenig%2Fbrendapy.svg)](https://badge.fury.io/gh/matthiaskoenig%2Fbrendapy)
 [![Build Status](https://travis-ci.org/matthiaskoenig/brendapy.svg?branch=develop)](https://travis-ci.org/matthiaskoenig/brendapy)
 [![License (LGPL version 3)](https://img.shields.io/badge/license-LGPLv3.0-blue.svg?style=flat-square)](http://opensource.org/licenses/LGPL-3.0)
-<b><a href="https://orcid.org/0000-0003-1725-179X" title="https://orcid.org/0000-0003-1725-179X"><img src="./docs/images/orcid.png" height="15" width="15"/></a> Matthias König</b>
 
-# brendapy - Parsing BRENDA in python
+# brendapy - BRENDA in python
+<b><a href="https://orcid.org/0000-0003-1725-179X" title="https://orcid.org/0000-0003-1725-179X"><img src="./docs/images/orcid.png" height="15" width="15"/></a> Matthias König</b>
 
 The `brendapy` package provides a python parser for [BRENDA](https://www.brenda-enzymes.org/index.php) 
 enzyme information. The parser extracts the protein information from the
- database flat file.
+ database flat file and makes it accessible in a simple manner. 
+ 
+ This package was developed in the context of building kinetic pathway models.
 
-**How to cite**  
-If you use brendapy in your project cite [![DOI](https://zenodo.org/badge/55952847.svg)](https://zenodo.org/badge/latestdoi/55952847) and  
-<a href="https://www.brenda-enzymes.org"><img src="./docs/images/brenda.png" height="50"/>
-> BRENDA in 2019: a European ELIXIR core data resource
-> Jeske L., Placzek S., Schomburg I., Chang A., Schomburg D., Nucleic Acids Res., in print (2019)
 
 **License**
 * Source Code: [LGPLv3](http://opensource.org/licenses/LGPL-3.0)
 * Documentation: [CC BY-SA 4.0](http://creativecommons.org/licenses/by-sa/4.0/)
 
+**Citation**  
+If you use brendapy in your project cite  
+
+<a href="https://www.brenda-enzymes.org"><img src="./docs/images/brenda.png" height="50"/></a>
+> BRENDA in 2019: a European ELIXIR core data resource
+> Jeske L., Placzek S., Schomburg I., Chang A., Schomburg D., Nucleic Acids Res., in print (2019)
+
+and the `brendapy` project [![DOI](https://zenodo.org/badge/55952847.svg)](https://zenodo.org/badge/latestdoi/55952847)
 
 ## Installation
 `brendapy` is available from [pypi](https://pypi.python.org/pypi/brendapy). To use `brendapy` in your project install via pip
