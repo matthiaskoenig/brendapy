@@ -1,7 +1,6 @@
 """
 Examples of using brendapy
 """
-from pprint import pprint
 from brendapy import BrendaParser, BrendaProtein
 
 
@@ -12,7 +11,7 @@ def parse_proteins_for_ec():
     """
     brenda = BrendaParser()
     ec = "1.1.1.1"
-    proteins = brenda.parse_proteins(ec)
+    proteins = brenda.get_proteins(ec)
 
     print(f"{len(proteins)} proteins for EC {ec} in BRENDA")
     print(f"Protein identifier: {proteins.keys()}")
@@ -24,13 +23,4 @@ def parse_proteins_for_ec():
 
 
 if __name__ == "__main__":
-    # parse_proteins_for_ec()
-
-    brenda = BrendaParser()
-    # ec = "1.14.13.29"
-    ec = "1.14.14.1"  # CYP2D6
-
-    proteins = brenda.get_proteins(ec)
-    for key, protein in proteins.items():
-        print(protein)
-        print("---")
+    parse_proteins_for_ec()
