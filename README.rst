@@ -11,4 +11,12 @@ with source code at https://github.com/matthiaskoenig/brendapy
 
 ``brendapy`` support has been tested on ``py36`` and ``py37``.
 
+If you use this package cite `BRENDA <https://www.brenda-enzymes.org/index.php>`__
+
+::
+
+    BRENDA in 2019: a European ELIXIR core data resource
+    Jeske L., Placzek S., Schomburg I., Chang A., Schomburg D., Nucleic Acids Res., in print (2019)
+
+
 © 2019 Matthias König
