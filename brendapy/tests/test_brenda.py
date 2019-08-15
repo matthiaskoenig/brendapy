@@ -1,4 +1,3 @@
-
 import pytest
 import logging
 from brendapy import BrendaParser, BrendaProtein
@@ -51,6 +50,17 @@ def test_info_dict():
     ec_str = BRENDA_PARSER.ec_text[ec]
     d = BRENDA_PARSER._parse_info_dict(ec, ec_str)
     assert d
+
+
+def test_source_tissue():
+    ec = "1.1.1.2"
+    ec_str = BRENDA_PARSER.ec_text[ec]
+    d = BRENDA_PARSER._parse_info_dict(ec, ec_str)
+    assert d
+
+    print(d["ST"])
+
+    assert 0
 
 
 @pytest.mark.parametrize("ec", BRENDA_PARSER.keys())
