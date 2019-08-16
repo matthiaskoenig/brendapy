@@ -73,7 +73,7 @@ setup(
           '../requirements.txt',
           'resources/README.txt',
           'resources/README.rst',
-          'resources/brenda_download_2019-07-2019.txt',
+          'resources/brenda_download.txt',
           'resources/ncbitaxon/taxdmp.zip',
           ],
     },
