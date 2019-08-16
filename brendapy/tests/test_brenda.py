@@ -33,6 +33,7 @@ def test_protein_detail1():
     assert protein
     assert 'liver' in protein.source_tissues
     assert protein.organism == "Gallus gallus"
+    assert protein.taxonomy == 9031
     assert 44 in protein.references
 
 
@@ -58,9 +59,6 @@ def test_source_tissue():
     d = BRENDA_PARSER._parse_info_dict(ec, ec_str)
     assert d
 
-    print(d["ST"])
-
-    assert 0
 
 
 @pytest.mark.parametrize("ec", BRENDA_PARSER.keys())

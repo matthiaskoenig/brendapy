@@ -41,57 +41,90 @@ Taxonomy names file (names.dmp):
 # TAXONOMY_ZIP = os.path.join(RESOURCES_PATH, "ncbitaxon")
 
 import os
+import io
 import logging
 import time
 from brendapy.settings import RESOURCES_PATH
 from brendapy.utils import timeit
+import zipfile
+import ujson
 
+TAXONOMY_DATA = os.path.join(RESOURCES_PATH, "ncbitaxon", "taxonomy.json")
 
-class Taxonomy(object):
-    """ Taxonomy class. """
-    f_tax_names = os.path.join(RESOURCES_PATH, "ncbitaxon", "names.dmp")
-    f_tax_tree = os.path.join(RESOURCES_PATH, "ncbitaxon", "nodes.dmp")
+# ----------------------------------------------------
+def parse_taxonomy_data(f_taxonomy=TAXONOMY_DATA):
+    """Parses the node and tree information for the taxonomy.
 
-    tid_name_dict = None  # { ncbi_id: ncbi_name }
-    name_tid_dict = None  # { ncbi_scientific_name: ncbi_id }
-    node_parent_dict = None  # storage of tree information
+    Stores processed data as json dictionary.
 
-    def __init__(self):
-        if Taxonomy.tid_name_dict is None:
-            Taxonomy.load_taxonomy_data()
+    :param f_taxonomy: json file with stored processed taxonomy data.
+    :return:
+    """
+    logging.warning("Parsing taxonomy information, this may take a while ...")
+    ts = time.time()
 
-    @classmethod
-    def load_taxonomy_data(cls):
-        """ Parses the node and tree information for the taxonomy. """
-        logging.warning("Parsing taxonomy information, this may take a while ...")
-        ts = time.time()
+    tid_name_dict = {}
+    name_tid_dict = {}
+    node_parent_dict = {}
 
-        cls.tid_name_dict = {}
-        cls.name_tid_dict = {}
-        cls.node_parent_dict = {}
+    # load from zip file
+    zip_file = os.path.join(RESOURCES_PATH, "ncbitaxon", "taxdmp.zip")
+    with zipfile.ZipFile(zip_file) as z:
 
-        # parse node information
-        with open(cls.f_tax_names, "r") as f_names:
-
+        # parse names information
+        with io.TextIOWrapper(z.open("names.dmp", "r")) as f_names:
             for line in f_names:
                 # every line is a single node which is converted to a dictionary entry
                 items = [t.strip() for t in line.split("|")]
                 tid = int(items[0])
                 name = items[1]
                 # store name
-                cls.name_tid_dict[name] = tid
+                name_tid_dict[name] = tid
                 if items[3] == "scientific name":
-                    cls.tid_name_dict[tid] = name
+                    tid_name_dict[tid] = name
 
         # parse tree information
-        with open(cls.f_tax_tree, "r") as f_nodes:
+        with io.TextIOWrapper(z.open("nodes.dmp")) as f_nodes:
             for line in f_nodes:
                 items = [t.strip() for t in line.split("|")]
                 node, parent = int(items[0]), int(items[1])
-                cls.node_parent_dict[node] = parent
+                node_parent_dict[node] = parent
 
-        te = time.time()
-        logging.warning("... taxonomy information parsed in {} s.".format((te - ts)*1E6))
+    # store data
+    data = {
+        "tid_name_dict": tid_name_dict,
+        "name_tid_dict": name_tid_dict,
+        "node_parent_dict": node_parent_dict,
+    }
+    with open(f_taxonomy, "w") as f_out:
+        ujson.dump(data, f_out)
+
+    te = time.time()
+    logging.warning("... taxonomy information parsed in {} s.".format((te - ts)))
+
+
+if not os.path.exists(TAXONOMY_DATA):
+    parse_taxonomy_data()
+
+
+# ----------------------------------------------------
+class Taxonomy(object):
+    """ Taxonomy class. """
+    tid_name_dict = None  # { ncbi_id: ncbi_name }
+    name_tid_dict = None  # { ncbi_scientific_name: ncbi_id }
+    node_parent_dict = None  # storage of tree information
+
+    def __init__(self, f_taxonomy=TAXONOMY_DATA):
+        if Taxonomy.tid_name_dict is None:
+            ts = time.time()
+            with open(f_taxonomy, "r") as f_tax:
+                data = ujson.load(f_tax)
+                Taxonomy.tid_name_dict = {int(k): v for k, v in data["tid_name_dict"].items()}
+                Taxonomy.name_tid_dict = data["name_tid_dict"]
+                Taxonomy.node_parent_dict = {int(k): int(v) for k, v in data["node_parent_dict"].items()}
+                del data
+            te = time.time()
+            logging.warning("Taxonomy loaded in {} s.".format((te - ts)))
 
     @staticmethod
     def _tax_id_clean(tax_id):
@@ -135,6 +168,7 @@ class Taxonomy(object):
             try:
                 parent_id = self.node_parent_dict[tid]
             except KeyError:
+                logging.error(f"taxonomy id not found: {tax_id}")
                 return None
 
             nodes.append(parent_id)
