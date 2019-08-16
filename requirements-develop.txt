@@ -1,3 +1,7 @@
+pip>=19.1
+pandas>=0.24.2
+pyparsing>=2.4.2
+ujson
 tox
 pytest>=4.3.1
 pytest-cov>=2.6.1

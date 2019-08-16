@@ -74,6 +74,7 @@ setup(
           'resources/README.txt',
           'resources/README.rst',
           'resources/brenda_download_2019-07-2019.txt',
+          'resources/ncbitaxon/taxdmp.zip',
           ],
     },
     include_package_data=True,
