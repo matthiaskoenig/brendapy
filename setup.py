@@ -71,14 +71,15 @@ setup(
     package_data={
       '': [
           '../requirements.txt',
+          '../requirements-develop.txt',
           'resources/README.txt',
           'resources/README.rst',
-          'resources/brenda_download_2019-07-2019.txt',
+          'resources/brenda_download.txt',
+          'resources/ncbitaxon/taxdmp.zip',
           ],
     },
     include_package_data=True,
     zip_safe=False,
-    # List run-time dependencies here.  These will be installed by pip when
     install_requires=requires,
     dependency_links=links,
     extras_require={},

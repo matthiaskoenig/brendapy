@@ -55,6 +55,9 @@ from pprint import pprint
 
 from brendapy import utils
 from brendapy.settings import BRENDA_FILE
+from brendapy.taxonomy import Taxonomy
+
+TAXONOMY = Taxonomy()
 
 
 class BrendaParser(object):
@@ -309,11 +312,14 @@ class BrendaProtein(object):
         id (number of entry for ec in Brenda) and ec_string which contains the
         data for the protein.
         """
+        organism = data['PR'][key]['data']
         self.data = OrderedDict([
             ('protein_id', key),
             ('ec', ec),
-            ('organism', data['PR'][key]['data']),
+            ('organism', organism),
+            ('taxonomy', TAXONOMY.get_taxonomy_id(organism))
         ])
+
         reference_ids = set(data['PR'][key]['refs'])
         for bid in [
             "AC", "AP", "CF", "CL", "CR", "EN", "EXP", "GI", "GS", "IC50",
@@ -345,6 +351,10 @@ class BrendaProtein(object):
     @property
     def organism(self):
         return self.data['organism']
+
+    @property
+    def taxonomy(self):
+        return self.data['taxonomy']
 
     @property
     def source_tissues(self):
