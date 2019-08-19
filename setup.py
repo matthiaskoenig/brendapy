@@ -71,6 +71,7 @@ setup(
     package_data={
       '': [
           '../requirements.txt',
+          '../requirements-develop.txt',
           'resources/README.txt',
           'resources/README.rst',
           'resources/brenda_download.txt',
@@ -79,7 +80,6 @@ setup(
     },
     include_package_data=True,
     zip_safe=False,
-    # List run-time dependencies here.  These will be installed by pip when
     install_requires=requires,
     dependency_links=links,
     extras_require={},
