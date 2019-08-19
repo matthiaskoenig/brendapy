@@ -65,3 +65,16 @@ def test_source_tissue():
 def test_proteins_for_ec(ec):
     proteins = BRENDA_PARSER.get_proteins(ec)
     assert proteins is not None
+
+
+def test_999_values():
+    """
+    filter the values with -999
+    see https://github.com/matthiaskoenig/brendapy/issues/8
+    :return:
+    """
+    proteins = BRENDA_PARSER.get_proteins("1.1.1.100")
+    for key, p in proteins.items():
+        if p.organism == "Home sapiens":
+            print(p)
+    assert 0
