@@ -51,6 +51,7 @@ import ujson
 
 TAXONOMY_DATA = os.path.join(RESOURCES_PATH, "ncbitaxon", "taxonomy.json")
 
+
 # ----------------------------------------------------
 def parse_taxonomy_data(f_taxonomy=TAXONOMY_DATA):
     """Parses the node and tree information for the taxonomy.
