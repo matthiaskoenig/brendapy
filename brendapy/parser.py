@@ -187,9 +187,12 @@ class BrendaParser(object):
                     ids = [int(token) for token in ids.split(',')]
                     refs = refs.replace(' ', ",")  # fix the missing comma in refs
 
-                    # get rid of brackets
+                    # get additional information
+                    tokens = data.split('(')
+                    data = '('.join(tokens[0:-1]).strip()
+
                     info = {
-                        'data': data.split('(')[0].strip(),
+                        'data': data,
                         'refs': [int(token) for token in refs.split(',')]
                     }
                     if info['data'] in ['more', 'more = ?', '-999 {more}', '-999']:
