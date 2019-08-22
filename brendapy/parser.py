@@ -188,13 +188,28 @@ class BrendaParser(object):
                     refs = refs.replace(' ', ",")  # fix the missing comma in refs
 
                     # get additional information
-                    tokens = data.split('(')
-                    data = '('.join(tokens[0:-1]).strip()
+                    comment = None
+                    tokens = data.split('}')
+                    if len(tokens) > 1:
+                        # data with substance information "{  }"
+                        data = tokens[0] + '}'
+                        rest = tokens[1].strip()
+                        if rest and rest.startswith("("):
+                            comment = rest[1:-1]
+                    else:
+                        tokens = data.split('(')
+                        data = tokens[0]
+                        if len(tokens) > 0:
+                            comment = "(" + "(".join(tokens[1:])
+                            comment = comment[1:-1]
 
                     info = {
-                        'data': data,
+                        'data': data.strip(),
                         'refs': [int(token) for token in refs.split(',')]
                     }
+                    if comment:
+                        info['comment'] = comment
+
                     if info['data'] in ['more', 'more = ?', '-999 {more}', '-999']:
                         logging.info(f"{ec}_{bid}: `more` information not stored: {info}")
                         return

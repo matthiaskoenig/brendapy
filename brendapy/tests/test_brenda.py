@@ -131,11 +131,14 @@ def test_substances():
     proteins = BRENDA_PARSER.get_proteins("2.6.1.42")
     p = proteins[5]
     data = p.data["KM"]
+    from pprint import pprint
+    pprint(data)
     assert data[0]["data"] == "2.4 {2-oxoglutarate}"
     assert data[1]["data"] == "1.7 {2-oxoglutarate}"
     assert data[2]["data"] == "1 {2-oxoglutarate}"
     assert data[3]["data"] == "0.06 {(R)-3-methyl-2-oxopentanoate}"
     assert data[4]["data"] == "0.17 {(S)-3-methyl-2-oxopentanoate}"
+    assert data[0]["comment"] == "#4# pH 8.0, 25°C, substrate L-isoleucine <23,40>; #5# pH 8.4, 25°C, substrate L-alloisoleucine <41>"
 
 
 def test_source_tissue():
