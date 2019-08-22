@@ -53,6 +53,16 @@ def test_info_dict():
     assert d
 
 
+def test_organism():
+    """
+    https://github.com/matthiaskoenig/brendapy/issues/16
+    :return:
+    """
+    proteins = BRENDA_PARSER.get_proteins("1.1.1.1")
+    p = proteins[106]
+    assert p.organism == "Homo sapiens"
+
+
 def test_source_tissue():
     ec = "1.1.1.2"
     ec_str = BRENDA_PARSER.ec_text[ec]

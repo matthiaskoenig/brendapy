@@ -42,7 +42,7 @@ def parse_proteins_by_taxonomy():
     results = []
     for key, p in proteins.items():
         if p.taxonomy is None:
-            logging.error(f"Taxonomy could not be resolved for `{p.organism}`: `{p.taxonomy}`")
+            logging.error(f"Taxonomy could not be resolved for protein <{p.protein_id}>: '{p.organism}': '{p.taxonomy}'")
             continue
 
         [common_node_id, common_name, common_dist] = tax.find_common_node(

@@ -77,6 +77,7 @@ class BrendaParser(object):
     }
     PATTERN_RF = re.compile(r"^<(\d+?)> (.+) {Pubmed:\s*(\d*)\s*}")
     PATTERN_ALL = re.compile(r"^#([,\d\s]+?)#(.+)<([,\d\s]+)>")
+    PATTERN_ORGANISM = re.compile(r"^(\w+)\s([\w\.]+)")
 
     def __init__(self, brenda_file=BRENDA_FILE):
         """ Initialize parser and parse BRENDA file.
@@ -312,7 +313,16 @@ class BrendaProtein(object):
         id (number of entry for ec in Brenda) and ec_string which contains the
         data for the protein.
         """
-        organism = data['PR'][key]['data']
+        protein_info = data['PR'][key]['data']
+        organism = protein_info
+
+        match = BrendaParser.PATTERN_ORGANISM.match(protein_info)
+        if match:
+            organism = f"{match.group(1)} {match.group(2)}"
+        else:
+            organism = protein_info
+            logging.error(f"organism could not be parsed from: '{protein_info}'")
+
         self.data = OrderedDict([
             ('protein_id', key),
             ('ec', ec),
