@@ -192,27 +192,32 @@ class BrendaParser(object):
             else:
                 match = BrendaParser.PATTERN_ALL.match(item)
                 if match:
-                    ids, data, refs = match.group(1), match.group(2), match.group(3)
+                    ids, data_all, refs = match.group(1), match.group(2), match.group(3)
                     ids = ids.replace(' ', ",")  # fix the missing comma in ids
                     ids = [int(token) for token in ids.split(',')]
                     refs = refs.replace(' ', ",")  # fix the missing comma in refs
 
                     # get additional information
                     comment = None
-                    tokens = data.split('}')
-                    if len(tokens) > 1:
-                        # data with substance information "{  }"
-                        data = tokens[0] + '}'
-                        rest = tokens[1].strip()
-                        if rest and rest.startswith("("):
-                            comment = rest[1:-1]
-                    else:
-                        tokens = data.split('(')
-                        data = tokens[0]
-                        if len(tokens) > 0:
-                            comment = "(" + "(".join(tokens[1:])
-                            comment = comment[1:-1]
 
+                    tokens = data_all.split('(#')
+                    if len(tokens) == 1:
+                        data = tokens[0]
+                    elif len(tokens) == 2:
+                        data = tokens[0].strip()
+                        comment = "(#" + tokens[1].strip()
+                        comment = comment[1:-1]
+                    else:
+                        logging.error(f"comment could not be parsed: '{data_all}'")
+
+                    # check data
+                    if len(data) == 0:
+                        logging.warning(f"{ec}_{bid}: empty information not stored: '{data_all}'")
+                    elif data == "more":
+                        logging.info(f"{ec}_{bid}: 'more' data not stored: {data_all}")
+                        return
+
+                    # store info as dict
                     info = {
                         'data': data.strip(),
                         'refs': [int(token) for token in refs.split(',')]
@@ -220,20 +225,16 @@ class BrendaParser(object):
                     if comment:
                         info['comment'] = comment
 
-
-                    if info['data'] in ['more', 'more = ?', '-999 {more}', '-999']:
-                        logging.info(f"{ec}_{bid}: `more` information not stored: {info}")
-                        return
-                    if len(info['data']) == 0:
-                        logging.info(f"{ec}_{bid}: `empty` information not stored: {info}")
-                        return
-
                     if bid in BrendaParser.UNITS:
                         info["units"] = BrendaParser.UNITS[bid]
-                        match_s = BrendaParser.PATTERN_VALUE.match(info["data"])
-                        if match_s:
-                            info['value'] = float(match_s.group(1))
-                            info['substrate'] = match_s.group(2)
+                        if data.startswith("-999"):
+                            # parse value
+                            logging.info(f"{ec}_{bid}: '-999' values not parsed: {data}")
+                        else:
+                            match_s = BrendaParser.PATTERN_VALUE.match(info["data"])
+                            if match_s:
+                                info['value'] = float(match_s.group(1))
+                                info['substrate'] = match_s.group(2)
 
                     for pid in ids:
                         if bid == "PR":

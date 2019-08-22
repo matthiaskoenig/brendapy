@@ -145,6 +145,17 @@ def test_substances():
     assert data[0]["comment"] == "#4# pH 8.0, 25°C, substrate L-isoleucine <23,40>; #5# pH 8.4, 25°C, substrate L-alloisoleucine <41>"
 
 
+def test_minus_999():
+    """test https://github.com/matthiaskoenig/brendapy/issues/8
+
+    :return:
+    """
+    proteins = BRENDA_PARSER.get_proteins("1.1.1.100")
+    p = proteins[2]
+    data = p.data["IC50"]
+    assert len(data) == 2
+
+
 def test_source_tissue():
     ec = "1.1.1.2"
     ec_str = BRENDA_PARSER.ec_text[ec]
@@ -152,21 +163,7 @@ def test_source_tissue():
     assert d
 
 
-
 @pytest.mark.parametrize("ec", BRENDA_PARSER.keys())
 def test_proteins_for_ec(ec):
     proteins = BRENDA_PARSER.get_proteins(ec)
     assert proteins is not None
-
-
-def test_999_values():
-    """
-    filter the values with -999
-    see https://github.com/matthiaskoenig/brendapy/issues/8
-    :return:
-    """
-    proteins = BRENDA_PARSER.get_proteins("1.1.1.100")
-    for key, p in proteins.items():
-        if p.organism == "Home sapiens":
-            print(p)
-    assert 0
