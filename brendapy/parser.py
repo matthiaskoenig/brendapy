@@ -78,6 +78,16 @@ class BrendaParser(object):
     PATTERN_RF = re.compile(r"^<(\d+?)> (.+) {Pubmed:\s*(\d*)\s*}")
     PATTERN_ALL = re.compile(r"^#([,\d\s]+?)#(.+)<([,\d\s]+)>")
     PATTERN_ORGANISM = re.compile(r"^(\w+)\s([\w\.]+)")
+    PATTERN_VALUE = re.compile(r"^([\d\.]+)\s+\{(.+)\}")
+
+    UNITS = {
+        "KM": "mM",
+        "KI": "mM",
+        "TN": "1/s",
+        "IC50": "mM",
+        "KKM": "1/mM/s",
+        "SA": "µmol/min/mg"
+    }
 
     def __init__(self, brenda_file=BRENDA_FILE):
         """ Initialize parser and parse BRENDA file.
@@ -210,12 +220,20 @@ class BrendaParser(object):
                     if comment:
                         info['comment'] = comment
 
+
                     if info['data'] in ['more', 'more = ?', '-999 {more}', '-999']:
                         logging.info(f"{ec}_{bid}: `more` information not stored: {info}")
                         return
                     if len(info['data']) == 0:
                         logging.info(f"{ec}_{bid}: `empty` information not stored: {info}")
                         return
+
+                    if bid in BrendaParser.UNITS:
+                        info["units"] = BrendaParser.UNITS[bid]
+                        match_s = BrendaParser.PATTERN_VALUE.match(info["data"])
+                        if match_s:
+                            info['value'] = float(match_s.group(1))
+                            info['substrate'] = match_s.group(2)
 
                     for pid in ids:
                         if bid == "PR":
