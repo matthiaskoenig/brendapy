@@ -184,8 +184,9 @@ class BrendaParser(object):
                 if match:
                     ids, data, refs = match.group(1), match.group(2), match.group(3)
                     ids = ids.replace(' ', ",")  # fix the missing comma in ids
-                    refs = ids.replace(' ', ",")  # fix the missing comma in refs
                     ids = [int(token) for token in ids.split(',')]
+                    refs = refs.replace(' ', ",")  # fix the missing comma in refs
+
                     # get rid of brackets
                     info = {
                         'data': data.split('(')[0].strip(),

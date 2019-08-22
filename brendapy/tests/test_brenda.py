@@ -54,13 +54,58 @@ def test_info_dict():
 
 
 def test_organism():
-    """
-    https://github.com/matthiaskoenig/brendapy/issues/16
+    """test https://github.com/matthiaskoenig/brendapy/issues/16
     :return:
     """
     proteins = BRENDA_PARSER.get_proteins("1.1.1.1")
     p = proteins[106]
     assert p.organism == "Homo sapiens"
+
+
+def test_source_tissue_reference():
+    """test https://github.com/matthiaskoenig/brendapy/issues/13
+
+    ST	#3# lymphocyte <34,40,51>
+    ST	#3# skin fibroblast <31>
+    ST	#3,4# more (#3# cell line 3152 and cell line 13042 <31>; #4# in adult,
+        absent from astrocytes, oligodendrocytes and microcapillary endothelial
+        cells (blood-brain barrier). Present in rhombencephalon of embryos
+        <41>; #4# PCCalpha is present in choroid plexus epithelium, is absent
+        from astrocytes and oligodendrocytes and in microcapillary endothelial
+        cells (blood brain barrier) <41>; #3# two-years-old girl with
+        propionic acidemia <42>) <31,41,42>
+    ST	#3,4,6# liver (#4# in embryos (E15.5 and E18.5), PCCalpha shows a much
+        higher expression level in the entire central nervous system than in
+        the liver <41>; #4# low levels in the E15.5 embryonic liver <41>)
+        <5,6,16,41>
+
+    :return:
+    """
+    proteins = BRENDA_PARSER.get_proteins("6.4.1.3")
+    p = proteins[3]
+    print(p.source_tissues)
+    print(p.data["ST"])
+
+    source_tissues = p.data["ST"]
+    assert source_tissues
+    assert len(source_tissues) == 3
+
+    st1 = source_tissues[0]
+    assert st1['data'] == "lymphocyte"
+    assert len(st1['refs']) == 3
+    for ref in [34, 40, 51]:
+        assert ref in st1['refs']
+
+    st2 = source_tissues[1]
+    assert st2['data'] == "skin fibroblast"
+    assert len(st2['refs']) == 1
+    assert 31 in st2['refs']
+
+    st3 = source_tissues[2]
+    assert st3['data'] == "liver"
+    assert len(st3['refs']) == 4
+    for ref in [5, 6, 16, 41]:
+        assert ref in st3['refs']
 
 
 def test_source_tissue():
