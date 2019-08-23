@@ -8,15 +8,22 @@ from collections import OrderedDict
 from brendapy import BrendaParser, BrendaProtein
 from brendapy.taxonomy import Taxonomy
 
+BRENDA_PARSER = BrendaParser()  # reuse parser
 
-def parse_proteins_for_ec():
+
+def parse_proteins_for_ec(ec="1.1.1.1"):
+    """Parse the protein entries for a given EC number in BRENDA.
+    """
+    proteins = BRENDA_PARSER.get_proteins(ec)
+    return proteins
+
+
+def parse_human_proteins_for_ec(ec="1.1.1.1"):
     """Parse the protein entries for a given EC number in BRENDA.
 
     Prints overview of proteins, protein ids, and Human proteins.
     """
-    brenda = BrendaParser()
-    ec = "1.1.1.1"
-    proteins = brenda.get_proteins(ec)
+    proteins = BRENDA_PARSER.get_proteins(ec)
 
     print(f"{len(proteins)} proteins for EC {ec} in BRENDA")
     print(f"Protein identifier: {proteins.keys()}")
@@ -32,12 +39,11 @@ def parse_proteins_by_taxonomy():
 
     :return:
     """
-    brenda = BrendaParser()
     tax = Taxonomy()
     ec = "1.1.1.1"  # enzyme of interest
     tax_id_ref = tax.get_taxonomy_id("Homo sapiens")  # tax id of target species
 
-    proteins = brenda.get_proteins(ec)
+    proteins = BRENDA_PARSER.get_proteins(ec)
 
     results = []
     for key, p in proteins.items():
@@ -60,16 +66,20 @@ def parse_proteins_by_taxonomy():
         )
 
     # sorted data frame
-
     df = pd.DataFrame(results)
     df = df.sort_values(by=['common_dist'])
-    pd.set_option('display.max_rows', 100)
-    pd.set_option('display.max_columns', 30)
     print("-" * 80)
     print(df)
     print("-" * 80)
 
 
+def parse_all_proteins_for_all_ecs():
+    for ec in BRENDA_PARSER.keys():
+        proteins = BRENDA_PARSER.get_proteins(ec)
+
+
 if __name__ == "__main__":
-    # parse_proteins_for_ec()
+    parse_proteins_for_ec(ec="1.1.1.1")
+    parse_human_proteins_for_ec(ec="1.1.1.1")
     parse_proteins_by_taxonomy()
+    parse_all_proteins_for_all_ecs()

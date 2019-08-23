@@ -31,7 +31,9 @@ def test_protein_detail1():
     protein = proteins[1]
 
     assert protein
-    assert 'liver' in protein.source_tissues
+
+    tissues = [item['data'] for item in protein.ST]
+    assert 'liver' in tissues
     assert protein.organism == "Gallus gallus"
     assert protein.taxonomy == 9031
     assert 44 in protein.references
@@ -83,7 +85,6 @@ def test_source_tissue_reference():
     """
     proteins = BRENDA_PARSER.get_proteins("6.4.1.3")
     p = proteins[3]
-    print(p.source_tissues)
     print(p.data["ST"])
 
     source_tissues = p.data["ST"]
