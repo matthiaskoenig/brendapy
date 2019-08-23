@@ -26,6 +26,10 @@ twine upload dist/*
 ```
 mkvirtualenv test --python=python3.6
 (test) pip install brendapy
+(test) python
+
+from brendapy.examples import *
+
 ```
 
 ## version bump
