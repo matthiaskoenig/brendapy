@@ -409,170 +409,212 @@ class BrendaProtein(object):
     def AC(self):
         """activating compound"""
         return self.data.get("AC", None)
+
     @property
     def AP(self):
         """application"""
         return self.data.get("AP", None)
+
     @property
     def CF(self):
         """cofactor"""
         return self.data.get("CF", None)
+
     @property
     def CL(self):
         """cloned"""
         return self.data.get("CL", None)
+
     @property
     def CR(self):
         """crystallization"""
         return self.data.get("CR", None)
+
     @property
     def EN(self):
         """engineering"""
         return self.data.get("EN", None)
+
     @property
     def EXP(self):
         """expression"""
         return self.data.get("EXP", None)
+
     @property
     def GI(self):
         """general information on enzyme"""
         return self.data.get("GI", None)
+
     @property
     def GS(self):
         """general stability"""
         return self.data.get("GS", None)
+
     @property
     def IC50(self):
         """IC-50 Value"""
         return self.data.get("IC50", None)
+
     @property
     def ID(self):
         """EC-class"""
         return self.data.get("ID", None)
+
     @property
     def IN(self):
         """inhibitors"""
         return self.data.get("IN", None)
+
     @property
     def KKM(self):
         """Kcat/KM-Value substrate in {...}"""
         return self.data.get("KKM", None)
+
     @property
     def KI(self):
         """Ki-value inhibitor in {...}"""
         return self.data.get("KI", None)
+
     @property
     def KM(self):
         """KM-value substrate in {...}"""
         return self.data.get("KM", None)
+
     @property
     def LO(self):
         """localization"""
         return self.data.get("LO", None)
+
     @property
     def ME(self):
         """metals/ions"""
         return self.data.get("ME", None)
+
     @property
     def MW(self):
         """molecular weight"""
         return self.data.get("MW", None)
+
     @property
     def NSP(self):
         """natural substrates/products reversibilty information in {...}"""
         return self.data.get("NSP", None)
+
     @property
     def OS(self):
         """oxygen stability"""
         return self.data.get("OS", None)
+
     @property
     def OSS(self):
         """organic solvent stability"""
         return self.data.get("OSS", None)
+
     @property
     def PHO(self):
         """pH-optimum"""
         return self.data.get("PHO", None)
+
     @property
     def PHR(self):
         """pH-range"""
         return self.data.get("PHR", None)
+
     @property
     def PHS(self):
         """pH stability"""
         return self.data.get("PHS", None)
+
     @property
     def PI(self):
         """isoelectric point"""
         return self.data.get("PI", None)
+
     @property
     def PM(self):
         """posttranslation modification"""
         return self.data.get("PM", None)
+
     @property
     def PU(self):
         """purification"""
         return self.data.get("PU", None)
+
     @property
     def RE(self):
         """reaction catalyzed"""
         return self.data.get("RE", None)
+
     @property
     def REN(self):
         """renatured"""
         return self.data.get("REN", None)
+
     @property
     def RN(self):
         """accepted name (IUPAC)"""
         return self.data.get("RN", None)
+
     @property
     def RT(self):
         """reaction type"""
         return self.data.get("RT", None)
+
     @property
     def SA(self):
         """specific activity"""
         return self.data.get("SA", None)
+
     @property
     def SN(self):
         """synonyms"""
         return self.data.get("SN", None)
+
     @property
     def SP(self):
         """substrates/products    reversibilty information in {...}"""
         return self.data.get("SP", None)
+
     @property
     def SS(self):
         """storage stability"""
         return self.data.get("SS", None)
+
     @property
     def SS(self):
         """storage stability"""
         return self.data.get("SS", None)
+
     @property
     def ST(self):
         """source/tissue"""
         return self.data.get("ST", None)
+
     @property
     def SU(self):
         """subunits"""
         return self.data.get("SU", None)
+
     @property
     def SY(self):
         """systematic name"""
         return self.data.get("SY", None)
+
     @property
     def TN(self):
         """turnover number    substrate in {...}"""
         return self.data.get("TN", None)
+
     @property
     def TO(self):
         """temperature optimum"""
         return self.data.get("TO", None)
+
     @property
     def TR(self):
         """temperature range"""
         return self.data.get("TR", None)
+
     @property
     def TS(self):
         """temperature stability"""
