@@ -3,6 +3,7 @@ from brendapy.taxonomy import Taxonomy
 
 TAXONOMY = Taxonomy()
 
+
 def test_get_taxonomy_id():
     """ Test the module """
     tid = TAXONOMY.get_taxonomy_id("Homo sapiens")
