@@ -6,3 +6,6 @@ brendapy.egg-info
 .tox
 dist
 
+brendapy/resources/ncbitaxon/taxdmp.zip
+brendapy/resources/ncbitaxon/taxonomy.json
+
