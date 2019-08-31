@@ -56,6 +56,7 @@ from pprint import pprint
 from brendapy import utils
 from brendapy.settings import BRENDA_FILE
 from brendapy.taxonomy import Taxonomy
+from brendapy.tissues import BTO
 
 TAXONOMY = Taxonomy()
 
@@ -380,6 +381,20 @@ class BrendaProtein(object):
 
         self.data['references'] = {ref_id: data['RF'].get(ref_id, None) for ref_id in reference_ids}
 
+        # map tissues on Brenda Tissue Ontology
+        tissues = set()
+        if self.ST:
+            for item in self.ST:
+                tissue = item['data']
+                bto = BTO.get(tissue, None)
+                if bto:
+                    bto_term = bto["key"]
+                    item['bto'] = bto_term
+                    tissues.add(bto_term)
+                else:
+                    logging.error(f"Source/Tissue not found in Brenda Tissue Ontology (BTO): '{tissue}'")
+        self.data["tissues"] = tissues
+
     @property
     def protein_id(self):
         return self.data['protein_id']
@@ -395,6 +410,10 @@ class BrendaProtein(object):
     @property
     def taxonomy(self):
         return self.data['taxonomy']
+
+    @property
+    def tissues(self):
+        return self.data['tissues']
 
     @property
     def references(self):

@@ -1,4 +1,6 @@
-pip>=19.2.2
+pip>=19.2.3
 pandas>=0.24.2
 pyparsing>=2.4.2
 ujson>=1.35
+requests>=2.22.0
+owlready2

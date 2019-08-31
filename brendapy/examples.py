@@ -79,7 +79,7 @@ def parse_all_proteins_for_all_ecs():
 
 
 if __name__ == "__main__":
-    parse_proteins_for_ec(ec="1.1.1.1")
-    parse_human_proteins_for_ec(ec="1.1.1.1")
-    parse_proteins_by_taxonomy()
+    # parse_proteins_for_ec(ec="1.1.1.1")
+    # parse_human_proteins_for_ec(ec="1.1.1.1")
+    # parse_proteins_by_taxonomy()
     parse_all_proteins_for_all_ecs()
