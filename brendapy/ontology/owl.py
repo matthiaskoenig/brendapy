@@ -30,6 +30,7 @@ and the following methods:
 
 """
 import os
+import logging
 import json
 from collections import OrderedDict
 from owlready2 import *
@@ -47,30 +48,30 @@ def parse_bto_owl(bto_owl_path="bto.owl", onto_repository_path="/home/mkoenig/tm
     for key, value in onto._namespaces.items():
         print(f"'{key}': '{value}'")
 
-    # testing
+
     # bto = get_namespace("http://purl.obolibrary.org/obo/")
     # print('-' * 80)
-    # print(bto.BTO_0000759)
-    # print(bto.BTO_0000759.iri)
-    # print(bto.BTO_0000759.label)
-    # print('Descendents:',  bto.BTO_0000759.descendants())
-    # print('Ancestors:',  bto.BTO_0000759.ancestors())
-    # print('Class properties:', bto.BTO_0000759.get_class_properties())
-    # print(type(bto.BTO_0000759))
-    # print(ThingClass.__getattr__((bto.BTO_0000759), "IAO_0000115"))
+    # print(bto.BTO_0000016)
+    # print(bto.BTO_0000016.iri)
+    # print(bto.BTO_0000016.label)
+    # print('Descendents:',  bto.BTO_0000016.descendants())
+    # print('Ancestors:',  bto.BTO_0000016.ancestors())
+    # print('Class properties:', bto.BTO_0000016.get_class_properties())
+    # print(type(bto.BTO_0000016))
+    # print(ThingClass.__getattr__((bto.BTO_0000016), "IAO_0000115"))
     # print('-' * 80)
-
 
     d_key = {}
     d_label = {}
 
     for c in onto.classes():
         key = c.name
-        print(key)
+        # print(key)
 
         label = c.label[0]
         ancestors = {c.name for c in c.ancestors() if c.name not in ["owl.Thing", "Thing"]}
         descendants = {c.name for c in c.descendants() if c.name not in ["owl.Thing", "Thing"]}
+        synonyms = c.hasRelatedSynonym
 
         description = ThingClass.__getattr__(c, "IAO_0000115")
         if description and isinstance(description, (list, tuple)):
@@ -84,42 +85,23 @@ def parse_bto_owl(bto_owl_path="bto.owl", onto_repository_path="/home/mkoenig/tm
             ("descendents", descendants),
             ("description", description),
         ])
+        if len(synonyms) > 0:
+            item["synonyms"] = synonyms
+
         d_key[key] = item
         d_label[label] = item
 
-    # FIXME: parse the synonyms
-    # oboInOwl:hasRelatedSynonym
+    # Add all the synonyms to the dictionary
+    for bto_key, item in d_key.items():
+        if "synonyms" in item:
+            for name in item["synonyms"]:
 
-    # Manual fixes (use all the synonmys for fixing):
-    fixes = {
-        "sperm": "BTO_0001277",  # spermatozoon
-        "sperm cell": "BTO_0001277",  # spermatozoon
-
-        "prostate": "BTO_0001129",  # prostate gland
-        "prostate cancer cell": "BTO_0001130",  # prostate gland cancer cell
-        "prostate carcinoma cell": "BTO_0001130",  # prostate gland cancer cell
-        "prostate tumor cell": "BTO_0001130",  # prostate gland cancer cell
-
-        "liver parenchymal cell": "BTO_0000575",  # hepatocyte
-        "hepatocellular carcinoma cell": "BTO_0000594",  # liver cancer cell
-        "hepatic carcinoma cell": "BTO_0000594",  # liver cancer cell
-        "hepatocarcinoma cell": "BTO_0000594",  # liver cancer cell
-
-        "cardiomyocyte": "BTO_0002320",  # cardiac muscle fiber
-        "cardiac myocyte": "BTO_0002320",  # cardiac muscle fiber
-
-        "neuronal cell": "BTO_0000938",   # neuron
-        "adipose": "BTO_0001487",  # adipose tissue
-        "plasma": "BTO_0000131",  # blood plasma
-
-        "pituitary gland": "BTO_0001073",  # hypophysis (131)
-        "brain cortex": "BTO_0000233",  # cerebral cortex (110)
-        "Huh-7 cell": "BTO_0001950",  # HuH-7 cell (81)
-        "platelet": "BTO_0000132",  # blood platelet" (75)
-        "T-cell": "BTO_0000782",  # T-cell (69)
-    }
-    for key, bto in fixes.items():
-        d_label[key] = d_key[bto]
+                if name in d_label:
+                    bto_key_duplicate = d_label[name]['key']
+                    if bto_key != bto_key_duplicate:
+                        logging.error(f"Duplicate synonym: '{name}', mismatch bto: '{bto_key}' vs '{bto_key_duplicate}'")
+                else:
+                    d_label[name] = d_key[bto_key]
 
     outpath = os.path.join("..", "resources", "bto", "bto.json")
     _serialize_to_json(data=d_label, outpath=outpath)
@@ -194,6 +176,7 @@ if __name__ == "__main__":
         from pprint import pprint
         print("-" * 80)
         pprint(d_label["liver"])
+        pprint(d_label["A-172 cell"])
 
 
 
