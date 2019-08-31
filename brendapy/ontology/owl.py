@@ -3,11 +3,13 @@ Working with ontologies to resolve information
 
 Ontologies have been downloaded from
     https://www.ebi.ac.uk/ols/ontologies/bto
+    https://www.ebi.ac.uk/ols/ontologies/chebi
 
 
 Using the following library for OWL parsing:
     owlready2 https://bitbucket.org/jibalamy/owlready2/src/default/
     https://pypi.org/project/Owlready2/
+    https://owlready2.readthedocs.io/en/latest/
 
 An ontology has the following attributes:
 
@@ -37,6 +39,9 @@ from owlready2 import *
 from owlready2.entity import ThingClass
 
 
+# -----------------------------------------
+# BRENDA Tissue Ontology (BTO)
+# -----------------------------------------
 def parse_bto_owl(bto_owl_path="bto.owl", onto_repository_path="/home/mkoenig/tmp/owl"):
     """ Parse the OWL information."""
 
@@ -79,11 +84,11 @@ def parse_bto_owl(bto_owl_path="bto.owl", onto_repository_path="/home/mkoenig/tm
 
         item = OrderedDict([
             ("key", key),
-            ("iri", c.iri),
+            # ("iri", c.iri),
             ("label", label),
             ("ancestors", ancestors),
-            ("descendents", descendants),
-            ("description", description),
+            # ("descendents", descendants),
+            # ("description", description),
         ])
         if len(synonyms) > 0:
             item["synonyms"] = synonyms
@@ -109,46 +114,75 @@ def parse_bto_owl(bto_owl_path="bto.owl", onto_repository_path="/home/mkoenig/tm
     return d_key, d_label
 
 
+# -----------------------------------------
+# CHEBI
+# -----------------------------------------
 def parse_chebi_owl(bto_owl_path="chebi.owl", onto_repository_path="/home/mkoenig/tmp/owl"):
     """ Parse the OWL information."""
     onto_path.append(onto_repository_path)
     onto = get_ontology(bto_owl_path).load()
 
     # accessing entities defined in the bto namespace
-    print(onto._namespaces)
-    for key, value in onto._namespaces.items():
-        print(f"'{key}': '{value}'")
+    chebi = get_namespace("http://purl.obolibrary.org/obo/")
+    print('-' * 80)
+    print(chebi.CHEBI_17634)
+    print(chebi.CHEBI_17634.iri)
+    print(chebi.CHEBI_17634.label)
+    print('Descendents:',  chebi.CHEBI_17634.descendants())
+    print('Ancestors:',  chebi.CHEBI_17634.ancestors())
+    print('Class properties:', chebi.CHEBI_17634.get_class_properties())
+    print('Synonyms:', chebi.CHEBI_17634.hasRelatedSynonym)
+    print('-' * 80)
+
+    # TODO: remove the deprecated entries (and filter by the 3* entries)
 
     d_key = {}
     d_label = {}
 
     for c in onto.classes():
         key = c.name
-        print(key)
-        print('Class properties:', c.get_class_properties())
-
         label = c.label
+        if len(label) > 0:
+            label = label[0]
+        else:
+            label = None
+
+        print(key, label)
+
         ancestors = {c.name for c in c.ancestors() if c.name not in ["owl.Thing", "Thing"]}
         descendants = {c.name for c in c.descendants() if c.name not in ["owl.Thing", "Thing"]}
-        IAO_0000231 = ThingClass.__getattr__(c, "IAO_0000231")
-        IAO_0100001 = ThingClass.__getattr__(c, "IAO_0100001")
+        description = ThingClass.__getattr__(c, "IAO_0000115")
+        if description and isinstance(description, (list, tuple)):
+            description = description[0]
+        synonyms = c.hasRelatedSynonym + c.hasExactSynonym
 
-        # description = ThingClass.__getattr__(c, "IAO_0000115")
-        # if description and isinstance(description, (list, tuple)):
-        #    description = description[0]
 
         item = OrderedDict([
             ("key", key),
-            ("iri", c.iri),
+            # ("iri", c.iri),
             ("label", label),
             ("ancestors", ancestors),
-            ("descendents", descendants),
+            # ("descendents", descendants),
             # ("description", description),
-            ("IAO_0000231",  IAO_0000231),
-            ("IAO_0100001", IAO_0100001),
         ])
+        if len(synonyms) > 0:
+            item["synonyms"] = synonyms
+
         d_key[key] = item
-        d_label[label] = item
+        if label:
+            d_label[label] = item
+
+    # Add all the synonyms to the dictionary
+    for chebi_key, item in d_key.items():
+        if "synonyms" in item:
+            for name in item["synonyms"]:
+                if name in d_label:
+                    chebi_key_duplicate = d_label[name]['key']
+                    if chebi_key != chebi_key_duplicate:
+                        logging.error(
+                            f"Duplicate synonym: '{name}', mismatch chebi: '{chebi_key}' vs '{chebi_key_duplicate}'")
+                else:
+                    d_label[name] = d_key[chebi_key]
 
     outpath = os.path.join("..", "resources", "chebi", "chebi.json")
     _serialize_to_json(data=d_label, outpath=outpath)
@@ -168,16 +202,12 @@ def _serialize_to_json(data, outpath):
 
 
 if __name__ == "__main__":
+    # bto
+    d_key, d_label = parse_bto_owl()
 
-    # parse_chebi_owl()
+    from pprint import pprint
+    pprint(d_label["liver"])
+    pprint(d_label["A-172 cell"])
 
-    if 1:
-        d_key, d_label = parse_bto_owl()
-        from pprint import pprint
-        print("-" * 80)
-        pprint(d_label["liver"])
-        pprint(d_label["A-172 cell"])
-
-
-
-
+    # chebi
+    parse_chebi_owl()

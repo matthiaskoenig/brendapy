@@ -57,6 +57,7 @@ from brendapy import utils
 from brendapy.settings import BRENDA_FILE
 from brendapy.taxonomy import Taxonomy
 from brendapy.tissues import BTO
+from brendapy.substances import CHEBI
 
 TAXONOMY = Taxonomy()
 
@@ -235,7 +236,18 @@ class BrendaParser(object):
                             match_s = BrendaParser.PATTERN_VALUE.match(info["data"])
                             if match_s:
                                 info['value'] = float(match_s.group(1))
-                                info['substrate'] = match_s.group(2)
+                                substrate = match_s.group(2)
+                                info['substrate'] = substrate
+                                if substrate in CHEBI:
+                                    info['chebi'] = CHEBI[substrate]["key"]
+                                else:
+                                    logging.error(f"Substrate could not be found in CHEBI: '{substrate}'")
+                            else:
+                                # trying the simple patterns without substrate
+                                try:
+                                    info['value'] = float(info["data"])
+                                except :
+                                    logging.error(f"data could not be converted to float: {info['data']}")
 
                     for pid in ids:
                         if bid == "PR":

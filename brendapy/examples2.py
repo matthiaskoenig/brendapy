@@ -7,6 +7,8 @@ from collections import OrderedDict
 
 from brendapy import BrendaParser, BrendaProtein
 from brendapy.taxonomy import Taxonomy
+
+from collections import Counter
 from pprint import pprint
 
 BRENDA_PARSER = BrendaParser()  # reuse parser
@@ -22,24 +24,39 @@ def parse_parameters_for_ec(ec="1.1.1.1"):
         print(p.taxonomy)
         print(p.tissues)
 
-        if p.SA:
+        if p.SA:  # no substrate
             print("*** SA ***")
             pprint(p.SA)
-        if p.KM:
+
+        if p.KM:  # substrate
             print("*** KM ***")
             pprint(p.KM)
-        if p.KI:
+        if p.KI:  # substrate
             print("*** KI ***")
             pprint(p.KI)
-        if p.KKM:
+
+        if p.KKM:  # no substrate
             print("*** KKM ***")
             pprint(p.KKM)
         print("-" * 80)
 
 
-def parse_parameters():
+def missing_chebi_substances():
+    missing_chebi = Counter()
     for ec in BRENDA_PARSER.keys():
-        proteins = parse_parameters_for_ec(ec)
+        proteins = BRENDA_PARSER.get_proteins(ec)
+        for pkey, p in proteins.items():
+
+            km = p.KM
+            if km:
+                missing = [item['substrate'] for item in km if ("substrate" in item) and (not "chebi" in item)]
+                missing_chebi.update(missing)
+            ki = p.KI
+            if ki:
+                missing = [item['substrate'] for item in ki if ("substrate" in item) and (not "chebi" in item)]
+                missing_chebi.update(missing)
+
+    return missing_chebi
 
 
 def missing_bto_tissues():
@@ -47,7 +64,6 @@ def missing_bto_tissues():
 
     :return:
     """
-    from collections import Counter
     missing_tissues = Counter()
     for ec in BRENDA_PARSER.keys():
         proteins = BRENDA_PARSER.get_proteins(ec)
@@ -61,8 +77,28 @@ def missing_bto_tissues():
 
 
 if __name__ == "__main__":
-    # parse_parameters_for_ec()
-    missing_tissues = missing_bto_tissues()
-    from pprint import pprint
-    pprint(missing_tissues)
 
+    def _serialize_json(data, path):
+        import json
+        with open(path, "w") as f:
+            json.dump(data, fp=f, indent=2)
+
+    # parse_parameters_for_ec()
+
+
+    missing_substances = missing_chebi_substances()
+    pprint(missing_substances)
+    # _serialize_json(missing_substances, path="missing_substances.json")
+
+    with open("missing_substances.txt", "w") as f:
+        for key, count in missing_substances.most_common():
+            f.write(f"{count} : {key}\n")
+
+
+    missing_tissues = missing_bto_tissues()
+    pprint(missing_tissues)
+    # _serialize_json(missing_tissues, path="missing_tissues.json")
+
+    with open("missing_tissues.txt", "w") as f:
+        for key, count in missing_tissues.most_common():
+            f.write(f"{count} : {key}\n")
