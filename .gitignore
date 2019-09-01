@@ -3,3 +3,9 @@
 data
 brendapy.egg-info
 .pytest_cache
+.tox
+dist
+
+brendapy/resources/ncbitaxon/taxdmp.zip
+brendapy/resources/ncbitaxon/taxonomy.json
+

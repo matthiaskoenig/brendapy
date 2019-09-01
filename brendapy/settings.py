@@ -1,5 +1,10 @@
 import os
-base_path = os.path.dirname(os.path.realpath(__file__))
+import zipfile
+import logging
+
+BASE_PATH = os.path.dirname(os.path.realpath(__file__))
+RESOURCES_PATH = os.path.join(BASE_PATH, 'resources')
+
 BRENDA_FILE = os.path.join(
-    base_path, "resources", "brenda_download_2019-07-29.zip"
+    RESOURCES_PATH, "brenda_download.txt"
 )
