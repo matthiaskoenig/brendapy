@@ -361,13 +361,14 @@ class BrendaProtein(object):
             organism = f"{match.group(1)} {match.group(2)}"
         else:
             organism = protein_info
-            logging.warning(f"organism could not be parsed from: '{protein_info}'")
+            logging.warning(f"Organism could not be parsed from: '{protein_info}'")
 
+        taxonomy = TAXONOMY.get_taxonomy_id(organism)
         self.data = OrderedDict([
             ('protein_id', key),
             ('ec', ec),
             ('organism', organism),
-            ('taxonomy', TAXONOMY.get_taxonomy_id(organism))
+            ('taxonomy', taxonomy)
         ])
         reference_ids = set(data['PR'][key]['refs'])
 
@@ -409,6 +410,13 @@ class BrendaProtein(object):
 
     @property
     def protein_id(self):
+        """"BRENDA Protein id.
+
+        This is the integer used in the BRENDA flatfile to
+        map to individual protein entries.
+
+        :return: int protein id
+        """
         return self.data['protein_id']
 
     @property
@@ -421,10 +429,17 @@ class BrendaProtein(object):
 
     @property
     def taxonomy(self):
+        """ NCBI Taxonomy id
+
+        :return: NCBI taxonomy id, None if organism could not be mapped
+        """
         return self.data['taxonomy']
 
     @property
     def tissues(self):
+        """ BRENDA Tissue Ontology (BTO) tissue ids
+        :return: set of bto terms, empty set if no bto terms exist
+        """
         return self.data['tissues']
 
     @property
@@ -438,7 +453,9 @@ class BrendaProtein(object):
 
     @property
     def AC(self):
-        """activating compound"""
+        """activating compound
+        :return: list, None if no data exists
+        """
         return self.data.get("AC", None)
 
     @property

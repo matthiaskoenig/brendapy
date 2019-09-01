@@ -142,6 +142,8 @@ class Taxonomy(object):
         :param name: species name
         :return: NBCI taxonomy id or None if not existing in taxonomy
         """
+        if name not in self.name_tid_dict:
+            logging.warning(f"Taxonomy id could not be resolved for species/organism: {name}")
         return self.name_tid_dict.get(name, None)
 
     def get_scientific_name(self, tax_id):

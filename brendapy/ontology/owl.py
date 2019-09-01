@@ -184,6 +184,13 @@ def parse_chebi_owl(bto_owl_path="chebi.owl", onto_repository_path="/home/mkoeni
                 else:
                     d_label[name] = d_key[chebi_key]
 
+    # additional
+    additional = {
+        "MgATP2-": "CHEBI_30617",
+
+    }
+
+
     outpath = os.path.join("..", "resources", "chebi", "chebi.json")
     _serialize_to_json(data=d_label, outpath=outpath)
 
