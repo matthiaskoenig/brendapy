@@ -1,3 +1,17 @@
+"""
+Loads BRENDA parameters.json (created with `parameters.py`) and writes
+all parameters as SBML.
+
+- units are annotated as SBML units
+- tissues are annotated via BRENDA Tissue Ontology (bto)
+- organisms are annotated via NCBI Taxononmy (taxonomy)
+- compounds (for KM, KI and TN) are annotated to ChEBI (chebi)
+- parameters are annotated to SBO terms (sbo)
+- literature is annotated via pubmed ids
+
+All annotations use BQB.IS qualifiers with exception of pubmed ids which use BQB.IS_DESCRIBED_BY.
+"""
+
 import json
 from copy import deepcopy
 from sbmlutils.units import *
