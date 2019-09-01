@@ -4,3 +4,4 @@ pyparsing>=2.4.2
 ujson>=1.35
 requests>=2.22.0
 owlready2
+python-libsbml-experimental>=5.18.1

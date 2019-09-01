@@ -185,12 +185,14 @@ class BrendaParser(object):
                     rid, info, pubmed = match.group(1), match.group(2), match.group(3)
                     rid = int(rid)  # integer keys for all references
                     results[bid][rid] = {
-                        # 'id': rid,
                         'info': info,
-                        'pubmed': pubmed,
                     }
+                    if pubmed and len(pubmed) > 0:
+                        pubmed = int(pubmed)  # integer keys for all pubmeds
+                        results[bid][rid]['pubmed'] = pubmed
                 else:
-                    logging.error(f"{ec}_{bid}: could not be parsed: `{item}`")
+                    logging.error(f"Reference could not be parsed: `{item}`")
+
             else:
                 match = BrendaParser.PATTERN_ALL.match(item)
                 if match:
@@ -392,7 +394,7 @@ class BrendaProtein(object):
                             # collect additional references
                             reference_ids.update(item['refs'])
 
-        self.data['references'] = {ref_id: data['RF'].get(ref_id, None) for ref_id in reference_ids}
+        self.data['references'] = {ref_id: data['RF'].get(ref_id, {}) for ref_id in reference_ids}
 
         # map tissues on Brenda Tissue Ontology
         tissues = set()
