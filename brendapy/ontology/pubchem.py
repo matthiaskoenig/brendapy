@@ -1,20 +1,9 @@
 """
-Resolve substance information from BRENDA.
+UniChem
 
-Ontologies downloaded from:
-https://www.ebi.ac.uk/ols/ontologies/chebi
-https://www.ebi.ac.uk/ols/ontologies/bto
+Resolving
+https://www.ebi.ac.uk/unichem/info/webservices
 
-on 2019-08-31
-
-
-# chebi information:
-ftp://ftp.ebi.ac.uk/pub/databases/chebi/Flat_file_tab_delimited/
-
-
-
-
-TODO: parse the CHeBI information for the given Km parameter.
 
 Name:  Get src_compound_ids from InChIKey
 Description:  Obtain a list of all src_compound_ids (from all sources) which are CURRENTLY assigned to a query InChIKey
@@ -26,9 +15,14 @@ Example:  https://www.ebi.ac.uk/unichem/rest/inchikey/AAOVKJBEBIDNHE-UHFFFAOYSA-
 
 
 """
-from pprint import pprint
+
+
 import logging
 import requests
+import os
+import json
+from pprint import pprint
+
 
 def get_pubchem_collections():
     """ Available collections in PubChem.
@@ -94,9 +88,7 @@ def get_substance_info():
 
     :return:
     """
-
     logging.warning(f"Parse BRENDA ligand: {brenda_ligand_id}")
-
 
     url = "https://www.ebi.ac.uk/unichem/rest/inchikey/AAOVKJBEBIDNHE-UHFFFAOYSA-N"
     print(url)

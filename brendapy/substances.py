@@ -1,7 +1,6 @@
 import os
 import json
 
-
 from brendapy.settings import RESOURCES_PATH
 CHEBI_DATA = os.path.join(RESOURCES_PATH, "chebi", "chebi.json")
 

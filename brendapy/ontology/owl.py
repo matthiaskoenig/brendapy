@@ -12,10 +12,7 @@ Using the following library for OWL parsing:
     https://owlready2.readthedocs.io/en/latest/
 
 An ontology has the following attributes:
-
- * .base_iri : base IRI for the ontology
- * .imported_ontologies : the list of imported ontologies (see below)
-
+6
 and the following methods:
 
  * .classes() : returns a generator for the Classes defined in the ontology (see :doc:`class`)
@@ -42,11 +39,11 @@ from owlready2.entity import ThingClass
 # -----------------------------------------
 # BRENDA Tissue Ontology (BTO)
 # -----------------------------------------
-def parse_bto_owl(bto_owl_path="bto.owl", onto_repository_path="/home/mkoenig/tmp/owl"):
+def parse_bto_owl(owl_path="bto.owl", onto_repository_path="/tmp/owl"):
     """ Parse the OWL information."""
 
     onto_path.append(onto_repository_path)
-    onto = get_ontology(bto_owl_path).load()
+    onto = get_ontology(owl_path).load()
 
     # accessing entities defined in the bto namespace
     print(onto._namespaces)
@@ -117,10 +114,10 @@ def parse_bto_owl(bto_owl_path="bto.owl", onto_repository_path="/home/mkoenig/tm
 # -----------------------------------------
 # CHEBI
 # -----------------------------------------
-def parse_chebi_owl(bto_owl_path="chebi.owl", onto_repository_path="/home/mkoenig/tmp/owl"):
+def parse_chebi_owl(owl_path="chebi.owl", onto_repository_path="/tmp/owl"):
     """ Parse the OWL information."""
     onto_path.append(onto_repository_path)
-    onto = get_ontology(bto_owl_path).load()
+    onto = get_ontology(owl_path).load()
 
     # accessing entities defined in the bto namespace
     chebi = get_namespace("http://purl.obolibrary.org/obo/")
@@ -147,7 +144,7 @@ def parse_chebi_owl(bto_owl_path="chebi.owl", onto_repository_path="/home/mkoeni
         else:
             label = None
 
-        print(key, label)
+        print(key)
 
         ancestors = {c.name for c in c.ancestors() if c.name not in ["owl.Thing", "Thing"]}
         descendants = {c.name for c in c.descendants() if c.name not in ["owl.Thing", "Thing"]}
@@ -184,12 +181,12 @@ def parse_chebi_owl(bto_owl_path="chebi.owl", onto_repository_path="/home/mkoeni
                 else:
                     d_label[name] = d_key[chebi_key]
 
-    # additional
+    # additional substances have to be resolved
+    # TODO: see https://github.com/matthiaskoenig/brendapy/issues/#17
     additional = {
         "MgATP2-": "CHEBI_30617",
 
     }
-
 
     outpath = os.path.join("..", "resources", "chebi", "chebi.json")
     _serialize_to_json(data=d_label, outpath=outpath)
@@ -210,11 +207,11 @@ def _serialize_to_json(data, outpath):
 
 if __name__ == "__main__":
     # bto
-    d_key, d_label = parse_bto_owl()
+    d_key, d_label = parse_bto_owl(owl_path="../resources/bto/bto.owl")
 
     from pprint import pprint
     pprint(d_label["liver"])
     pprint(d_label["A-172 cell"])
 
     # chebi
-    parse_chebi_owl()
+    parse_chebi_owl(owl_path="../resources/chebi/chebi.owl")

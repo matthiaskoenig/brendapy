@@ -42,6 +42,19 @@ within the research network Systems Medicine of the Liver (**LiSyM**, grant numb
 pip install brendapy
 ```
 
+In addition some files are required, i.e., the brenda flat file and
+additional ontology files (owl) for mapping of substances, organisms and tissues:
+
+https://www.ebi.ac.uk/ols/ontologies/bto  
+https://www.ebi.ac.uk/ols/ontologies/chebi  
+
+These files are
+```
+
+
+```
+
+
 ## Release notes
 ### 0.3.0
 * taxonomy information added
