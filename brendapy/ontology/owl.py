@@ -185,7 +185,6 @@ def parse_chebi_owl(owl_path="chebi.owl", onto_repository_path="/tmp/owl"):
     # TODO: see https://github.com/matthiaskoenig/brendapy/issues/#17
     additional = {
         "MgATP2-": "CHEBI_30617",
-
     }
 
     outpath = os.path.join("..", "resources", "chebi", "chebi.json")

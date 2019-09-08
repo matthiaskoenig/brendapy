@@ -3,6 +3,7 @@ pandas>=0.24.2
 pyparsing>=2.4.2
 ujson>=1.35
 requests>=2.22.0
+owlready2
 tox
 pytest>=4.3.1
 pytest-cov>=2.6.1

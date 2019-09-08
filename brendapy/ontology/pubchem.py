@@ -15,7 +15,7 @@ Example:  https://www.ebi.ac.uk/unichem/rest/inchikey/AAOVKJBEBIDNHE-UHFFFAOYSA-
 
 
 """
-
+from brendapy.substances import CHEBI
 
 import logging
 import requests
@@ -54,8 +54,8 @@ def get_pubchem_collections():
 
     :return:
     """
+    logging.info("get_unichem_collections")
     url_source_ids = "https://www.ebi.ac.uk/unichem/rest/src_ids/"
-    print(url_source_ids)
     response = requests.get(url_source_ids)
     src_ids_data = response.json()
     pprint(src_ids_data)
@@ -69,12 +69,11 @@ def get_pubchem_collections():
         src_json = response.json()
         data[src_id] = src_json
 
-    pprint(data)
     return data
 
 
 
-def get_substance_info():
+def get_substance_info(collections):
     """
     Possible to map between all database identifiers, i.e., CHeBI to BRENDA id can be resolved.
 
@@ -88,7 +87,6 @@ def get_substance_info():
 
     :return:
     """
-    logging.warning(f"Parse BRENDA ligand: {brenda_ligand_id}")
 
     url = "https://www.ebi.ac.uk/unichem/rest/inchikey/AAOVKJBEBIDNHE-UHFFFAOYSA-N"
     print(url)
@@ -97,10 +95,14 @@ def get_substance_info():
     pprint(contents)
 
 
-
 if __name__ == "__main__":
+    from pprint import pprint
+    print("Loading chebi information")
+    pprint(CHEBI["D-glucose"])
+
     # get_substance_info(brenda_ligand_id=100)
     data = get_pubchem_collections()
+    get_substance_info(collections=data)
 
 
 # use unichem for resolution:

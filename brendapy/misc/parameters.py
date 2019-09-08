@@ -134,6 +134,7 @@ def _serialize_counter(counter, path):
 
 if __name__ == "__main__":
 
+    print("Parsing parameters")
     base_path = os.path.abspath(
         os.path.join(os.path.dirname(os.path.realpath(__file__)), "..", "resources")
     )
