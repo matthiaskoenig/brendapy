@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
 Module for parsing the BRENDA ENZYME information from flat file.
 The following information is available:
@@ -124,7 +125,7 @@ class BrendaParser(object):
         data_lines = []
 
         # read BRENDA file
-        with open(filename, 'r') as bf:
+        with open(filename, 'r', encoding="utf-8") as bf:
             for line in bf.readlines():
                 if line.startswith("*") or len(line) == 0:
                     continue
