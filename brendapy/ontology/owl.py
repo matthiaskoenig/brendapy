@@ -50,7 +50,6 @@ def parse_bto_owl(owl_path="bto.owl", onto_repository_path="/tmp/owl"):
     for key, value in onto._namespaces.items():
         print(f"'{key}': '{value}'")
 
-
     # bto = get_namespace("http://purl.obolibrary.org/obo/")
     # print('-' * 80)
     # print(bto.BTO_0000016)
@@ -71,8 +70,10 @@ def parse_bto_owl(owl_path="bto.owl", onto_repository_path="/tmp/owl"):
         # print(key)
 
         label = c.label[0]
-        ancestors = {c.name for c in c.ancestors() if c.name not in ["owl.Thing", "Thing"]}
-        descendants = {c.name for c in c.descendants() if c.name not in ["owl.Thing", "Thing"]}
+        ancestors = {c.name for c in c.ancestors()
+                     if c.name not in ["owl.Thing", "Thing"]}
+        descendants = {c.name for c in c.descendants()
+                       if c.name not in ["owl.Thing", "Thing"]}
         synonyms = c.hasRelatedSynonym
 
         description = ThingClass.__getattr__(c, "IAO_0000115")
@@ -101,7 +102,10 @@ def parse_bto_owl(owl_path="bto.owl", onto_repository_path="/tmp/owl"):
                 if name in d_label:
                     bto_key_duplicate = d_label[name]['key']
                     if bto_key != bto_key_duplicate:
-                        logging.error(f"Duplicate synonym: '{name}', mismatch bto: '{bto_key}' vs '{bto_key_duplicate}'")
+                        logging.error(
+                            f"Duplicate synonym: '{name}', "
+                            f"mismatch bto: '{bto_key}' vs "
+                            f"'{bto_key_duplicate}'")
                 else:
                     d_label[name] = d_key[bto_key]
 
@@ -125,14 +129,13 @@ def parse_chebi_owl(owl_path="chebi.owl", onto_repository_path="/tmp/owl"):
     print(chebi.CHEBI_17634)
     print(chebi.CHEBI_17634.iri)
     print(chebi.CHEBI_17634.label)
-    print('Descendents:',  chebi.CHEBI_17634.descendants())
-    print('Ancestors:',  chebi.CHEBI_17634.ancestors())
+    print('Descendents:', chebi.CHEBI_17634.descendants())
+    print('Ancestors:', chebi.CHEBI_17634.ancestors())
     print('Class properties:', chebi.CHEBI_17634.get_class_properties())
     print('Synonyms:', chebi.CHEBI_17634.hasRelatedSynonym)
     print('-' * 80)
 
     # TODO: remove the deprecated entries (and filter by the 3* entries)
-
     d_key = {}
     d_label = {}
 
@@ -146,13 +149,14 @@ def parse_chebi_owl(owl_path="chebi.owl", onto_repository_path="/tmp/owl"):
 
         print(key)
 
-        ancestors = {c.name for c in c.ancestors() if c.name not in ["owl.Thing", "Thing"]}
-        descendants = {c.name for c in c.descendants() if c.name not in ["owl.Thing", "Thing"]}
+        ancestors = {c.name for c in c.ancestors()
+                     if c.name not in ["owl.Thing", "Thing"]}
+        descendants = {c.name for c in c.descendants()
+                       if c.name not in ["owl.Thing", "Thing"]}
         description = ThingClass.__getattr__(c, "IAO_0000115")
         if description and isinstance(description, (list, tuple)):
             description = description[0]
         synonyms = c.hasRelatedSynonym + c.hasExactSynonym
-
 
         item = OrderedDict([
             ("key", key),
@@ -177,7 +181,9 @@ def parse_chebi_owl(owl_path="chebi.owl", onto_repository_path="/tmp/owl"):
                     chebi_key_duplicate = d_label[name]['key']
                     if chebi_key != chebi_key_duplicate:
                         logging.error(
-                            f"Duplicate synonym: '{name}', mismatch chebi: '{chebi_key}' vs '{chebi_key_duplicate}'")
+                            f"Duplicate synonym: '{name}', "
+                            f"mismatch chebi: '{chebi_key}' "
+                            f"vs '{chebi_key_duplicate}'")
                 else:
                     d_label[name] = d_key[chebi_key]
 

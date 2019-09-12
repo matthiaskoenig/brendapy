@@ -72,7 +72,6 @@ def get_pubchem_collections():
     return data
 
 
-
 def get_substance_info(collections):
     """
     Possible to map between all database identifiers, i.e., CHeBI to BRENDA id can be resolved.

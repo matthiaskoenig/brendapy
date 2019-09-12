@@ -1,7 +1,6 @@
-pip>=19.2.3
-pandas>=0.24.2
+pip>=19
+pandas>=0.25
 pyparsing>=2.4.2
 ujson>=1.35
-requests>=2.22.0
-owlready2
-python-libsbml-experimental>=5.18.1
+requests>=2.22
+owlready2>=0.20
