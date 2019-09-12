@@ -165,118 +165,17 @@ class BrendaParser(object):
         """
         :return:
         """
-        results = defaultdict(OrderedDict)
-
-        def store_item(bid, item):
-            """ Store parsed item for bid.
-            :param bid:
-            :param item:
-            :return:
-            """
-            if bid == "ID":
-                results[bid] = item
-            elif bid in {"RN", "RE", "RT", "SN"}:
-                if isinstance(results[bid], OrderedDict):
-                    results[bid] = {item}
-                else:
-                    results[bid].add(item)
-            elif bid == "RF":
-                match = BrendaParser.PATTERN_RF.match(item)
-                if match:
-                    rid, info, pubmed = match.group(1), match.group(2), match.group(3)
-                    rid = int(rid)  # integer keys for all references
-                    results[bid][rid] = {
-                        'info': info,
-                    }
-                    if pubmed and len(pubmed) > 0:
-                        pubmed = int(pubmed)  # integer keys for all pubmeds
-                        results[bid][rid]['pubmed'] = pubmed
-                else:
-                    logging.error(f"Reference could not be parsed: `{item}`")
-
-            else:
-                match = BrendaParser.PATTERN_ALL.match(item)
-                if match:
-                    ids, data_all, refs = match.group(1), match.group(2), match.group(3)
-                    ids = ids.replace(' ', ",")  # fix the missing comma in ids
-                    ids = [int(token) for token in ids.split(',')]
-                    refs = refs.replace(' ', ",")  # fix the missing comma in refs
-
-                    # get additional information
-                    comment = None
-
-                    tokens = data_all.split('(#')
-                    if len(tokens) == 1:
-                        data = tokens[0]
-                    elif len(tokens) == 2:
-                        data = tokens[0].strip()
-                        comment = "(#" + tokens[1].strip()
-                        comment = comment[1:-1]
-                    else:
-                        logging.error(f"comment could not be parsed: '{data_all}'")
-
-                    # check data
-                    if len(data) == 0:
-                        logging.warning(f"{ec}_{bid}: empty information not stored: '{data_all}'")
-                    elif data == "more":
-                        logging.info(f"{ec}_{bid}: 'more' data not stored: {data_all}")
-                        return
-
-                    # store info as dict
-                    info = {
-                        'data': data.strip(),
-                        'refs': [int(token) for token in refs.split(',')]
-                    }
-                    if comment:
-                        info['comment'] = comment
-
-                    if bid in BrendaParser.UNITS:
-                        info["units"] = BrendaParser.UNITS[bid]
-                        if data.startswith("-999"):
-                            # parse value
-                            logging.info(f"{ec}_{bid}: '-999' values not parsed: {data}")
-                        else:
-                            match_s = BrendaParser.PATTERN_VALUE.match(info["data"])
-                            if match_s:
-                                info['value'] = float(match_s.group(1))
-                                substrate = match_s.group(2)
-                                info['substrate'] = substrate
-                                if substrate in CHEBI:
-                                    info['chebi'] = CHEBI[substrate]["key"]
-                                else:
-                                    logging.error(f"Substrate could not be found in CHEBI: '{substrate}'")
-                            else:
-                                # trying the simple patterns without substrate
-                                try:
-                                    info['value'] = float(info["data"])
-                                except :
-                                    logging.error(f"data could not be converted to float: {info['data']}")
-
-                    for pid in ids:
-                        if bid == "PR":
-                            results[bid][pid] = info
-                        else:
-                            if pid in results[bid]:
-                                results[bid][pid].append(info)
-                            else:
-                                results[bid][pid] = [info]
-                else:
-                    if bid == "SY" and item[0] != '#':
-                        logging.info(f"{ec}_{bid}: generic synonyms are not stored: {item}")
-                    else:
-                        logging.error(f"{ec}_{bid}: could not be parsed: `{item}`")
-
         def parse_bid_item(line):
             tokens = line.split("\t")
             bid = tokens[0].strip()
             item = "\t".join(tokens[1:])
             return bid, item
 
-        # parse entries from line
-        lines = ec_str.split("\n")
+        # parse entries from lines
+        bid_sets = defaultdict(set)  # sets to remove duplicate entries
         in_item = False
 
-        for line in lines:
+        for line in ec_str.split("\n"):
             if not in_item:
                 if len(line) > 0 and not line.startswith("\t"):
                     bid, item = parse_bid_item(line)
@@ -294,7 +193,7 @@ class BrendaParser(object):
                 # write entries if next entry begins
                 elif len(line) > 0 and not line.startswith("\t"):
                     # store old entry
-                    store_item(bid, item)
+                    bid_sets[bid].add(item)
                     in_item = False
 
                     # create new entry
@@ -305,12 +204,121 @@ class BrendaParser(object):
                         logging.error(f"{ec}_{bid}: BRENDA key not supported in line: `{line}`")
                         item = None
 
-                # write last entry
+                # store last entry
                 elif len(line) == 0:
-                    store_item(bid, item)
+                    bid_sets[bid].add(item)
                     in_item = False
 
+        # transfer the unique entries into results
+        results = defaultdict(OrderedDict)
+        for key, items in bid_sets.items():
+            for item in sorted(items):  # sorting for reproducible order (in unittests)
+                BrendaParser._store_item(results=results, bid=key, item=item, ec=ec)
+
         return results
+
+    @staticmethod
+    def _store_item(results, bid, item, ec=None):
+        """ Store parsed item for bid.
+
+        :param bid:
+        :param item:
+        :return:
+        """
+        if bid == "ID":
+            results[bid] = item
+        elif bid in {"RN", "RE", "RT", "SN"}:
+            if isinstance(results[bid], OrderedDict):
+                results[bid] = {item}
+            else:
+                results[bid].add(item)
+        elif bid == "RF":
+            match = BrendaParser.PATTERN_RF.match(item)
+            if match:
+                rid, info, pubmed = match.group(1), match.group(2), match.group(3)
+                rid = int(rid)  # integer keys for all references
+                results[bid][rid] = {
+                    'info': info,
+                }
+                if pubmed and len(pubmed) > 0:
+                    pubmed = int(pubmed)  # integer keys for all pubmeds
+                    results[bid][rid]['pubmed'] = pubmed
+            else:
+                logging.error(f"Reference could not be parsed: `{item}`")
+        # everything else
+        else:
+            match = BrendaParser.PATTERN_ALL.match(item)
+            if match:
+                ids, data_all, refs = match.group(1), match.group(2), match.group(3)
+                ids = ids.replace(' ', ",")  # fix the missing comma in ids
+                ids = [int(token) for token in ids.split(',')]
+                refs = refs.replace(' ', ",")  # fix the missing comma in refs
+
+                # get additional information
+                comment = None
+
+                tokens = data_all.split('(#')
+                if len(tokens) == 1:
+                    data = tokens[0]
+                elif len(tokens) == 2:
+                    data = tokens[0].strip()
+                    comment = "(#" + tokens[1].strip()
+                    comment = comment[1:-1]
+                else:
+                    logging.error(f"comment could not be parsed: '{data_all}'")
+
+                # check data
+                if len(data) == 0:
+                    logging.warning(f"{ec}_{bid}: empty information not stored: '{data_all}'")
+                elif data == "more":
+                    logging.info(f"{ec}_{bid}: 'more' data not stored: {data_all}")
+                    return
+
+                # store info as dict
+                info = {
+                    'data': data.strip(),
+                    'refs': [int(token) for token in refs.split(',')]
+                }
+                if comment:
+                    info['comment'] = comment
+
+                if bid in BrendaParser.UNITS:
+                    info["units"] = BrendaParser.UNITS[bid]
+                    if data.startswith("-999"):
+                        # parse value
+                        logging.info(f"{ec}_{bid}: '-999' values not parsed: {data}")
+                    else:
+                        match_s = BrendaParser.PATTERN_VALUE.match(info["data"])
+                        if match_s:
+                            info['value'] = float(match_s.group(1))
+                            substrate = match_s.group(2)
+                            info['substrate'] = substrate
+                            if substrate in CHEBI:
+                                info['chebi'] = CHEBI[substrate]["key"]
+                            else:
+                                logging.error(
+                                    f"Substrate could not be found in CHEBI: '{substrate}'")
+                        else:
+                            # trying the simple patterns without substrate
+                            try:
+                                info['value'] = float(info["data"])
+                            except:
+                                logging.error(
+                                    f"data could not be converted to float: {info['data']}")
+
+                for pid in ids:
+                    if bid == "PR":
+                        results[bid][pid] = info
+                    else:
+                        if pid in results[bid]:
+                            results[bid][pid].append(info)
+                        else:
+                            results[bid][pid] = [info]
+            else:
+                if bid == "SY" and item[0] != '#':
+                    logging.info(f"{ec}_{bid}: generic synonyms are not stored: {item}")
+                else:
+                    logging.error(f"{ec}_{bid}: could not be parsed: `{item}`")
 
     @staticmethod
     def _get_ec_from_line(line):
