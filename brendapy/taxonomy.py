@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
 Module for working with taxonomy information and taxonomy tree.
 
@@ -37,8 +38,6 @@ Taxonomy names file (names.dmp):
     name class				-- (synonym, common name, ...)
 ----------------------------------------------------------------
 """
-# import zip
-# TAXONOMY_ZIP = os.path.join(RESOURCES_PATH, "ncbitaxon")
 
 import os
 import io
@@ -49,7 +48,8 @@ from brendapy.utils import timeit
 import zipfile
 import ujson
 
-TAXONOMY_DATA = os.path.join(RESOURCES_PATH, "ncbitaxon", "taxonomy.json")
+
+TAXONOMY_DATA = os.path.join(RESOURCES_PATH, "taxonomy.json")
 
 
 # ----------------------------------------------------
@@ -69,7 +69,7 @@ def parse_taxonomy_data(f_taxonomy=TAXONOMY_DATA):
     node_parent_dict = {}
 
     # load from zip file
-    zip_file = os.path.join(RESOURCES_PATH, "ncbitaxon", "taxdmp.zip")
+    zip_file = os.path.join(RESOURCES_PATH, "taxdmp.zip")
     with zipfile.ZipFile(zip_file) as z:
 
         # parse names information
@@ -142,6 +142,8 @@ class Taxonomy(object):
         :param name: species name
         :return: NBCI taxonomy id or None if not existing in taxonomy
         """
+        if name not in self.name_tid_dict:
+            logging.warning(f"Taxonomy id could not be resolved for species/organism: {name}")
         return self.name_tid_dict.get(name, None)
 
     def get_scientific_name(self, tax_id):

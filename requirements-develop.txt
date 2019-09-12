@@ -1,7 +1,9 @@
-pip>=19.2.2
-pandas>=0.24.2
+pip>=19
+pandas>=0.25
 pyparsing>=2.4.2
 ujson>=1.35
-tox
+requests>=2.22
+owlready2>=0.20
+tox>=3.14.0
 pytest>=4.3.1
 pytest-cov>=2.6.1

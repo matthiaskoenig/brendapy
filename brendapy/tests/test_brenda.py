@@ -85,7 +85,6 @@ def test_source_tissue_reference():
     """
     proteins = BRENDA_PARSER.get_proteins("6.4.1.3")
     p = proteins[3]
-    print(p.data["ST"])
 
     source_tissues = p.data["ST"]
     assert source_tissues
@@ -132,8 +131,6 @@ def test_substances():
     proteins = BRENDA_PARSER.get_proteins("2.6.1.42")
     p = proteins[5]
     data = p.data["KM"]
-    from pprint import pprint
-    pprint(data)
     assert data[0]["data"] == "2.4 {2-oxoglutarate}"
     assert data[0]["value"] == 2.4
     assert data[0]["substrate"] == "2-oxoglutarate"
@@ -142,8 +139,8 @@ def test_substances():
     assert data[1]["data"] == "1.7 {2-oxoglutarate}"
     assert data[2]["data"] == "1 {2-oxoglutarate}"
     assert data[3]["data"] == "0.06 {(R)-3-methyl-2-oxopentanoate}"
-    assert data[4]["data"] == "0.17 {(S)-3-methyl-2-oxopentanoate}"
-    assert data[0]["comment"] == "#4# pH 8.0, 25°C, substrate L-isoleucine <23,40>; #5# pH 8.4, 25°C, substrate L-alloisoleucine <41>"
+    assert data[4]["data"] == "0.09 {(S)-3-methyl-2-oxopentanoate}"
+    assert data[0]["comment"] == "#4# pH 8.0, 25°C, substrate L-isoleucine <23,40>; #5# pH 8.4, 25°C, substrate L-alloisoleucine <41>"  # noqa: E501
 
 
 def test_minus_999():
@@ -155,6 +152,31 @@ def test_minus_999():
     p = proteins[2]
     data = p.data["IC50"]
     assert len(data) == 2
+
+
+def test_unique_ki_entries():
+    """Testing https://github.com/matthiaskoenig/brendapy/issues/30.
+     Checking that no duplicates are written.
+     """
+    proteins = BRENDA_PARSER.get_proteins("1.1.1.1")
+    for key, p in proteins.items():
+        if key != 5:
+            continue
+        assert len(p.KI) == 9
+
+
+def test_uniprot_swissprot_parsing():
+    """Testing https://github.com/matthiaskoenig/brendapy/issues/28.
+     Test that uniprot/swissprot are extracted from PR items.
+     """
+    proteins = BRENDA_PARSER.get_proteins("1.1.1.1")
+
+    p1 = proteins[109]
+    assert p1.uniprot == "P08319"
+    p2 = proteins[128]
+    assert p2.uniprot is None
+    p3 = proteins[120]
+    assert p3.uniprot == "P00331"
 
 
 def test_source_tissue():

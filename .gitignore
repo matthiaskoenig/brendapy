@@ -6,6 +6,12 @@ brendapy.egg-info
 .tox
 dist
 
-brendapy/resources/ncbitaxon/taxdmp.zip
-brendapy/resources/ncbitaxon/taxonomy.json
+# raw data for processing
+brendapy/data
+# extracted files
+brendapy/resources/brenda.txt
+brendapy/resources/bto.json
+brendapy/resources/chebi.json
+brendapy/resources/taxonomy.json
+
 
