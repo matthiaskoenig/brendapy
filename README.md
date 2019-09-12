@@ -13,10 +13,9 @@ The parser extracts the all information split up by individual protein entries f
  database flat file and makes it accessible in a simple manner.
  
  This package was developed in the context of building kinetic pathway models with 
- focus on extracting parameters like `Km` values from BRENDA.
+ focus on extracting parameters like `Km` or `Ki` from BRENDA.
  
  `brendapy` support has been tested on `py36` and `py37`.
-
 
 **License**
 * Source Code: [LGPLv3](http://opensource.org/licenses/LGPL-3.0)
@@ -42,19 +41,16 @@ within the research network Systems Medicine of the Liver (**LiSyM**, grant numb
 pip install brendapy
 ```
 
-In addition some files are required, i.e., the brenda flat file and
-additional ontology files (owl) for mapping of substances, organisms and tissues:
-
-These files are
-```
-brenda_download.txt
-ftp://ftp.ncbi.nih.gov/pub/taxonomy/taxdmp.zip
-https://www.ebi.ac.uk/ols/ontologies/bto  
-https://www.ebi.ac.uk/ols/ontologies/chebi  
-
-```
-
 ## Release notes
+### 0.4.0
+* resolving uniprot and swissprot information
+* removing redundant information
+* fixing references in entries
+* mapping to BRENDA tissue ontology (BTO)
+* mapping to chebi ontology
+* bugfixes (encoding issues, organism parsing, taxonomy, ...)
+* removing git-lfs dependencies
+
 ### 0.3.0
 * taxonomy information added
 * parsing of all BRENDA fields

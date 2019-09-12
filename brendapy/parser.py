@@ -295,7 +295,7 @@ class BrendaParser(object):
                             if substrate in CHEBI:
                                 info['chebi'] = CHEBI[substrate]["key"]
                             else:
-                                logging.error(
+                                logging.info(
                                     f"Substrate could not be found in CHEBI: '{substrate}'")
                         else:
                             # trying the simple patterns without substrate
