@@ -38,8 +38,6 @@ Taxonomy names file (names.dmp):
     name class				-- (synonym, common name, ...)
 ----------------------------------------------------------------
 """
-# import zip
-# TAXONOMY_ZIP = os.path.join(RESOURCES_PATH, "ncbitaxon")
 
 import os
 import io
@@ -50,7 +48,8 @@ from brendapy.utils import timeit
 import zipfile
 import ujson
 
-TAXONOMY_DATA = os.path.join(RESOURCES_PATH, "ncbitaxon", "taxonomy.json")
+
+TAXONOMY_DATA = os.path.join(RESOURCES_PATH, "taxonomy.json")
 
 
 # ----------------------------------------------------
@@ -70,7 +69,7 @@ def parse_taxonomy_data(f_taxonomy=TAXONOMY_DATA):
     node_parent_dict = {}
 
     # load from zip file
-    zip_file = os.path.join(RESOURCES_PATH, "ncbitaxon", "taxdmp.zip")
+    zip_file = os.path.join(RESOURCES_PATH, "taxdmp.zip")
     with zipfile.ZipFile(zip_file) as z:
 
         # parse names information
