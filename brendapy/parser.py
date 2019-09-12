@@ -80,7 +80,6 @@ class BrendaParser(object):
     ]
     PATTERN_RF = re.compile(r"^<(\d+?)> (.+) {Pubmed:\s*(\d*)\s*}")
     PATTERN_ALL = re.compile(r"^#([,\d\s]+?)#(.+)<([,\d\s]+)>")
-    PATTERN_ORGANISM = re.compile(r"^(\w+)\s([\w\.]+)")
     PATTERN_VALUE = re.compile(r"^([\d\.]+)\s+\{(.+)\}")
 
     UNITS = {
@@ -356,6 +355,8 @@ class BrendaProtein(object):
     This class provides helper properties which allows to access
     the data based on the BRENDA keys in the flat file.
     """
+    PATTERN_ORGANISM = re.compile(r"^(\w+)\s([\w\.]+)")
+    PATTERN_UNIPROT = re.compile(r"([A-N,R-Z][0-9]([A-Z][A-Z, 0-9][A-Z, 0-9][0-9]){1,2})|([O,P,Q][0-9][A-Z, 0-9][A-Z, 0-9][A-Z, 0-9][0-9])(\.\d+)?")
 
     def __init__(self, ec, key, data):
         """ Construct protein object.
@@ -366,20 +367,31 @@ class BrendaProtein(object):
         """
         protein_info = data['PR'][key]['data']
 
-        # parse core protein information
-        match = BrendaParser.PATTERN_ORGANISM.match(protein_info)
-        if match:
-            organism = f"{match.group(1)} {match.group(2)}"
+        # organism
+        match_organism = BrendaProtein.PATTERN_ORGANISM.match(protein_info)
+        if match_organism:
+            organism = f"{match_organism.group(1)} {match_organism.group(2)}"
         else:
             organism = protein_info
             logging.warning(f"Organism could not be parsed from: '{protein_info}'")
 
+        # taxonomy
         taxonomy = TAXONOMY.get_taxonomy_id(organism)
+
+        # uniprot
+        uniprot = None
+        for token in protein_info.split(" "):
+            match_uniprot = BrendaProtein.PATTERN_UNIPROT.match(token)
+            if match_uniprot:
+                uniprot = token
+                break
+
         self.data = OrderedDict([
             ('protein_id', key),
             ('ec', ec),
             ('organism', organism),
-            ('taxonomy', taxonomy)
+            ('taxonomy', taxonomy),
+            ('uniprot', uniprot),
         ])
         reference_ids = set(data['PR'][key]['refs'])
 
@@ -445,6 +457,14 @@ class BrendaProtein(object):
         :return: NCBI taxonomy id, None if organism could not be mapped
         """
         return self.data['taxonomy']
+
+    @property
+    def uniprot(self):
+        """ UniProt/SwissProt id.
+
+        :return: uniprot id, None if no information available for protein entry
+        """
+        return self.data['uniprot']
 
     @property
     def tissues(self):

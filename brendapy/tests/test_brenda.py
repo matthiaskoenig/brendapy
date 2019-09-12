@@ -157,7 +157,7 @@ def test_minus_999():
     assert len(data) == 2
 
 
-def test_unique_km_entries():
+def test_unique_ki_entries():
     """Testing https://github.com/matthiaskoenig/brendapy/issues/30.
      Checking that no duplicates are written.
      """
@@ -166,6 +166,20 @@ def test_unique_km_entries():
         if key != 5:
             continue
         assert len(p.KI) == 9
+
+
+def test_uniprot_swissprot_parsing():
+    """Testing https://github.com/matthiaskoenig/brendapy/issues/28.
+     Test that uniprot/swissprot are extracted from PR items.
+     """
+    proteins = BRENDA_PARSER.get_proteins("1.1.1.1")
+
+    p1 = proteins[109]
+    assert p1.uniprot == "P08319"
+    p2 = proteins[128]
+    assert p2.uniprot == None
+    p3 = proteins[120]
+    assert p3.uniprot == "P00331"
 
 
 def test_source_tissue():
