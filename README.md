@@ -42,6 +42,9 @@ pip install brendapy
 ```
 
 ## Release notes
+### 0.4.1
+* downloading online resources instead of pypi packaging
+
 ### 0.4.0
 * resolving uniprot and swissprot information
 * removing redundant information
