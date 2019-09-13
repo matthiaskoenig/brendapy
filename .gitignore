@@ -1,17 +1,14 @@
 *.pyc
 .idea
-data
+
 brendapy.egg-info
 .pytest_cache
 .tox
 dist
 
-# raw data for processing
-brendapy/data
-# extracted files
-brendapy/resources/brenda.txt
-brendapy/resources/bto.json
-brendapy/resources/chebi.json
-brendapy/resources/taxonomy.json
+# data for resources
+*.zip
+data
 
-
+# downloaded resources
+brendapy/resources/data

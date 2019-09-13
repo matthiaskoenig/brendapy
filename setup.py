@@ -72,12 +72,7 @@ setup(
       '': [
           '../requirements.txt',
           '../requirements-develop.txt',
-          'resources/brenda.txt.zip',
-          'resources/brenda_readme.txt',
-          'resources/bto.json.zip',
-          'resources/chebi.json.zip',
-          'resources/taxdmp.zip',
-          'resources/taxdmp_readme.txt',
+          '../brendapy/resources/README.md',
           ],
     },
     include_package_data=True,

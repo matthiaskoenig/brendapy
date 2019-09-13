@@ -43,17 +43,13 @@ import os
 import io
 import logging
 import time
-from brendapy.settings import RESOURCES_PATH
-from brendapy.utils import timeit
 import zipfile
 import ujson
 
+from brendapy.settings import TAXONOMY_DATA, TAXONOMY_ZIP
 
-TAXONOMY_DATA = os.path.join(RESOURCES_PATH, "taxonomy.json")
 
-
-# ----------------------------------------------------
-def parse_taxonomy_data(f_taxonomy=TAXONOMY_DATA):
+def parse_taxonomy_data():
     """Parses the node and tree information for the taxonomy.
 
     Stores processed data as json dictionary.
@@ -69,8 +65,7 @@ def parse_taxonomy_data(f_taxonomy=TAXONOMY_DATA):
     node_parent_dict = {}
 
     # load from zip file
-    zip_file = os.path.join(RESOURCES_PATH, "taxdmp.zip")
-    with zipfile.ZipFile(zip_file) as z:
+    with zipfile.ZipFile(TAXONOMY_ZIP) as z:
 
         # parse names information
         with io.TextIOWrapper(z.open("names.dmp", "r")) as f_names:
@@ -97,7 +92,7 @@ def parse_taxonomy_data(f_taxonomy=TAXONOMY_DATA):
         "name_tid_dict": name_tid_dict,
         "node_parent_dict": node_parent_dict,
     }
-    with open(f_taxonomy, "w") as f_out:
+    with open(TAXONOMY_DATA, "w") as f_out:
         ujson.dump(data, f_out)
 
     te = time.time()
@@ -122,7 +117,9 @@ class Taxonomy(object):
                 data = ujson.load(f_tax)
                 Taxonomy.tid_name_dict = {int(k): v for k, v in data["tid_name_dict"].items()}
                 Taxonomy.name_tid_dict = data["name_tid_dict"]
-                Taxonomy.node_parent_dict = {int(k): int(v) for k, v in data["node_parent_dict"].items()}
+                Taxonomy.node_parent_dict = {
+                    int(k): int(v) for k, v in data["node_parent_dict"].items()
+                }
                 del data
             te = time.time()
             logging.warning("Taxonomy loaded in {} s.".format((te - ts)))
