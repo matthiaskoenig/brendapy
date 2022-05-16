@@ -4,7 +4,7 @@ from .parser import BrendaParser
 from .parser import BrendaProtein
 
 __author__ = "Matthias Koenig"
-__version__ = "0.4.1"
+__version__ = "0.5.0"
 
 
 from depinfo import print_dependencies  # type: ignore
