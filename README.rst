@@ -125,32 +125,35 @@ Examples are provided in `./src/brendapy/examples.py <./src/brendapy/examples.py
 
 .. code:: python
 
+    """Example use case brendapy."""
+    
     from brendapy import BrendaParser
+    from brendapy.console import console
     
     
-    def parse_human_proteins_for_ec(ec="1.1.1.1"):
-        """Parse the protein entries for a given EC number in BRENDA.
+    def human_proteins_for_ec(ec: str = "1.1.1.1") -> None:
+        """Parse the human protein entries for a given EC number in BRENDA.
     
-        Prints overview of proteins, protein ids, and Human proteins.
+        Prints overview of number of proteins, protein ids, and human proteins.
         """
         brenda = BrendaParser()
         proteins = brenda.get_proteins(ec)
     
-        print(f"{len(proteins)} proteins for EC {ec} in BRENDA")
-        print(f"Protein identifier: {proteins.keys()}")
-        print("-" * 80)
+        console.print(f"{len(proteins)} proteins for EC {ec} in BRENDA")
+        console.print(f"Protein identifier: {proteins.keys()}")
+        console.print("-" * 80)
         for p in proteins.values():
             if p.organism == "Homo sapiens":
-                print(p)
-                print("-" * 80)
+                console.print(p)
+                console.rule()
     
     
     if __name__ == "__main__":
-        parse_human_proteins_for_ec(ec="1.1.1.1")
+        human_proteins_for_ec(ec="1.1.1.1")
 
 .. code:: bash
 
-OrderedDict([('protein_id', 107),
+    OrderedDict([('protein_id', 107),
              ('ec', '1.1.1.1'),
              ('organism', 'Homo sapiens'),
              ('taxonomy', 9606),
@@ -10768,6 +10771,5 @@ OrderedDict([('protein_id', 8),
                'BTO:0001424',
                'BTO:0001613'})])
 --------------------------------------------------------------------------------
-
 
 © 2019-2022 Matthias König

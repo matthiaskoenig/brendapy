@@ -3,7 +3,7 @@ from typing import Dict
 
 import pandas as pd
 
-from brendapy import BrendaParser
+from brendapy import BrendaParser, BrendaProtein
 from brendapy.console import console
 from brendapy.log import get_logger
 from brendapy.taxonomy import Taxonomy
@@ -76,7 +76,7 @@ def parse_proteins_by_taxonomy() -> None:
     console.rule()
 
 
-def parse_all_proteins_for_all_ecs() -> Dict[int, "BrendaProtein"]:
+def parse_all_proteins_for_all_ecs() -> Dict[int, BrendaProtein]:
     """Parse all proteins for all ECs."""
     for ec in BRENDA_PARSER.keys():
         proteins = BRENDA_PARSER.get_proteins(ec)
