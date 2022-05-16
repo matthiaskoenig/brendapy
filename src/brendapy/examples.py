@@ -2,19 +2,20 @@
 """
 Examples of using brendapy
 """
-import pandas as pd
 import logging
 from collections import OrderedDict
 
+import pandas as pd
+
 from src.brendapy import BrendaParser, BrendaProtein
 from src.brendapy.taxonomy import Taxonomy
+
 
 BRENDA_PARSER = BrendaParser()  # reuse parser
 
 
 def parse_proteins_for_ec(ec="1.1.1.1"):
-    """Parse the protein entries for a given EC number in BRENDA.
-    """
+    """Parse the protein entries for a given EC number in BRENDA."""
     proteins = BRENDA_PARSER.get_proteins(ec)
     return proteins
 
@@ -36,7 +37,7 @@ def parse_human_proteins_for_ec(ec="1.1.1.1"):
 
 
 def parse_proteins_by_taxonomy():
-    """ Sort protein entries by taxonomy information.
+    """Sort protein entries by taxonomy information.
 
     :return:
     """
@@ -49,26 +50,29 @@ def parse_proteins_by_taxonomy():
     results = []
     for key, p in proteins.items():
         if p.taxonomy is None:
-            logging.error(f"Taxonomy could not be resolved for protein <{p.protein_id}>: '{p.organism}': '{p.taxonomy}'")
+            logging.error(
+                f"Taxonomy could not be resolved for protein <{p.protein_id}>: '{p.organism}': '{p.taxonomy}'"
+            )
             continue
 
         [common_node_id, common_name, common_dist] = tax.find_common_node(
-            tax_id=p.taxonomy,
-            tax_id_ref=tax_id_ref
+            tax_id=p.taxonomy, tax_id_ref=tax_id_ref
         )
-        results.append(OrderedDict(
-            [
-                ("protein_id", key),
-                ("organism", p.organism),
-                ("taxonomy", p.taxonomy),
-                ("common_name", common_name),
-                ("common_dist", common_dist),
-            ])
+        results.append(
+            OrderedDict(
+                [
+                    ("protein_id", key),
+                    ("organism", p.organism),
+                    ("taxonomy", p.taxonomy),
+                    ("common_name", common_name),
+                    ("common_dist", common_dist),
+                ]
+            )
         )
 
     # sorted data frame
     df = pd.DataFrame(results)
-    df = df.sort_values(by=['common_dist'])
+    df = df.sort_values(by=["common_dist"])
     print("-" * 80)
     print(df)
     print("-" * 80)

@@ -1,11 +1,13 @@
 import pytest
+
 from src.brendapy.taxonomy import Taxonomy
+
 
 TAXONOMY = Taxonomy()
 
 
 def test_get_taxonomy_id():
-    """ Test the module """
+    """Test the module"""
     tid = TAXONOMY.get_taxonomy_id("Homo sapiens")
     assert tid == 9606
 
@@ -14,7 +16,7 @@ def test_get_taxonomy_id():
 
 
 def test_get_scientific_name():
-    """ Test the module """
+    """Test the module"""
     tid = TAXONOMY.get_scientific_name(9606)
     assert tid == "Homo sapiens"
 

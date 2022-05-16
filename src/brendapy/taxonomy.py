@@ -39,11 +39,12 @@ Taxonomy names file (names.dmp):
 ----------------------------------------------------------------
 """
 
-import os
 import io
 import logging
+import os
 import time
 import zipfile
+
 import ujson
 
 from src.brendapy.settings import TAXONOMY_DATA, TAXONOMY_ZIP
@@ -105,7 +106,8 @@ if not os.path.exists(TAXONOMY_DATA):
 
 # ----------------------------------------------------
 class Taxonomy(object):
-    """ Taxonomy class. """
+    """Taxonomy class."""
+
     tid_name_dict = None  # { ncbi_id: ncbi_name }
     name_tid_dict = None  # { ncbi_scientific_name: ncbi_id }
     node_parent_dict = None  # storage of tree information
@@ -115,7 +117,9 @@ class Taxonomy(object):
             ts = time.time()
             with open(f_taxonomy, "r") as f_tax:
                 data = ujson.load(f_tax)
-                Taxonomy.tid_name_dict = {int(k): v for k, v in data["tid_name_dict"].items()}
+                Taxonomy.tid_name_dict = {
+                    int(k): v for k, v in data["tid_name_dict"].items()
+                }
                 Taxonomy.name_tid_dict = data["name_tid_dict"]
                 Taxonomy.node_parent_dict = {
                     int(k): int(v) for k, v in data["node_parent_dict"].items()
@@ -127,24 +131,26 @@ class Taxonomy(object):
     @staticmethod
     def _tax_id_clean(tax_id):
         if isinstance(tax_id, str):
-            if tax_id.startswith('TAX:'):
+            if tax_id.startswith("TAX:"):
                 tax_id = tax_id[4:]
             tax_id = int(tax_id)
 
         return tax_id
 
     def get_taxonomy_id(self, name):
-        """ Get NCBI taxonomy id.
+        """Get NCBI taxonomy id.
 
         :param name: species name
         :return: NBCI taxonomy id or None if not existing in taxonomy
         """
         if name not in self.name_tid_dict:
-            logging.warning(f"Taxonomy id could not be resolved for species/organism: {name}")
+            logging.warning(
+                f"Taxonomy id could not be resolved for species/organism: {name}"
+            )
         return self.name_tid_dict.get(name, None)
 
     def get_scientific_name(self, tax_id):
-        """ Get the NCBI scientific name for NCBI taxonomy id.
+        """Get the NCBI scientific name for NCBI taxonomy id.
 
         :param tax_id:
         :return: NCBI scientific name, None if not existing in taxonomy
@@ -153,7 +159,7 @@ class Taxonomy(object):
         return self.tid_name_dict.get(tax_id, None)
 
     def get_parent_nodes(self, tax_id):
-        """ Returns list of parent nodes for given NCBI taxonomy identifier.
+        """Returns list of parent nodes for given NCBI taxonomy identifier.
 
         First entry in list is tax_id, last entry is 1 ('all').
         If no valid tax_id given returns 'None'
@@ -176,11 +182,11 @@ class Taxonomy(object):
 
     def find_common_node_by_name(self, name, name_ref):
         return self.find_common_node(
-            tax_id=self.get_taxonomy_id(name),
-            tax_id_ref=self.get_taxonomy_id(name_ref))
+            tax_id=self.get_taxonomy_id(name), tax_id_ref=self.get_taxonomy_id(name_ref)
+        )
 
     def find_common_node(self, tax_id, tax_id_ref):
-        """ Finds the first ancestor node of the species with reference organism.
+        """Finds the first ancestor node of the species with reference organism.
 
         :param tax_id:
         :param tax_id_ref:

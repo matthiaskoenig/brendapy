@@ -8,15 +8,16 @@ These resources have to be loaded from online resources on
 first import.
 
 """
-import os
 import logging
+import os
+import shutil
 from zipfile import ZipFile
 
 import requests
-import shutil
+
 
 BASE_PATH = os.path.dirname(os.path.realpath(__file__))
-RESOURCES_PATH = os.path.join(BASE_PATH, 'resources')
+RESOURCES_PATH = os.path.join(BASE_PATH, "resources")
 
 BRENDA_FILE = os.path.join(RESOURCES_PATH, "data", "brenda", "brenda_download.txt")
 TAXONOMY_DATA = os.path.join(RESOURCES_PATH, "data", "taxonomy", "taxonomy.json")
@@ -29,10 +30,10 @@ CHEBI_DATA = os.path.join(RESOURCES_PATH, "data", "chebi", "chebi.json")
 # Download resources
 # ------------------------------------------------
 def download_file(url, directory):
-    local_filename = os.path.join(directory, url.split('/')[-1])
+    local_filename = os.path.join(directory, url.split("/")[-1])
     logging.warning(f"Download {url}")
     with requests.get(url, stream=True) as r:
-        with open(local_filename, 'wb') as f:
+        with open(local_filename, "wb") as f:
             shutil.copyfileobj(r.raw, f)
 
     logging.warning(f"Download finished")
@@ -50,7 +51,7 @@ if not os.path.exists(ZIP_PATH):
 
     # extract resources
     logging.warning(f"Extraction {ZIP_PATH} ...")
-    with ZipFile(ZIP_PATH, 'r') as zipObj:
+    with ZipFile(ZIP_PATH, "r") as zipObj:
         zipObj.extractall(RESOURCES_PATH)
     logging.warning(f"Extraction finished.")
 # ------------------------------------------------

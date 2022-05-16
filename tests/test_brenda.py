@@ -1,7 +1,10 @@
-import pytest
 import logging
+
+import pytest
+
 from src.brendapy import BrendaParser, BrendaProtein
 from src.brendapy.settings import BRENDA_FILE
+
 
 BRENDA_PARSER = BrendaParser()
 
@@ -19,7 +22,7 @@ def test_parsing_from_file():
 
 
 def test_protein1():
-    """ Test the proteinBRENDA module """
+    """Test the proteinBRENDA module"""
     ec = "1.1.1.1"
     proteins = BRENDA_PARSER.get_proteins(ec)
     assert proteins
@@ -32,8 +35,8 @@ def test_protein_detail1():
 
     assert protein
 
-    tissues = [item['data'] for item in protein.ST]
-    assert 'liver' in tissues
+    tissues = [item["data"] for item in protein.ST]
+    assert "liver" in tissues
     assert protein.organism == "Gallus gallus"
     assert protein.taxonomy == 9031
     assert 44 in protein.references
@@ -91,21 +94,21 @@ def test_source_tissue_reference():
     assert len(source_tissues) == 3
 
     st1 = source_tissues[0]
-    assert st1['data'] == "lymphocyte"
-    assert len(st1['refs']) == 3
+    assert st1["data"] == "lymphocyte"
+    assert len(st1["refs"]) == 3
     for ref in [34, 40, 51]:
-        assert ref in st1['refs']
+        assert ref in st1["refs"]
 
     st2 = source_tissues[1]
-    assert st2['data'] == "skin fibroblast"
-    assert len(st2['refs']) == 1
-    assert 31 in st2['refs']
+    assert st2["data"] == "skin fibroblast"
+    assert len(st2["refs"]) == 1
+    assert 31 in st2["refs"]
 
     st3 = source_tissues[2]
-    assert st3['data'] == "liver"
-    assert len(st3['refs']) == 4
+    assert st3["data"] == "liver"
+    assert len(st3["refs"]) == 4
     for ref in [5, 6, 16, 41]:
-        assert ref in st3['refs']
+        assert ref in st3["refs"]
 
 
 def test_substances():
@@ -140,7 +143,10 @@ def test_substances():
     assert data[2]["data"] == "1 {2-oxoglutarate}"
     assert data[3]["data"] == "0.06 {(R)-3-methyl-2-oxopentanoate}"
     assert data[4]["data"] == "0.09 {(S)-3-methyl-2-oxopentanoate}"
-    assert data[0]["comment"] == "#4# pH 8.0, 25°C, substrate L-isoleucine <23,40>; #5# pH 8.4, 25°C, substrate L-alloisoleucine <41>"  # noqa: E501
+    assert (
+        data[0]["comment"]
+        == "#4# pH 8.0, 25°C, substrate L-isoleucine <23,40>; #5# pH 8.4, 25°C, substrate L-alloisoleucine <41>"
+    )  # noqa: E501
 
 
 def test_minus_999():
@@ -156,8 +162,8 @@ def test_minus_999():
 
 def test_unique_ki_entries():
     """Testing https://github.com/matthiaskoenig/brendapy/issues/30.
-     Checking that no duplicates are written.
-     """
+    Checking that no duplicates are written.
+    """
     proteins = BRENDA_PARSER.get_proteins("1.1.1.1")
     for key, p in proteins.items():
         if key != 5:
@@ -167,8 +173,8 @@ def test_unique_ki_entries():
 
 def test_uniprot_swissprot_parsing():
     """Testing https://github.com/matthiaskoenig/brendapy/issues/28.
-     Test that uniprot/swissprot are extracted from PR items.
-     """
+    Test that uniprot/swissprot are extracted from PR items.
+    """
     proteins = BRENDA_PARSER.get_proteins("1.1.1.1")
 
     p1 = proteins[109]

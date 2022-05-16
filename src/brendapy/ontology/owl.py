@@ -28,10 +28,11 @@ and the following methods:
  * .get_namepace(base_iri) : returns a namespace for the ontology and the given base IRI (see namespaces below, in the next section)
 
 """
-import os
-import logging
 import json
+import logging
+import os
 from collections import OrderedDict
+
 from owlready2 import *
 from owlready2.entity import ThingClass
 
@@ -40,7 +41,7 @@ from owlready2.entity import ThingClass
 # BRENDA Tissue Ontology (BTO)
 # -----------------------------------------
 def parse_bto_owl(owl_path="bto.owl", onto_repository_path="/tmp/owl"):
-    """ Parse the OWL information."""
+    """Parse the OWL information."""
 
     onto_path.append(onto_repository_path)
     onto = get_ontology(owl_path).load()
@@ -70,24 +71,28 @@ def parse_bto_owl(owl_path="bto.owl", onto_repository_path="/tmp/owl"):
         # print(key)
 
         label = c.label[0]
-        ancestors = {c.name for c in c.ancestors()
-                     if c.name not in ["owl.Thing", "Thing"]}
-        descendants = {c.name for c in c.descendants()
-                       if c.name not in ["owl.Thing", "Thing"]}
+        ancestors = {
+            c.name for c in c.ancestors() if c.name not in ["owl.Thing", "Thing"]
+        }
+        descendants = {
+            c.name for c in c.descendants() if c.name not in ["owl.Thing", "Thing"]
+        }
         synonyms = c.hasRelatedSynonym
 
         description = ThingClass.__getattr__(c, "IAO_0000115")
         if description and isinstance(description, (list, tuple)):
             description = description[0]
 
-        item = OrderedDict([
-            ("key", key),
-            # ("iri", c.iri),
-            ("label", label),
-            ("ancestors", ancestors),
-            # ("descendents", descendants),
-            # ("description", description),
-        ])
+        item = OrderedDict(
+            [
+                ("key", key),
+                # ("iri", c.iri),
+                ("label", label),
+                ("ancestors", ancestors),
+                # ("descendents", descendants),
+                # ("description", description),
+            ]
+        )
         if len(synonyms) > 0:
             item["synonyms"] = synonyms
 
@@ -100,12 +105,13 @@ def parse_bto_owl(owl_path="bto.owl", onto_repository_path="/tmp/owl"):
             for name in item["synonyms"]:
 
                 if name in d_label:
-                    bto_key_duplicate = d_label[name]['key']
+                    bto_key_duplicate = d_label[name]["key"]
                     if bto_key != bto_key_duplicate:
                         logging.error(
                             f"Duplicate synonym: '{name}', "
                             f"mismatch bto: '{bto_key}' vs "
-                            f"'{bto_key_duplicate}'")
+                            f"'{bto_key_duplicate}'"
+                        )
                 else:
                     d_label[name] = d_key[bto_key]
 
@@ -119,21 +125,21 @@ def parse_bto_owl(owl_path="bto.owl", onto_repository_path="/tmp/owl"):
 # CHEBI
 # -----------------------------------------
 def parse_chebi_owl(owl_path="chebi.owl", onto_repository_path="/tmp/owl"):
-    """ Parse the OWL information."""
+    """Parse the OWL information."""
     onto_path.append(onto_repository_path)
     onto = get_ontology(owl_path).load()
 
     # accessing entities defined in the bto namespace
     chebi = get_namespace("http://purl.obolibrary.org/obo/")
-    print('-' * 80)
+    print("-" * 80)
     print(chebi.CHEBI_17634)
     print(chebi.CHEBI_17634.iri)
     print(chebi.CHEBI_17634.label)
-    print('Descendents:', chebi.CHEBI_17634.descendants())
-    print('Ancestors:', chebi.CHEBI_17634.ancestors())
-    print('Class properties:', chebi.CHEBI_17634.get_class_properties())
-    print('Synonyms:', chebi.CHEBI_17634.hasRelatedSynonym)
-    print('-' * 80)
+    print("Descendents:", chebi.CHEBI_17634.descendants())
+    print("Ancestors:", chebi.CHEBI_17634.ancestors())
+    print("Class properties:", chebi.CHEBI_17634.get_class_properties())
+    print("Synonyms:", chebi.CHEBI_17634.hasRelatedSynonym)
+    print("-" * 80)
 
     # TODO: remove the deprecated entries (and filter by the 3* entries)
     d_key = {}
@@ -149,23 +155,27 @@ def parse_chebi_owl(owl_path="chebi.owl", onto_repository_path="/tmp/owl"):
 
         print(key)
 
-        ancestors = {c.name for c in c.ancestors()
-                     if c.name not in ["owl.Thing", "Thing"]}
-        descendants = {c.name for c in c.descendants()
-                       if c.name not in ["owl.Thing", "Thing"]}
+        ancestors = {
+            c.name for c in c.ancestors() if c.name not in ["owl.Thing", "Thing"]
+        }
+        descendants = {
+            c.name for c in c.descendants() if c.name not in ["owl.Thing", "Thing"]
+        }
         description = ThingClass.__getattr__(c, "IAO_0000115")
         if description and isinstance(description, (list, tuple)):
             description = description[0]
         synonyms = c.hasRelatedSynonym + c.hasExactSynonym
 
-        item = OrderedDict([
-            ("key", key),
-            # ("iri", c.iri),
-            ("label", label),
-            ("ancestors", ancestors),
-            # ("descendents", descendants),
-            # ("description", description),
-        ])
+        item = OrderedDict(
+            [
+                ("key", key),
+                # ("iri", c.iri),
+                ("label", label),
+                ("ancestors", ancestors),
+                # ("descendents", descendants),
+                # ("description", description),
+            ]
+        )
         if len(synonyms) > 0:
             item["synonyms"] = synonyms
 
@@ -178,12 +188,13 @@ def parse_chebi_owl(owl_path="chebi.owl", onto_repository_path="/tmp/owl"):
         if "synonyms" in item:
             for name in item["synonyms"]:
                 if name in d_label:
-                    chebi_key_duplicate = d_label[name]['key']
+                    chebi_key_duplicate = d_label[name]["key"]
                     if chebi_key != chebi_key_duplicate:
                         logging.error(
                             f"Duplicate synonym: '{name}', "
                             f"mismatch chebi: '{chebi_key}' "
-                            f"vs '{chebi_key_duplicate}'")
+                            f"vs '{chebi_key_duplicate}'"
+                        )
                 else:
                     d_label[name] = d_key[chebi_key]
 
@@ -206,7 +217,7 @@ def _serialize_to_json(data, outpath):
             return list(obj)
         raise TypeError
 
-    with open(outpath, 'w') as fp:
+    with open(outpath, "w") as fp:
         json.dump(data, fp, indent=2, default=set_default)
 
 
@@ -215,6 +226,7 @@ if __name__ == "__main__":
     d_key, d_label = parse_bto_owl(owl_path="../resources/bto/bto.owl")
 
     from pprint import pprint
+
     pprint(d_label["liver"])
     pprint(d_label["A-172 cell"])
 
