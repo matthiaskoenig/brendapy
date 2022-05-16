@@ -123,7 +123,9 @@ To install for development use::
     
 Usage
 =====
-Examples are provided in `./src/brendapy/examples.py <./src/brendapy/examples.py>`__ and `./tests/test_brendapy.py <./tests/test_brenda.py>`__::
+Examples are provided in `./src/brendapy/examples.py <./src/brendapy/examples.py>`__ and `./tests/test_brendapy.py <./tests/test_brenda.py>`__.
+
+.. code:: python
 
     from brendapy import BrendaParser
     
@@ -147,9 +149,9 @@ Examples are provided in `./src/brendapy/examples.py <./src/brendapy/examples.py
     
     if __name__ == "__main__":
         parse_human_proteins_for_ec(ec="1.1.1.1")
-    ```
-    
-    ```
+
+.. code:: bash
+
     OrderedDict([('protein_id', 106),
                  ('ec', '1.1.1.1'),
                  ('organism', 'Homo sapiens'),
@@ -11248,7 +11250,5 @@ Examples are provided in `./src/brendapy/examples.py <./src/brendapy/examples.py
                    'BTO_0001363',
                    'BTO_0001424',
                    'BTO_0001613'})])
-    --------------------------------------------------------------------------------
-
 
 © 2019-2022 Matthias König
