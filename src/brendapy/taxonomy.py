@@ -43,11 +43,13 @@ import zipfile
 
 import ujson
 
-from brendapy.log import get_logger
 from brendapy.console import console
+from brendapy.log import get_logger
 from brendapy.settings import TAXONOMY_JSON, TAXONOMY_ZIP
 
+
 logger = get_logger(__name__)
+
 
 def parse_taxonomy_data():
     """Parse the node and tree information for the taxonomy.

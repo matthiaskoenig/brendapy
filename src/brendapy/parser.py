@@ -49,6 +49,7 @@ The following information is available:
 """
 import re
 from collections import OrderedDict, defaultdict
+from typing import Dict
 
 from brendapy import utils
 from brendapy.log import get_logger
@@ -334,7 +335,7 @@ class BrendaParser(object):
                             substrate = match_s.group(2)
                             info["substrate"] = substrate
                             if substrate in CHEBI:
-                                info["chebi"] = CHEBI[substrate]["key"]
+                                info["chebi"] = CHEBI[substrate]
                             else:
                                 logger.info(
                                     f"Substrate not found in CHEBI: '{substrate}'"
@@ -372,7 +373,7 @@ class BrendaParser(object):
         else:
             return None
 
-    def get_proteins(self, ec):
+    def get_proteins(self, ec: str) -> Dict[int, "BrendaProtein"]:
         """Parse all BRENDA proteins for given EC number.
 
         :param ec:
@@ -477,9 +478,8 @@ class BrendaProtein(object):
                 tissue = item["data"]
                 bto = BTO.get(tissue, None)
                 if bto:
-                    bto_term = bto["key"]
-                    item["bto"] = bto_term
-                    tissues.add(bto_term)
+                    item["bto"] = bto
+                    tissues.add(bto)
                 else:
                     logger.error(
                         f"Source/Tissue not found in Brenda Tissue Ontology (BTO): "

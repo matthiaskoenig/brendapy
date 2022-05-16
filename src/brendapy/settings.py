@@ -6,13 +6,15 @@ These resources have to be loaded from online resources on
 first import.
 """
 
-import shutil
+
+from rich.progress import Progress
 from pathlib import Path
 from zipfile import ZipFile
 
 import requests
 
 from brendapy.log import get_logger
+from brendapy.console import console
 
 
 logger = get_logger(__name__)
@@ -28,27 +30,33 @@ TAXONOMY_JSON = RESOURCES_PATH / "data" / "taxonomy" / "taxonomy.json"
 
 def download_file(url: str, directory: Path):
     """Download resource."""
-    local_filename = directory / url.split("/")[-1]
-    logger.warning(f"Download {url}")
-    with requests.get(url, stream=True) as r:
-        with open(local_filename, "wb") as f:
-            shutil.copyfileobj(r.raw, f)
 
-    logger.info("Download finished")
+    console.print(f"Download of BRENDApy resources ({url})")
+    local_filename = directory / url.split("/")[-1]
+    with Progress() as progress:
+
+        response = requests.get(url, stream=True)
+        total_size_in_bytes = int(response.headers.get('content-length', 0))
+        block_size = 1024
+        task1 = progress.add_task("[green]Progress", total=total_size_in_bytes)
+        with open(local_filename, 'wb') as file:
+            for data in response.iter_content(block_size):
+                progress.update(task1, advance=block_size)
+                file.write(data)
+
     return local_filename
 
 
-# ZIP_FILENAME = "brendapy-data-v0.5.0.zip"
-# ZIP_PATH = RESOURCES_PATH / ZIP_FILENAME
-# if not ZIP_PATH.exists():
-#     url = f"http://141.20.66.64/brendapy/{ZIP_FILENAME}"
-#     download_file(url=url, directory=RESOURCES_PATH)
-#     if not ZIP_PATH.exists():
-#         logger.error("brendapy data could not be downloaded")
-#         raise IOError(f"{ZIP_PATH} does not exist.")
-#
-#     # extract resources
-#     logger.warning(f"Extraction {ZIP_PATH} ...")
-#     with ZipFile(ZIP_PATH, "r") as zipObj:
-#         zipObj.extractall(RESOURCES_PATH)
-#     logger.warning(f"Extraction finished.")
+ZIP_FILENAME = "brendapy-data-v0.5.0.zip"
+ZIP_PATH = RESOURCES_PATH / ZIP_FILENAME
+if not ZIP_PATH.exists():
+    url = f"http://134.176.27.178/brendapy/{ZIP_FILENAME}"
+    download_file(url=url, directory=RESOURCES_PATH)
+    if not ZIP_PATH.exists():
+        logger.error("brendapy data could not be downloaded")
+        raise IOError(f"{ZIP_PATH} does not exist.")
+
+    # extract resources
+    console.print(f"[success]Extract {ZIP_PATH}")
+    with ZipFile(ZIP_PATH, "r") as zip:
+        zip.extractall(RESOURCES_PATH)

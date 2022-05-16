@@ -1,5 +1,5 @@
 """Examples of using brendapy."""
-from collections import OrderedDict
+from typing import Dict
 
 import pandas as pd
 
@@ -35,7 +35,7 @@ def parse_human_proteins_for_ec(ec="1.1.1.1"):
             console.rule()
 
 
-def parse_proteins_by_taxonomy():
+def parse_proteins_by_taxonomy() -> None:
     """Sort protein entries by taxonomy information.
 
     :return:
@@ -58,17 +58,13 @@ def parse_proteins_by_taxonomy():
         [common_node_id, common_name, common_dist] = tax.find_common_node(
             tax_id=p.taxonomy, tax_id_ref=tax_id_ref
         )
-        results.append(
-            OrderedDict(
-                [
-                    ("protein_id", key),
-                    ("organism", p.organism),
-                    ("taxonomy", p.taxonomy),
-                    ("common_name", common_name),
-                    ("common_dist", common_dist),
-                ]
-            )
-        )
+        results.append({
+            "protein_id": key,
+            "organism": p.organism,
+            "taxonomy": p.taxonomy,
+            "common_name": common_name,
+            "common_dist": common_dist,
+        })
 
     # sorted data frame
     df = pd.DataFrame(results)
@@ -78,7 +74,7 @@ def parse_proteins_by_taxonomy():
     console.rule()
 
 
-def parse_all_proteins_for_all_ecs():
+def parse_all_proteins_for_all_ecs() -> Dict[int, "BrendaProtein"]:
     """Parse all proteins for all ECs."""
     for ec in BRENDA_PARSER.keys():
         proteins = BRENDA_PARSER.get_proteins(ec)

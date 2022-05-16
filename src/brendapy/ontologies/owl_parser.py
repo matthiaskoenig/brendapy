@@ -2,13 +2,14 @@
 
 Improved lookup and speed.
 """
-import logging
 import json
+import logging
 import warnings
 from pathlib import Path
 from typing import Any, Dict, Union
 
 import pronto
+
 
 RESOURCES_PATH = Path(__file__).parent.parent / "resources"
 BTO_JSON = RESOURCES_PATH / "data" / "bto" / "bto.json"
@@ -40,7 +41,6 @@ def parse_owl_map(owl_path: Path, json_path: Path) -> None:
         term_map[term.name] = term.id
 
     _serialize_to_json(data=term_map, json_path=json_path)
-
 
 
 #
@@ -81,11 +81,9 @@ def _serialize_to_json(data: Dict[Any, Any], json_path: Path) -> None:
 
 if __name__ == "__main__":
     parse_owl_map(
-        owl_path=RESOURCES_PATH / "data" / "bto" / "bto_lite.owl",
-        json_path=BTO_JSON
+        owl_path=RESOURCES_PATH / "data" / "bto" / "bto_lite.owl", json_path=BTO_JSON
     )
     parse_owl_map(
         owl_path=RESOURCES_PATH / "data" / "chebi" / "chebi_lite.owl",
-        json_path=CHEBI_JSON
+        json_path=CHEBI_JSON,
     )
-

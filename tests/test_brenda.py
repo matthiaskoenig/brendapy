@@ -1,8 +1,9 @@
 """Module for testing BRENDA data structure."""
+from typing import Dict
 
 import pytest
 
-from brendapy import BrendaParser
+from brendapy import BrendaParser, BrendaProtein
 from brendapy.settings import BRENDA_FILE
 
 
@@ -69,8 +70,8 @@ def test_organism() -> None:
     test https://github.com/matthiaskoenig/brendapy/issues/16
     :return:
     """
-    proteins = BRENDA_PARSER.get_proteins("1.1.1.1")
-    p = proteins[106]
+    proteins: Dict[int, BrendaProtein] = BRENDA_PARSER.get_proteins("1.1.1.1")
+    p = proteins[107]
     assert p.organism == "Homo sapiens"
 
 
@@ -180,10 +181,8 @@ def test_unique_ki_entries() -> None:
     Checking that no duplicates are written.
     """
     proteins = BRENDA_PARSER.get_proteins("1.1.1.1")
-    for key, p in proteins.items():
-        if key != 5:
-            continue
-        assert len(p.KI) == 9
+    p = proteins[5]
+    assert len(p.KI) == 5
 
 
 def test_uniprot_swissprot_parsing() -> None:
@@ -194,11 +193,11 @@ def test_uniprot_swissprot_parsing() -> None:
     """
     proteins = BRENDA_PARSER.get_proteins("1.1.1.1")
 
-    p1 = proteins[109]
+    p1 = proteins[110]
     assert p1.uniprot == "P08319"
-    p2 = proteins[128]
+    p2 = proteins[129]
     assert p2.uniprot is None
-    p3 = proteins[120]
+    p3 = proteins[121]
     assert p3.uniprot == "P00331"
 
 
