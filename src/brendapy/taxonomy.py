@@ -46,7 +46,7 @@ import time
 import zipfile
 import ujson
 
-from brendapy.settings import TAXONOMY_DATA, TAXONOMY_ZIP
+from src.brendapy.settings import TAXONOMY_DATA, TAXONOMY_ZIP
 
 
 def parse_taxonomy_data():

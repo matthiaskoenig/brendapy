@@ -18,5 +18,5 @@ coverage.xml
 data
 
 # downloaded resources
-brendapy/resources/data
+src/brendapy/resources/data
 src/brendapy.egg-info/

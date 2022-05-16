@@ -19,4 +19,4 @@ If you use this package cite `BRENDA <https://www.brenda-enzymes.org/index.php>`
     Jeske L., Placzek S., Schomburg I., Chang A., Schomburg D., Nucleic Acids Res., in print (2019)
 
 
-© 2019 Matthias König
+© 2019-2022 Matthias König

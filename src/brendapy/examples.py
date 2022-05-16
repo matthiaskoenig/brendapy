@@ -6,8 +6,8 @@ import pandas as pd
 import logging
 from collections import OrderedDict
 
-from brendapy import BrendaParser, BrendaProtein
-from brendapy.taxonomy import Taxonomy
+from src.brendapy import BrendaParser, BrendaProtein
+from src.brendapy.taxonomy import Taxonomy
 
 BRENDA_PARSER = BrendaParser()  # reuse parser
 
