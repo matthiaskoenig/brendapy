@@ -19,11 +19,4 @@ Ontologies have been downloaded from https://www.ebi.ac.uk/ols/ontologies/chebi 
 
 ## BTO
 Ontologies have been downloaded from https://www.ebi.ac.uk/ols/ontologies/bto as OWL format
-
-
-
-
-TAXONOMY_DATA = os.path.join(RESOURCES_PATH, "data", "taxonomy", "taxonomy.json")
-TAXONOMY_ZIP = os.path.join(RESOURCES_PATH, "data", "taxonomy", "taxdmp.zip")
-BTO_DATA = os.path.join(RESOURCES_PATH, "data", "bto", "bto.json")
-CHEBI_DATA = os.path.join(RESOURCES_PATH, "data", "chebi", "chebi.json")
+* Downloaded on 2022-05-16 with version 23:10:2021 16:56

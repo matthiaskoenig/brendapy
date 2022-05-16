@@ -39,7 +39,6 @@ Taxonomy names file (names.dmp):
 
 import io
 import logging
-import os
 import time
 import zipfile
 
@@ -98,7 +97,7 @@ def parse_taxonomy_data():
     logging.warning(f"... taxonomy information parsed in {te - ts} [s].")
 
 
-if not os.path.exists(TAXONOMY_JSON):
+if not TAXONOMY_JSON.exists():
     parse_taxonomy_data()
 
 
