@@ -1,6 +1,7 @@
 """Utility functions."""
 
 import time
+from typing import Any, Callable, List
 
 
 def is_ec_number(ec: str) -> bool:
@@ -9,17 +10,17 @@ def is_ec_number(ec: str) -> bool:
     :param ec: ec string
     :return: True if EC number, False otherwise
     """
-    ec = ec.strip().split(".")
-    for number in ec:
+    ec_items: List[str] = ec.strip().split(".")
+    for number in ec_items:
         if not number.isdigit():
             return False
     return True
 
 
-def timeit(method):
+def timeit(method: Callable) -> Any:
     """Decorate function with timing functionality."""
 
-    def timed(*args, **kw):
+    def timed(*args, **kw) -> Any:
         ts = time.time()
         result = method(*args, **kw)
         te = time.time()

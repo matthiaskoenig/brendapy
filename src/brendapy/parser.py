@@ -139,7 +139,7 @@ class BrendaParser(object):
         self.ec_text = BrendaParser.parse_entry_strings(self.brenda_file)
         self.ec_data = OrderedDict()  # only parse on demand
 
-    def keys(self):
+    def keys(self) -> List:
         """Available ec keys.
 
         Information for these EC numbers is available in the

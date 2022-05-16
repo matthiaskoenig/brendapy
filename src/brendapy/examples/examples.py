@@ -13,13 +13,13 @@ logger = get_logger(__name__)
 BRENDA_PARSER = BrendaParser()
 
 
-def parse_proteins_for_ec(ec="1.1.1.1"):
+def parse_proteins_for_ec(ec: str = "1.1.1.1") -> Dict[int, BrendaProtein]:
     """Parse the protein entries for a given EC number in BRENDA."""
     proteins = BRENDA_PARSER.get_proteins(ec)
     return proteins
 
 
-def parse_human_proteins_for_ec(ec="1.1.1.1"):
+def parse_human_proteins_for_ec(ec: str = "1.1.1.1") -> None:
     """Parse the protein entries for a given EC number in BRENDA.
 
     Prints overview of proteins, protein ids, and Human proteins.

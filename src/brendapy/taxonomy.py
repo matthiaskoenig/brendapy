@@ -40,6 +40,7 @@ Taxonomy names file (names.dmp):
 import io
 import time
 import zipfile
+from typing import List, Optional
 
 import ujson
 
@@ -51,7 +52,7 @@ from brendapy.settings import TAXONOMY_JSON, TAXONOMY_ZIP
 logger = get_logger(__name__)
 
 
-def parse_taxonomy_data():
+def parse_taxonomy_data() -> None:
     """Parse the node and tree information for the taxonomy.
 
     Stores processed data as json dictionary.
@@ -188,7 +189,9 @@ class Taxonomy(object):
             tax_id=self.get_taxonomy_id(name), tax_id_ref=self.get_taxonomy_id(name_ref)
         )
 
-    def find_common_node(self, tax_id, tax_id_ref):
+    def find_common_node(
+        self, tax_id, tax_id_ref
+    ) -> List[Optional[str], Optional[str], int]:
         """Find the first ancestor node of the species with reference organism.
 
         :param tax_id:

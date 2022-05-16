@@ -36,7 +36,7 @@ def test_get_scientific_name() -> None:
     assert tid == "Mus musculus"
 
 
-def test_find_common_node_by_name():
+def test_find_common_node_by_name() -> None:
     """Test find common nodes by name."""
     common = TAXONOMY.find_common_node_by_name("Mus musculus", "Homo sapiens")
     assert common[0]

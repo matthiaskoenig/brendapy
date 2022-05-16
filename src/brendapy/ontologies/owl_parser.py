@@ -70,7 +70,7 @@ def parse_owl_map(owl_path: Path, json_path: Path) -> None:
 def _serialize_to_json(data: Dict[Any, Any], json_path: Path) -> None:
     """Serialize dictionary to JSON."""
 
-    def set_default(obj):
+    def set_default(obj: Any) -> Any:
         if isinstance(obj, set):
             return list(obj)
         raise TypeError

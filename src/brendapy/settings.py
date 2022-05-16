@@ -28,7 +28,7 @@ TAXONOMY_ZIP = RESOURCES_PATH / "data" / "taxonomy" / "taxdmp.zip"
 TAXONOMY_JSON = RESOURCES_PATH / "data" / "taxonomy" / "taxonomy.json"
 
 
-def download_file(url: str, directory: Path):
+def download_file(url: str, directory: Path) -> None:
     """Download resource."""
 
     console.print(f"Download of BRENDApy resources ({url})")
@@ -43,8 +43,6 @@ def download_file(url: str, directory: Path):
             for data in response.iter_content(block_size):
                 progress.update(task1, advance=block_size)
                 file.write(data)
-
-    return local_filename
 
 
 ZIP_FILENAME = "brendapy-data-v0.5.0.zip"
