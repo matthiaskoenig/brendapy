@@ -44,11 +44,10 @@ import zipfile
 import ujson
 
 from brendapy.log import get_logger
+from brendapy.console import console
 from brendapy.settings import TAXONOMY_JSON, TAXONOMY_ZIP
 
-
 logger = get_logger(__name__)
-
 
 def parse_taxonomy_data():
     """Parse the node and tree information for the taxonomy.
@@ -58,7 +57,7 @@ def parse_taxonomy_data():
     :param f_taxonomy: json file with stored processed taxonomy data.
     :return:
     """
-    logger.warning("Parsing taxonomy information, this may take a while ...")
+    console.print("Parsing taxonomy information, ...")
     ts = time.time()
 
     tid_name_dict = {}
@@ -97,7 +96,7 @@ def parse_taxonomy_data():
         ujson.dump(data, f_out)
 
     te = time.time()
-    logger.warning(f"... taxonomy information parsed in {te - ts} [s].")
+    console.print(f"[success]Taxonomy parsed in {(te - ts):.3} seconds.")
 
 
 if not TAXONOMY_JSON.exists():
@@ -127,7 +126,7 @@ class Taxonomy(object):
                 }
                 del data
             te = time.time()
-            logger.warning(f"Taxonomy loaded in {te - ts} [s].")
+            console.print(f"[success]Taxonomy loaded in {(te - ts):.3} seconds.")
 
     @staticmethod
     def _tax_id_clean(tax_id):

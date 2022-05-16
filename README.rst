@@ -37,16 +37,14 @@ brendapy: BRENDA in python
    :target: http://mypy-lang.org/
    :alt: mypy
 
-The `brendapy` package provides a python parser and utility functions 
+The :code:`brendapy` package provides a python parser and utility functions 
 for enzyme information from `BRENDA <https://www.brenda-enzymes.org/index.php>`__. 
 The parser extracts the all information split up by individual protein entries from the database flat file and makes it accessible in a simple manner.
+:code:`brendapy` support has been tested on python :code:`py38`, :code:`py39` and :code:`py310`. Code is available from 
+`https://github.com/matthiaskoenig/brendapy <https://github.com/matthiaskoenig/brendapy>`__.
  
 This package was developed in the context of building kinetic pathway models with focus on extracting parameters like `Km` or `Ki` from BRENDA.
- 
-`brendapy` support has been tested on python `py38`, `py39` and `py310`.
 
-Code is available from 
-`https://github.com/matthiaskoenig/brendapy <https://github.com/matthiaskoenig/brendapy>`__.
 
 How to cite
 ===========

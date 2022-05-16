@@ -10,6 +10,10 @@ from typing import Any, Dict, Union
 
 import pronto
 
+RESOURCES_PATH = Path(__file__).parent.parent / "resources"
+BTO_JSON = RESOURCES_PATH / "data" / "bto" / "bto.json"
+CHEBI_JSON = RESOURCES_PATH / "data" / "chebi" / "chebi.json"
+
 
 def parse_owl_map(owl_path: Path, json_path: Path) -> None:
     """Parse ontology label:id information in lookup dictionary.
@@ -39,69 +43,6 @@ def parse_owl_map(owl_path: Path, json_path: Path) -> None:
 
 
 
-# def parse_chebi_owl(
-#     owl_path: Path = CHEBI_OWL,
-#     json_path: Path = CHEBI_JSON,
-#     onto_repository_path="/tmp/owl",
-# ):
-#     """Parse the ChEBI OWL information.
-#
-#     Stores as JSON for fast lookup.
-#     """
-#     onto_path.append(onto_repository_path)
-#     onto = get_ontology(str(owl_path)).load()
-#
-#     # accessing entities defined in the bto namespace
-#     chebi = get_namespace("http://purl.obolibrary.org/obo/")
-#     print("-" * 80)
-#     print(chebi.CHEBI_17634)
-#     print(chebi.CHEBI_17634.iri)
-#     print(chebi.CHEBI_17634.label)
-#     print("Descendents:", chebi.CHEBI_17634.descendants())
-#     print("Ancestors:", chebi.CHEBI_17634.ancestors())
-#     print("Class properties:", chebi.CHEBI_17634.get_class_properties())
-#     print("Synonyms:", chebi.CHEBI_17634.hasRelatedSynonym)
-#     print("-" * 80)
-#
-#     # TODO: remove the deprecated entries (and filter by the 3* entries)
-#     d_key = {}
-#     d_label = {}
-#
-#     for c in onto.classes():
-#         key = c.name
-#         label = c.label
-#         if len(label) > 0:
-#             label = label[0]
-#         else:
-#             label = None
-#
-#         print(key)
-#
-#         ancestors = {
-#             c.name for c in c.ancestors() if c.name not in ["owl.Thing", "Thing"]
-#         }
-#         _ = {c.name for c in c.descendants() if c.name not in ["owl.Thing", "Thing"]}
-#         description = ThingClass.__getattr__(c, "IAO_0000115")
-#         if description and isinstance(description, (list, tuple)):
-#             _ = description[0]
-#         synonyms = c.hasRelatedSynonym + c.hasExactSynonym
-#
-#         item = OrderedDict(
-#             [
-#                 ("key", key),
-#                 # ("iri", c.iri),
-#                 ("label", label),
-#                 ("ancestors", ancestors),
-#                 # ("descendents", descendants),
-#                 # ("description", description),
-#             ]
-#         )
-#         if len(synonyms) > 0:
-#             item["synonyms"] = synonyms
-#
-#         d_key[key] = item
-#         if label:
-#             d_label[label] = item
 #
 #     # Add all the synonyms to the dictionary
 #     for chebi_key, item in d_key.items():
@@ -139,14 +80,12 @@ def _serialize_to_json(data: Dict[Any, Any], json_path: Path) -> None:
 
 
 if __name__ == "__main__":
-    RESOURCES_PATH = Path(__file__).parent.parent / "resources"
-    # parse_owl_map(
-    #     owl_url="https://www.ebi.ac.uk/ols/ontologies/bto/download",
-    #     json_path=RESOURCES_PATH / "data" / "bto" / "bto.json"
-    # )
     parse_owl_map(
-        # owl_url="https://www.ebi.ac.uk/ols/ontologies/chebi/download",
+        owl_path=RESOURCES_PATH / "data" / "bto" / "bto_lite.owl",
+        json_path=BTO_JSON
+    )
+    parse_owl_map(
         owl_path=RESOURCES_PATH / "data" / "chebi" / "chebi_lite.owl",
-        json_path=RESOURCES_PATH / "data" / "chebi" / "chebi.json"
+        json_path=CHEBI_JSON
     )
 
