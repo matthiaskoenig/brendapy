@@ -1,4 +1,5 @@
 """brendapy - BRENDA in python."""
+
 from .parser import BrendaParser
 from .parser import BrendaProtein
 

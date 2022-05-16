@@ -1,9 +1,5 @@
-# -*- coding: utf-8 -*-
 """
 Module for working with taxonomy information and taxonomy tree.
-
-This uses the NCBI taxonomy data available from ftp://ftp.ncbi.nih.gov/pub/taxonomy/
-The taxonomy was downloaded on 2019-08-15 (ftp://ftp.ncbi.nih.gov/pub/taxonomy/taxdmp.zip)
 
 Methods are provided to parse the taxonomy tree,
 get the distance between species, and find things like the first common ancestor.
@@ -47,7 +43,7 @@ import zipfile
 
 import ujson
 
-from brendapy.settings import TAXONOMY_DATA, TAXONOMY_ZIP
+from brendapy.settings import TAXONOMY_ZIP, TAXONOMY_JSON
 
 
 def parse_taxonomy_data():
@@ -93,14 +89,14 @@ def parse_taxonomy_data():
         "name_tid_dict": name_tid_dict,
         "node_parent_dict": node_parent_dict,
     }
-    with open(TAXONOMY_DATA, "w") as f_out:
+    with open(TAXONOMY_JSON, "w") as f_out:
         ujson.dump(data, f_out)
 
     te = time.time()
     logging.warning("... taxonomy information parsed in {} s.".format((te - ts)))
 
 
-if not os.path.exists(TAXONOMY_DATA):
+if not os.path.exists(TAXONOMY_JSON):
     parse_taxonomy_data()
 
 
@@ -112,7 +108,7 @@ class Taxonomy(object):
     name_tid_dict = None  # { ncbi_scientific_name: ncbi_id }
     node_parent_dict = None  # storage of tree information
 
-    def __init__(self, f_taxonomy=TAXONOMY_DATA):
+    def __init__(self, f_taxonomy=TAXONOMY_JSON):
         if Taxonomy.tid_name_dict is None:
             ts = time.time()
             with open(f_taxonomy, "r") as f_tax:

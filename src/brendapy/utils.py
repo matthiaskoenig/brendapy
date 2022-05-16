@@ -1,8 +1,9 @@
-# -*- coding: utf-8 -*-
+"""Utility functions."""
+
 import time
 
 
-def is_ec_number(ec):
+def is_ec_number(ec: str) -> bool:
     """Tests if given string 'ec' is EC number.
 
     :param ec: ec string

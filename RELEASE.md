@@ -2,8 +2,7 @@
 Steps for release are
 
 ### update BRENDA data
-* download latest BRENDA file https://www.brenda-enzymes.org/download_brenda_without_registration.php
-* update `MANIFEST.in`, `setup.py` and `.gitignore`
+
 
 ## github release
 * github: close and update issues/milestone

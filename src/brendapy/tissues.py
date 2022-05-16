@@ -1,10 +1,9 @@
-# -*- coding: utf-8 -*-
+
 import json
 
-from brendapy.settings import BTO_DATA
+from brendapy.settings import BTO_JSON
 
-
-with open(BTO_DATA, "r") as fin:
+with open(BTO_JSON, "r") as fin:
     BTO = json.load(fin)
 
 if __name__ == "__main__":

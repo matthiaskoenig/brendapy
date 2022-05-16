@@ -1,5 +1,4 @@
-"""
-Working with ontologies to resolve information
+"""Working with ontologies to resolve information.
 
 Ontologies have been downloaded from
     https://www.ebi.ac.uk/ols/ontologies/bto
@@ -30,38 +29,33 @@ and the following methods:
 """
 import json
 import logging
-import os
-from collections import OrderedDict
+from pathlib import Path
+from typing import Any, Dict
+
+
+RESOURCES_PATH = Path(__file__).parent / "resources"
+BTO_OWL = RESOURCES_PATH / "data" / "bto" / "bto.owl"
+BTO_JSON = RESOURCES_PATH / "data" / "bto" / "bto.json"
+CHEBI_OWL = RESOURCES_PATH / "data" / "chebi" / "chebi.owl"
+CHEBI_JSON = RESOURCES_PATH / "data" / "chebi" / "chebi.json"
 
 from owlready2 import *
 from owlready2.entity import ThingClass
 
 
-# -----------------------------------------
-# BRENDA Tissue Ontology (BTO)
-# -----------------------------------------
-def parse_bto_owl(owl_path="bto.owl", onto_repository_path="/tmp/owl"):
-    """Parse the OWL information."""
+def parse_bto_owl(owl_path: Path = BTO_OWL, json_path: Path = BTO_JSON, onto_repository_path: str = "/tmp/owl"):
+    """Parse BRENDA Tissue Ontology (BTO) OWL information.
+
+    Stores processed information as JSON for fast lookup.
+    """
 
     onto_path.append(onto_repository_path)
-    onto = get_ontology(owl_path).load()
+    onto = get_ontology(str(owl_path)).load()
 
     # accessing entities defined in the bto namespace
-    print(onto._namespaces)
-    for key, value in onto._namespaces.items():
-        print(f"'{key}': '{value}'")
-
-    # bto = get_namespace("http://purl.obolibrary.org/obo/")
-    # print('-' * 80)
-    # print(bto.BTO_0000016)
-    # print(bto.BTO_0000016.iri)
-    # print(bto.BTO_0000016.label)
-    # print('Descendents:',  bto.BTO_0000016.descendants())
-    # print('Ancestors:',  bto.BTO_0000016.ancestors())
-    # print('Class properties:', bto.BTO_0000016.get_class_properties())
-    # print(type(bto.BTO_0000016))
-    # print(ThingClass.__getattr__((bto.BTO_0000016), "IAO_0000115"))
-    # print('-' * 80)
+    # print(onto._namespaces)
+    # for key, value in onto._namespaces.items():
+    #     print(f"'{key}': '{value}'")
 
     d_key = {}
     d_label = {}
@@ -115,19 +109,18 @@ def parse_bto_owl(owl_path="bto.owl", onto_repository_path="/tmp/owl"):
                 else:
                     d_label[name] = d_key[bto_key]
 
-    outpath = os.path.join("..", "resources", "bto", "bto.json")
-    _serialize_to_json(data=d_label, outpath=outpath)
+    _serialize_to_json(data=d_label, json_path=json_path)
 
     return d_key, d_label
 
 
-# -----------------------------------------
-# CHEBI
-# -----------------------------------------
-def parse_chebi_owl(owl_path="chebi.owl", onto_repository_path="/tmp/owl"):
-    """Parse the OWL information."""
+def parse_chebi_owl(owl_path: Path = CHEBI_OWL, json_path: Path = CHEBI_JSON, onto_repository_path="/tmp/owl"):
+    """Parse the ChEBI OWL information.
+
+    Stores as JSON for fast lookup.
+    """
     onto_path.append(onto_repository_path)
-    onto = get_ontology(owl_path).load()
+    onto = get_ontology(str(owl_path)).load()
 
     # accessing entities defined in the bto namespace
     chebi = get_namespace("http://purl.obolibrary.org/obo/")
@@ -204,31 +197,23 @@ def parse_chebi_owl(owl_path="chebi.owl", onto_repository_path="/tmp/owl"):
         "MgATP2-": "CHEBI_30617",
     }
 
-    outpath = os.path.join("..", "resources", "chebi", "chebi.json")
-    _serialize_to_json(data=d_label, outpath=outpath)
+    _serialize_to_json(data=d_label, json_path=json_path)
 
     return d_key, d_label
 
 
-def _serialize_to_json(data, outpath):
-    # serialize to json
+def _serialize_to_json(data: Dict[Any, Any], json_path: Path) -> None:
+    """Serialize dictionary to JSON."""
     def set_default(obj):
         if isinstance(obj, set):
             return list(obj)
         raise TypeError
 
-    with open(outpath, "w") as fp:
+    with open(json_path, "w") as fp:
         json.dump(data, fp, indent=2, default=set_default)
 
 
 if __name__ == "__main__":
-    # bto
-    d_key, d_label = parse_bto_owl(owl_path="../resources/bto/bto.owl")
 
-    from pprint import pprint
-
-    pprint(d_label["liver"])
-    pprint(d_label["A-172 cell"])
-
-    # chebi
-    parse_chebi_owl(owl_path="../resources/chebi/chebi.owl")
+    # parse_bto_owl(owl_path=BTO_OWL, json_path=BTO_JSON)
+    parse_chebi_owl(owl_path=CHEBI_OWL, json_path=CHEBI_JSON)

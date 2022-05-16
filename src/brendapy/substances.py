@@ -1,10 +1,9 @@
 # -*- coding: utf-8 -*-
 import json
 
-from brendapy.settings import CHEBI_DATA
+from brendapy.settings import CHEBI_JSON
 
-
-with open(CHEBI_DATA, "r") as fin:
+with open(CHEBI_JSON, "r") as fin:
     CHEBI = json.load(fin)
 
 

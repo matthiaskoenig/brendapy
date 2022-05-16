@@ -1,35 +1,37 @@
-import logging
+"""Module for testing BRENDA data structure."""
 
 import pytest
 
 from brendapy import BrendaParser, BrendaProtein
 from brendapy.settings import BRENDA_FILE
 
-
 BRENDA_PARSER = BrendaParser()
 
 
-def test_parsing():
+def test_parsing() -> None:
+    """Test parsing."""
     brenda = BrendaParser()
     assert brenda
     assert "1.1.1.1" in brenda.ec_text
 
 
-def test_parsing_from_file():
+def test_parsing_from_file() -> None:
+    """Test parsing from file."""
     brenda = BrendaParser(brenda_file=BRENDA_FILE)
     assert brenda
     assert "1.1.1.1" in brenda.ec_text
 
 
-def test_protein1():
-    """Test the proteinBRENDA module"""
+def test_protein1() -> None:
+    """Test the proteinBRENDA module."""
     ec = "1.1.1.1"
     proteins = BRENDA_PARSER.get_proteins(ec)
     assert proteins
     assert len(proteins) == 167
 
 
-def test_protein_detail1():
+def test_protein_detail1() -> None:
+    """Test protein details."""
     proteins = BRENDA_PARSER.get_proteins(ec="1.1.1.1")
     protein = proteins[1]
 
@@ -42,7 +44,8 @@ def test_protein_detail1():
     assert 44 in protein.references
 
 
-def test_protein_detail2():
+def test_protein_detail2() -> None:
+    """Test protein details."""
     proteins = BRENDA_PARSER.get_proteins("1.1.1.1")
     protein = proteins[4]
 
@@ -51,15 +54,18 @@ def test_protein_detail2():
     assert 8 in protein.references
 
 
-def test_info_dict():
+def test_info_dict() -> None:
+    """Test info dictionary."""
     ec = "1.1.1.2"
     ec_str = BRENDA_PARSER.ec_text[ec]
     d = BRENDA_PARSER._parse_info_dict(ec, ec_str)
     assert d
 
 
-def test_organism():
-    """test https://github.com/matthiaskoenig/brendapy/issues/16
+def test_organism() -> None:
+    """Test organism.
+
+    test https://github.com/matthiaskoenig/brendapy/issues/16
     :return:
     """
     proteins = BRENDA_PARSER.get_proteins("1.1.1.1")
@@ -67,8 +73,10 @@ def test_organism():
     assert p.organism == "Homo sapiens"
 
 
-def test_source_tissue_reference():
-    """test https://github.com/matthiaskoenig/brendapy/issues/13
+def test_source_tissue_reference() -> None:
+    """Test source tissue reference.
+
+    Test https://github.com/matthiaskoenig/brendapy/issues/13
 
     ST	#3# lymphocyte <34,40,51>
     ST	#3# skin fibroblast <31>
@@ -111,8 +119,10 @@ def test_source_tissue_reference():
         assert ref in st3["refs"]
 
 
-def test_substances():
-    """test https://github.com/matthiaskoenig/brendapy/issues/12
+def test_substances() -> None:
+    """Test substances.
+
+    test https://github.com/matthiaskoenig/brendapy/issues/12
 
     KM	#4,5# 2.4 {2-oxoglutarate}  (#4# pH 8.0, 25°C, substrate L-isoleucine
         <23,40>; #5# pH 8.4, 25°C, substrate L-alloisoleucine <41>) <23,40,41>
@@ -149,8 +159,10 @@ def test_substances():
     )  # noqa: E501
 
 
-def test_minus_999():
-    """test https://github.com/matthiaskoenig/brendapy/issues/8
+def test_minus_999() -> None:
+    """Test the minus 999 issue.
+
+    Test https://github.com/matthiaskoenig/brendapy/issues/8
 
     :return:
     """
@@ -160,8 +172,10 @@ def test_minus_999():
     assert len(data) == 2
 
 
-def test_unique_ki_entries():
-    """Testing https://github.com/matthiaskoenig/brendapy/issues/30.
+def test_unique_ki_entries() -> None:
+    """Test uniqueness of Ki entries.
+
+    Testing https://github.com/matthiaskoenig/brendapy/issues/30.
     Checking that no duplicates are written.
     """
     proteins = BRENDA_PARSER.get_proteins("1.1.1.1")
@@ -171,8 +185,10 @@ def test_unique_ki_entries():
         assert len(p.KI) == 9
 
 
-def test_uniprot_swissprot_parsing():
-    """Testing https://github.com/matthiaskoenig/brendapy/issues/28.
+def test_uniprot_swissprot_parsing() -> None:
+    """Testing parsing of uniprot/swissprot.
+
+    Testing https://github.com/matthiaskoenig/brendapy/issues/28.
     Test that uniprot/swissprot are extracted from PR items.
     """
     proteins = BRENDA_PARSER.get_proteins("1.1.1.1")
@@ -185,14 +201,16 @@ def test_uniprot_swissprot_parsing():
     assert p3.uniprot == "P00331"
 
 
-def test_source_tissue():
-    ec = "1.1.1.2"
-    ec_str = BRENDA_PARSER.ec_text[ec]
+def test_source_tissue() -> None:
+    """Test source tissue."""
+    ec: str = "1.1.1.2"
+    ec_str: str = BRENDA_PARSER.ec_text[ec]
     d = BRENDA_PARSER._parse_info_dict(ec, ec_str)
     assert d
 
 
 @pytest.mark.parametrize("ec", BRENDA_PARSER.keys())
-def test_proteins_for_ec(ec):
+def test_proteins_for_ec(ec: str) -> None:
+    """Test parsing proteins for given EC."""
     proteins = BRENDA_PARSER.get_proteins(ec)
     assert proteins is not None
