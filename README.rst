@@ -123,7 +123,7 @@ To install for development use::
     
 Usage
 =====
-Examples are provided in `./src/brendapy/examples.py <./src/brendapy/examples.py>`__ `./tests/test_brendapy.py <./tests/test_brendapy.py>`__::
+Examples are provided in `./src/brendapy/examples.py <./src/brendapy/examples.py>`__ and `./tests/test_brendapy.py <./tests/test_brenda.py>`__::
 
     from brendapy import BrendaParser
     
