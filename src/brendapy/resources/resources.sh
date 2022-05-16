@@ -1,15 +1,8 @@
 """
-Updates the latest resources.
-
-The resources should be regularly updated with source files available from:
-
-bto.owl:
-chebi.owl:
-
-Data must be processed via
+Release of the latest resources.
 """
 # compress local data
-DATA_ZIP="brendapy-data-v0.4.0.zip"
+DATA_ZIP="brendapy-data-v0.5.0.zip"
 cd brendapy
 zip -r $DATA_ZIP data/
 
