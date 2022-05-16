@@ -7,14 +7,14 @@ first import.
 """
 
 
-from rich.progress import Progress
 from pathlib import Path
 from zipfile import ZipFile
 
 import requests
+from rich.progress import Progress
 
-from brendapy.log import get_logger
 from brendapy.console import console
+from brendapy.log import get_logger
 
 
 logger = get_logger(__name__)
@@ -36,10 +36,10 @@ def download_file(url: str, directory: Path):
     with Progress() as progress:
 
         response = requests.get(url, stream=True)
-        total_size_in_bytes = int(response.headers.get('content-length', 0))
+        total_size_in_bytes = int(response.headers.get("content-length", 0))
         block_size = 1024
         task1 = progress.add_task("[green]Progress", total=total_size_in_bytes)
-        with open(local_filename, 'wb') as file:
+        with open(local_filename, "wb") as file:
             for data in response.iter_content(block_size):
                 progress.update(task1, advance=block_size)
                 file.write(data)

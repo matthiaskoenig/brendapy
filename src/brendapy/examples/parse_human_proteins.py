@@ -1,5 +1,4 @@
-from brendapy import console
-from brendapy import BrendaParser
+from brendapy import BrendaParser, console
 
 
 def parse_human_proteins_for_ec(ec="1.1.1.1"):

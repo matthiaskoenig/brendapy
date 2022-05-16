@@ -58,13 +58,15 @@ def parse_proteins_by_taxonomy() -> None:
         [common_node_id, common_name, common_dist] = tax.find_common_node(
             tax_id=p.taxonomy, tax_id_ref=tax_id_ref
         )
-        results.append({
-            "protein_id": key,
-            "organism": p.organism,
-            "taxonomy": p.taxonomy,
-            "common_name": common_name,
-            "common_dist": common_dist,
-        })
+        results.append(
+            {
+                "protein_id": key,
+                "organism": p.organism,
+                "taxonomy": p.taxonomy,
+                "common_name": common_name,
+                "common_dist": common_dist,
+            }
+        )
 
     # sorted data frame
     df = pd.DataFrame(results)
