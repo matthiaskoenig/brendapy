@@ -2,8 +2,9 @@
 
 import pytest
 
-from brendapy import BrendaParser, BrendaProtein
+from brendapy import BrendaParser
 from brendapy.settings import BRENDA_FILE
+
 
 BRENDA_PARSER = BrendaParser()
 
@@ -155,7 +156,7 @@ def test_substances() -> None:
     assert data[4]["data"] == "0.09 {(S)-3-methyl-2-oxopentanoate}"
     assert (
         data[0]["comment"]
-        == "#4# pH 8.0, 25°C, substrate L-isoleucine <23,40>; #5# pH 8.4, 25°C, substrate L-alloisoleucine <41>"
+        == "#4# pH 8.0, 25°C, substrate L-isoleucine <23,40>; #5# pH 8.4, 25°C, substrate L-alloisoleucine <41>"  # noqa: E501
     )  # noqa: E501
 
 

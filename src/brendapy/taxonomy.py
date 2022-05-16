@@ -1,4 +1,4 @@
-"""
+r"""
 Module for working with taxonomy information and taxonomy tree.
 
 Methods are provided to parse the taxonomy tree,
@@ -11,20 +11,22 @@ General information.
 Field terminator is "\t|\t"
 Row terminator is "\t|\n"
 
-nodes.dmp file consists of taxonomy nodes. The description for each node includes the following
+nodes.dmp file consists of taxonomy nodes. The description for each node includes the
+following
+
 fields:
     tax_id					-- node id in GenBank taxonomy database
-    parent tax_id				-- parent node id in GenBank taxonomy database
+    parent tax_id			-- parent node id in GenBank taxonomy database
     rank					-- rank of this node (superkingdom, kingdom, ...)
     embl code				-- locus-name prefix; not unique
     division id				-- see division.dmp file
     inherited div flag  (1 or 0)		-- 1 if node inherits division from parent
     genetic code id				-- see gencode.dmp file
     inherited GC  flag  (1 or 0)		-- 1 if node inherits genetic code from parent
-    mitochondrial genetic code id		-- see gencode.dmp file
-    inherited MGC flag  (1 or 0)		-- 1 if node inherits mitochondrial gencode from parent
-    GenBank hidden flag (1 or 0)            -- 1 if name is suppressed in GenBank entry lineage
-    hidden subtree root flag (1 or 0)       -- 1 if this subtree has no sequence data yet
+    mitochondrial genetic code id	-- see gencode.dmp file
+    inherited MGC flag  (1 or 0)    -- 1 if node inherits mitochondrial gencode
+    GenBank hidden flag (1 or 0)    -- 1 if name is suppressed in GenBank entry lineage
+    hidden subtree root flag (1 or 0)     -- 1 if this subtree has no sequence data yet
     comments				-- free-text comments and citations
 
 Taxonomy names file (names.dmp):
@@ -43,11 +45,11 @@ import zipfile
 
 import ujson
 
-from brendapy.settings import TAXONOMY_ZIP, TAXONOMY_JSON
+from brendapy.settings import TAXONOMY_JSON, TAXONOMY_ZIP
 
 
 def parse_taxonomy_data():
-    """Parses the node and tree information for the taxonomy.
+    """Parse the node and tree information for the taxonomy.
 
     Stores processed data as json dictionary.
 
@@ -109,6 +111,7 @@ class Taxonomy(object):
     node_parent_dict = None  # storage of tree information
 
     def __init__(self, f_taxonomy=TAXONOMY_JSON):
+        """Initialize taxonomy."""
         if Taxonomy.tid_name_dict is None:
             ts = time.time()
             with open(f_taxonomy, "r") as f_tax:
@@ -155,7 +158,7 @@ class Taxonomy(object):
         return self.tid_name_dict.get(tax_id, None)
 
     def get_parent_nodes(self, tax_id):
-        """Returns list of parent nodes for given NCBI taxonomy identifier.
+        """Get list of parent nodes for given NCBI taxonomy identifier.
 
         First entry in list is tax_id, last entry is 1 ('all').
         If no valid tax_id given returns 'None'
@@ -176,13 +179,14 @@ class Taxonomy(object):
             nodes.append(parent_id)
         return nodes
 
-    def find_common_node_by_name(self, name, name_ref):
+    def find_common_node_by_name(self, name: str, name_ref):
+        """Find common node in ontology by name."""
         return self.find_common_node(
             tax_id=self.get_taxonomy_id(name), tax_id_ref=self.get_taxonomy_id(name_ref)
         )
 
     def find_common_node(self, tax_id, tax_id_ref):
-        """Finds the first ancestor node of the species with reference organism.
+        """Find the first ancestor node of the species with reference organism.
 
         :param tax_id:
         :param tax_id_ref:

@@ -1,17 +1,14 @@
-# -*- coding: utf-8 -*-
-"""
-Examples of using brendapy
-"""
+"""Examples of using brendapy."""
 import logging
 from collections import OrderedDict
 
 import pandas as pd
 
-from brendapy import BrendaParser, BrendaProtein
+from brendapy import BrendaParser
 from brendapy.taxonomy import Taxonomy
 
 
-BRENDA_PARSER = BrendaParser()  # reuse parser
+BRENDA_PARSER = BrendaParser()
 
 
 def parse_proteins_for_ec(ec="1.1.1.1"):
@@ -51,7 +48,8 @@ def parse_proteins_by_taxonomy():
     for key, p in proteins.items():
         if p.taxonomy is None:
             logging.error(
-                f"Taxonomy could not be resolved for protein <{p.protein_id}>: '{p.organism}': '{p.taxonomy}'"
+                f"Taxonomy could not be resolved for protein "
+                f"<{p.protein_id}>: '{p.organism}': '{p.taxonomy}'"
             )
             continue
 
@@ -79,8 +77,10 @@ def parse_proteins_by_taxonomy():
 
 
 def parse_all_proteins_for_all_ecs():
+    """Parse all proteins for all ECs."""
     for ec in BRENDA_PARSER.keys():
         proteins = BRENDA_PARSER.get_proteins(ec)
+    return proteins
 
 
 if __name__ == "__main__":

@@ -1,6 +1,11 @@
 """Examples for testing brendapy."""
 
-from brendapy.examples import *
+from brendapy.examples import (
+    parse_all_proteins_for_all_ecs,
+    parse_human_proteins_for_ec,
+    parse_proteins_by_taxonomy,
+    parse_proteins_for_ec,
+)
 
 
 def test_parse_proteins_for_ec() -> None:

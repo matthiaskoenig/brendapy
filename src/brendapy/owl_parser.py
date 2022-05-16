@@ -32,6 +32,9 @@ import logging
 from pathlib import Path
 from typing import Any, Dict
 
+from owlready2 import *
+from owlready2.entity import ThingClass
+
 
 RESOURCES_PATH = Path(__file__).parent / "resources"
 BTO_OWL = RESOURCES_PATH / "data" / "bto" / "bto.owl"
@@ -39,11 +42,12 @@ BTO_JSON = RESOURCES_PATH / "data" / "bto" / "bto.json"
 CHEBI_OWL = RESOURCES_PATH / "data" / "chebi" / "chebi.owl"
 CHEBI_JSON = RESOURCES_PATH / "data" / "chebi" / "chebi.json"
 
-from owlready2 import *
-from owlready2.entity import ThingClass
 
-
-def parse_bto_owl(owl_path: Path = BTO_OWL, json_path: Path = BTO_JSON, onto_repository_path: str = "/tmp/owl"):
+def parse_bto_owl(
+    owl_path: Path = BTO_OWL,
+    json_path: Path = BTO_JSON,
+    onto_repository_path: str = "/tmp/owl",
+):
     """Parse BRENDA Tissue Ontology (BTO) OWL information.
 
     Stores processed information as JSON for fast lookup.
@@ -68,14 +72,14 @@ def parse_bto_owl(owl_path: Path = BTO_OWL, json_path: Path = BTO_JSON, onto_rep
         ancestors = {
             c.name for c in c.ancestors() if c.name not in ["owl.Thing", "Thing"]
         }
-        descendants = {
+        _ = {
             c.name for c in c.descendants() if c.name not in ["owl.Thing", "Thing"]
         }
         synonyms = c.hasRelatedSynonym
 
         description = ThingClass.__getattr__(c, "IAO_0000115")
         if description and isinstance(description, (list, tuple)):
-            description = description[0]
+            _ = description[0]
 
         item = OrderedDict(
             [
@@ -83,8 +87,8 @@ def parse_bto_owl(owl_path: Path = BTO_OWL, json_path: Path = BTO_JSON, onto_rep
                 # ("iri", c.iri),
                 ("label", label),
                 ("ancestors", ancestors),
-                # ("descendents", descendants),
-                # ("description", description),
+                # ("descendents", _descendants),
+                # ("description", _description),
             ]
         )
         if len(synonyms) > 0:
@@ -114,7 +118,11 @@ def parse_bto_owl(owl_path: Path = BTO_OWL, json_path: Path = BTO_JSON, onto_rep
     return d_key, d_label
 
 
-def parse_chebi_owl(owl_path: Path = CHEBI_OWL, json_path: Path = CHEBI_JSON, onto_repository_path="/tmp/owl"):
+def parse_chebi_owl(
+    owl_path: Path = CHEBI_OWL,
+    json_path: Path = CHEBI_JSON,
+    onto_repository_path="/tmp/owl",
+):
     """Parse the ChEBI OWL information.
 
     Stores as JSON for fast lookup.
@@ -151,12 +159,10 @@ def parse_chebi_owl(owl_path: Path = CHEBI_OWL, json_path: Path = CHEBI_JSON, on
         ancestors = {
             c.name for c in c.ancestors() if c.name not in ["owl.Thing", "Thing"]
         }
-        descendants = {
-            c.name for c in c.descendants() if c.name not in ["owl.Thing", "Thing"]
-        }
+        _ = {c.name for c in c.descendants() if c.name not in ["owl.Thing", "Thing"]}
         description = ThingClass.__getattr__(c, "IAO_0000115")
         if description and isinstance(description, (list, tuple)):
-            description = description[0]
+            _ = description[0]
         synonyms = c.hasRelatedSynonym + c.hasExactSynonym
 
         item = OrderedDict(
@@ -193,9 +199,6 @@ def parse_chebi_owl(owl_path: Path = CHEBI_OWL, json_path: Path = CHEBI_JSON, on
 
     # additional substances have to be resolved
     # TODO: see https://github.com/matthiaskoenig/brendapy/issues/#17
-    additional = {
-        "MgATP2-": "CHEBI_30617",
-    }
 
     _serialize_to_json(data=d_label, json_path=json_path)
 
@@ -204,6 +207,7 @@ def parse_chebi_owl(owl_path: Path = CHEBI_OWL, json_path: Path = CHEBI_JSON, on
 
 def _serialize_to_json(data: Dict[Any, Any], json_path: Path) -> None:
     """Serialize dictionary to JSON."""
+
     def set_default(obj):
         if isinstance(obj, set):
             return list(obj)

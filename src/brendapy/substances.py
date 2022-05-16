@@ -1,7 +1,10 @@
-# -*- coding: utf-8 -*-
+"""Loading substances."""
+
+
 import json
 
-from brendapy.settings import CHEBI_JSON
+from brendapy.owl_parser import CHEBI_JSON
+
 
 with open(CHEBI_JSON, "r") as fin:
     CHEBI = json.load(fin)

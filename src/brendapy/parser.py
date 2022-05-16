@@ -1,6 +1,5 @@
-# -*- coding: utf-8 -*-
-"""
-Module for parsing the BRENDA ENZYME information from flat file.
+"""Module for parsing the BRENDA ENZYME information from flat file.
+
 The following information is available:
 
     AC    activating compound
@@ -49,10 +48,8 @@ The following information is available:
     TS    temperature stability
 """
 import logging
-import os
 import re
 from collections import OrderedDict, defaultdict
-from pprint import pprint
 
 from brendapy import utils
 from brendapy.settings import BRENDA_FILE
@@ -152,7 +149,7 @@ class BrendaParser(object):
 
     @staticmethod
     def parse_entry_strings(filename):
-        """Reads the string entries from BRENDA file.
+        """Read the string entries from BRENDA file.
 
         :param filename: BRENDA database download
         :return: dict (ec, brenda_info)
@@ -190,7 +187,7 @@ class BrendaParser(object):
 
     @utils.timeit
     def parse_info_dicts(self):
-        """Parses all info dicts.
+        """Parse all info dicts.
 
         This takes around ~15s and prepares all proteins.
         """
@@ -200,10 +197,8 @@ class BrendaParser(object):
         return d
 
     @staticmethod
-    def _parse_info_dict(ec, ec_str):
-        """
-        :return:
-        """
+    def _parse_info_dict(ec: str, ec_str):
+        """Parse info dictionary."""
 
         def parse_bid_item(line):
             tokens = line.split("\t")
@@ -341,15 +336,16 @@ class BrendaParser(object):
                                 info["chebi"] = CHEBI[substrate]["key"]
                             else:
                                 logging.info(
-                                    f"Substrate could not be found in CHEBI: '{substrate}'"
+                                    f"Substrate not found in CHEBI: '{substrate}'"
                                 )
                         else:
                             # trying the simple patterns without substrate
                             try:
                                 info["value"] = float(info["data"])
-                            except:
+                            except ValueError:
                                 logging.error(
-                                    f"data could not be converted to float: {info['data']}"
+                                    f"data could not be converted to float: "
+                                    f"{info['data']}"
                                 )
 
                 for pid in ids:
@@ -376,7 +372,7 @@ class BrendaParser(object):
             return None
 
     def get_proteins(self, ec):
-        """Parses all BRENDA proteins for given EC number.
+        """Parse all BRENDA proteins for given EC number.
 
         :param ec:
         :return: OrderedDict of BRENDA proteins
@@ -407,7 +403,7 @@ class BrendaProtein(object):
 
     PATTERN_ORGANISM = re.compile(r"^(\w+)\s([\w\.]+)")
     PATTERN_UNIPROT = re.compile(
-        r"([A-N,R-Z][0-9]([A-Z][A-Z, 0-9][A-Z, 0-9][0-9]){1,2})|([O,P,Q][0-9][A-Z, 0-9][A-Z, 0-9][A-Z, 0-9][0-9])(\.\d+)?"
+        r"([A-N,R-Z][0-9]([A-Z][A-Z, 0-9][A-Z, 0-9][0-9]){1,2})|([O,P,Q][0-9][A-Z, 0-9][A-Z, 0-9][A-Z, 0-9][0-9])(\.\d+)?"  # noqa: E501
     )
 
     def __init__(self, ec, key, data):
@@ -485,13 +481,14 @@ class BrendaProtein(object):
                     tissues.add(bto_term)
                 else:
                     logging.error(
-                        f"Source/Tissue not found in Brenda Tissue Ontology (BTO): '{tissue}'"
+                        f"Source/Tissue not found in Brenda Tissue Ontology (BTO): "
+                        f"'{tissue}'"
                     )
         self.data["tissues"] = tissues
 
     @property
     def protein_id(self):
-        """ "BRENDA Protein id.
+        """BRENDA Protein id.
 
         This is the integer used in the BRENDA flatfile to
         map to individual protein entries.
@@ -502,15 +499,17 @@ class BrendaProtein(object):
 
     @property
     def ec(self):
+        """EC."""
         return self.data["ec"]
 
     @property
     def organism(self):
+        """Organism."""
         return self.data["organism"]
 
     @property
     def taxonomy(self):
-        """NCBI Taxonomy id
+        """NCBI Taxonomy id.
 
         :return: NCBI taxonomy id, None if organism could not be mapped
         """
@@ -526,234 +525,229 @@ class BrendaProtein(object):
 
     @property
     def tissues(self):
-        """BRENDA Tissue Ontology (BTO) tissue ids
+        """BRENDA Tissue Ontology (BTO) tissue ids.
+
         :return: set of bto terms, empty set if no bto terms exist
         """
         return self.data["tissues"]
 
     @property
     def references(self):
+        """References."""  # noqa: D401
         return self.data["references"]
 
     def __str__(self):
-        """String representation."""
+        """String representation."""  # noqa: D401
         from pprint import pformat
 
         return pformat(self.data)
 
     @property
     def AC(self):
-        """activating compound
-        :return: list, None if no data exists
-        """
+        """Activating compound."""
         return self.data.get("AC", None)
 
     @property
     def AP(self):
-        """application"""
+        """Application."""
         return self.data.get("AP", None)
 
     @property
     def CF(self):
-        """cofactor"""
+        """Cofactor."""
         return self.data.get("CF", None)
 
     @property
     def CL(self):
-        """cloned"""
+        """Cloned."""
         return self.data.get("CL", None)
 
     @property
     def CR(self):
-        """crystallization"""
+        """Crystallization."""
         return self.data.get("CR", None)
 
     @property
     def EN(self):
-        """engineering"""
+        """Engineering."""
         return self.data.get("EN", None)
 
     @property
     def EXP(self):
-        """expression"""
+        """Expression."""
         return self.data.get("EXP", None)
 
     @property
     def GI(self):
-        """general information on enzyme"""
+        """General information on enzyme."""
         return self.data.get("GI", None)
 
     @property
     def GS(self):
-        """general stability"""
+        """General stability."""
         return self.data.get("GS", None)
 
     @property
     def IC50(self):
-        """IC-50 Value"""
+        """IC-50 Value."""
         return self.data.get("IC50", None)
 
     @property
     def ID(self):
-        """EC-class"""
+        """EC-class."""
         return self.data.get("ID", None)
 
     @property
     def IN(self):
-        """inhibitors"""
+        """Inhibitors."""
         return self.data.get("IN", None)
 
     @property
     def KKM(self):
-        """Kcat/KM-Value substrate in {...}"""
+        """Kcat/KM-Value substrate in {...}."""
         return self.data.get("KKM", None)
 
     @property
     def KI(self):
-        """Ki-value inhibitor in {...}"""
+        """Ki-value inhibitor in {...}."""
         return self.data.get("KI", None)
 
     @property
     def KM(self):
-        """KM-value substrate in {...}"""
+        """KM-value substrate in {...}."""
         return self.data.get("KM", None)
 
     @property
     def LO(self):
-        """localization"""
+        """Localization."""
         return self.data.get("LO", None)
 
     @property
     def ME(self):
-        """metals/ions"""
+        """Metals/ions."""
         return self.data.get("ME", None)
 
     @property
     def MW(self):
-        """molecular weight"""
+        """Molecular weight."""
         return self.data.get("MW", None)
 
     @property
     def NSP(self):
-        """natural substrates/products reversibilty information in {...}"""
+        """Natural substrates/products reversibilty information in {...}."""
         return self.data.get("NSP", None)
 
     @property
     def OS(self):
-        """oxygen stability"""
+        """Oxygen stability."""
         return self.data.get("OS", None)
 
     @property
     def OSS(self):
-        """organic solvent stability"""
+        """Organic solvent stability."""
         return self.data.get("OSS", None)
 
     @property
     def PHO(self):
-        """pH-optimum"""
+        """PH-optimum."""
         return self.data.get("PHO", None)
 
     @property
     def PHR(self):
-        """pH-range"""
+        """PH-range."""
         return self.data.get("PHR", None)
 
     @property
     def PHS(self):
-        """pH stability"""
+        """PH stability."""
         return self.data.get("PHS", None)
 
     @property
     def PI(self):
-        """isoelectric point"""
+        """Isoelectric point."""
         return self.data.get("PI", None)
 
     @property
     def PM(self):
-        """posttranslation modification"""
+        """Posttranslation modification."""
         return self.data.get("PM", None)
 
     @property
     def PU(self):
-        """purification"""
+        """Purification."""
         return self.data.get("PU", None)
 
     @property
     def RE(self):
-        """reaction catalyzed"""
+        """Reaction catalyzed."""
         return self.data.get("RE", None)
 
     @property
     def REN(self):
-        """renatured"""
+        """Renatured."""
         return self.data.get("REN", None)
 
     @property
     def RN(self):
-        """accepted name (IUPAC)"""
+        """Accepted name (IUPAC)."""  # noqa: D401
         return self.data.get("RN", None)
 
     @property
     def RT(self):
-        """reaction type"""
+        """Reaction type."""
         return self.data.get("RT", None)
 
     @property
     def SA(self):
-        """specific activity"""
+        """Specific activity."""
         return self.data.get("SA", None)
 
     @property
     def SN(self):
-        """synonyms"""
+        """Synonyms."""
         return self.data.get("SN", None)
 
     @property
     def SP(self):
-        """substrates/products    reversibilty information in {...}"""
+        """Substrates/products reversibilty information in {...}."""
         return self.data.get("SP", None)
 
     @property
     def SS(self):
-        """storage stability"""
-        return self.data.get("SS", None)
-
-    @property
-    def SS(self):
-        """storage stability"""
+        """Storage stability."""
         return self.data.get("SS", None)
 
     @property
     def ST(self):
-        """source/tissue"""
+        """Source/tissue."""
         return self.data.get("ST", None)
 
     @property
     def SU(self):
-        """subunits"""
+        """Subunits."""
         return self.data.get("SU", None)
 
     @property
     def SY(self):
-        """systematic name"""
+        """Systematic name."""
         return self.data.get("SY", None)
 
     @property
     def TN(self):
-        """turnover number    substrate in {...}"""
+        """Turnover number substrate in {...}."""
         return self.data.get("TN", None)
 
     @property
     def TO(self):
-        """temperature optimum"""
+        """Temperature optimum."""
         return self.data.get("TO", None)
 
     @property
     def TR(self):
-        """temperature range"""
+        """Temperature range."""
         return self.data.get("TR", None)
 
     @property
     def TS(self):
-        """temperature stability"""
+        """Temperature stability."""
         return self.data.get("TS", None)

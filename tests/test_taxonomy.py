@@ -1,4 +1,4 @@
-import pytest
+"""Test taxonomy."""
 
 from brendapy.taxonomy import Taxonomy
 
@@ -6,8 +6,8 @@ from brendapy.taxonomy import Taxonomy
 TAXONOMY = Taxonomy()
 
 
-def test_get_taxonomy_id():
-    """Test the module"""
+def test_get_taxonomy_id() -> None:
+    """Test the module."""
     tid = TAXONOMY.get_taxonomy_id("Homo sapiens")
     assert tid == 9606
 
@@ -15,8 +15,8 @@ def test_get_taxonomy_id():
     assert tid == 10090
 
 
-def test_get_scientific_name():
-    """Test the module"""
+def test_get_scientific_name() -> None:
+    """Test get scientific name."""
     tid = TAXONOMY.get_scientific_name(9606)
     assert tid == "Homo sapiens"
 
@@ -37,27 +37,31 @@ def test_get_scientific_name():
 
 
 def test_find_common_node_by_name():
+    """Test find common nodes by name."""
     common = TAXONOMY.find_common_node_by_name("Mus musculus", "Homo sapiens")
     assert common[0]
     assert common[1]
     assert common[2] > 1
 
 
-def test_find_common_node():
+def test_find_common_node() -> None:
+    """Test find common nodes."""
     common = TAXONOMY.find_common_node(10090, 9606)
     assert common[0]
     assert common[1]
     assert common[2] > 1
 
 
-def test_find_common_node2():
+def test_find_common_node2() -> None:
+    """Test find common nodes."""
     common1 = TAXONOMY.find_common_node(10090, 9606)
     common2 = TAXONOMY.find_common_node(10090, 9606)
     assert common1[0] == common2[0]
     assert common1[1] == common2[1]
 
 
-def test_parent_nodes():
+def test_parent_nodes() -> None:
+    """Test parent nodes."""
     p1 = TAXONOMY.get_parent_nodes(tax_id=7227)
     assert p1
     p2 = TAXONOMY.get_parent_nodes(tax_id="7227")

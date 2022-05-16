@@ -10,9 +10,9 @@ import logging
 import os
 import shutil
 from pathlib import Path
-from brendapy.owl_parser import BTO_JSON, CHEBI_JSON
 
 import requests
+
 
 BASE_PATH = Path(__file__).parent
 RESOURCES_PATH = BASE_PATH / "resources"
@@ -20,7 +20,6 @@ RESOURCES_PATH = BASE_PATH / "resources"
 BRENDA_FILE = RESOURCES_PATH / "data" / "brenda" / "brenda_download.txt"
 TAXONOMY_ZIP = RESOURCES_PATH / "data" / "taxonomy" / "taxdmp.zip"
 TAXONOMY_JSON = RESOURCES_PATH / "data" / "taxonomy" / "taxonomy.json"
-
 
 
 def download_file(url: str, directory: Path):
@@ -31,7 +30,7 @@ def download_file(url: str, directory: Path):
         with open(local_filename, "wb") as f:
             shutil.copyfileobj(r.raw, f)
 
-    logging.warning(f"Download finished")
+    logging.info("Download finished")
     return local_filename
 
 
@@ -49,4 +48,3 @@ def download_file(url: str, directory: Path):
 #     with ZipFile(ZIP_PATH, "r") as zipObj:
 #         zipObj.extractall(RESOURCES_PATH)
 #     logging.warning(f"Extraction finished.")
-

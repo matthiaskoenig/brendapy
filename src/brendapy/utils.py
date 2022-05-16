@@ -4,7 +4,7 @@ import time
 
 
 def is_ec_number(ec: str) -> bool:
-    """Tests if given string 'ec' is EC number.
+    """Test if given string 'ec' is EC number.
 
     :param ec: ec string
     :return: True if EC number, False otherwise
@@ -17,7 +17,7 @@ def is_ec_number(ec: str) -> bool:
 
 
 def timeit(method):
-    """Timing decorator."""
+    """Decorate function with timing functionality."""
 
     def timed(*args, **kw):
         ts = time.time()
