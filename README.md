@@ -42,7 +42,7 @@ pip install brendapy
 ```
 
 ## Usage
-Examples are provided in [./brendapy/examples.py](./brendapy/examples.py) or in the tests [./brendapy/tests/test_brenda.py](./brendapy/tests/test_brenda.py) 
+Examples are provided in [./brendapy/examples.py](./brendapy/examples.py) or in the tests [./brendapy/tests/test_brenda.py](tests/test_brenda.py) 
 
 ```python
 from brendapy import BrendaParser
