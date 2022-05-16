@@ -3,4 +3,4 @@ include requirements-develop.txt
 include README.md
 include README.rst
 
-include brendapy/resources/README.md
+include src/brendapy/resources/README.md

@@ -1,14 +1,22 @@
+.vscode
 *.pyc
-.idea
-
-brendapy.egg-info
-.pytest_cache
-.tox
+*~
+.DS_Store
+.eggs/
 dist
+build
+.idea
+cover/
+.tox/
+.cache/
+.coverage
+coverage.xml
+.benchmark
 
 # data for resources
 *.zip
 data
 
 # downloaded resources
-brendapy/resources/data
+src/brendapy/resources/data
+src/brendapy.egg-info/

@@ -1,0 +1,19 @@
+{
+  "upload_type": "software",
+  "title": "brendapy: BRENDA parser in python",
+  "creators": [
+    {
+      "orcid": "0000-0003-1725-179X",
+      "affiliation": "Humboldt-University Berlin, Institute for Theoretical Biology, Berlin",
+      "name": "König, Matthias"
+    }
+  ],
+  "description": "<p>The <code>brendapy</code> package provides a python parser and utility functions for enzyme information from <a href=\"https://www.brenda-enzymes.org/index.php\">BRENDA</a>.</p>\n<p>If you have any questions or issues please <a href=\"https://github.com/matthiaskoenig/brendapy/issues\">open an issue</a></p>\n<h2>Funding</h2><p>Matthias König is supported by the Federal Ministry of Education and Research (BMBF, Germany) within the research network Systems Medicine of the Liver (<strong>LiSyM</strong>, grant number 031L0054) and by the German Research Foundation (DFG) within the Research Unit Programme FOR 5151 <strong><a href=\"https://qualiperf.de\">QuaLiPerF</a></strong> (Quantifying Liver Perfusion-Function Relationship in Complex Resection - A Systems Medicine Approach)\" by grant number 436883643 and by grant number 465194077 (Priority Programme SPP 2311, Subproject SimLivA).</p>",
+  "access_right": "open",
+  "license": "LGPL-3.0",
+  "keywords": [
+    "BRENDA",
+    "enzyme kinetics",
+    "modeling"
+  ]
+}
