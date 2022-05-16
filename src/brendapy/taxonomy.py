@@ -38,13 +38,16 @@ Taxonomy names file (names.dmp):
 """
 
 import io
-import logging
 import time
 import zipfile
 
 import ujson
 
+from brendapy.log import get_logger
 from brendapy.settings import TAXONOMY_JSON, TAXONOMY_ZIP
+
+
+logger = get_logger(__name__)
 
 
 def parse_taxonomy_data():
@@ -55,7 +58,7 @@ def parse_taxonomy_data():
     :param f_taxonomy: json file with stored processed taxonomy data.
     :return:
     """
-    logging.warning("Parsing taxonomy information, this may take a while ...")
+    logger.warning("Parsing taxonomy information, this may take a while ...")
     ts = time.time()
 
     tid_name_dict = {}
@@ -94,7 +97,7 @@ def parse_taxonomy_data():
         ujson.dump(data, f_out)
 
     te = time.time()
-    logging.warning(f"... taxonomy information parsed in {te - ts} [s].")
+    logger.warning(f"... taxonomy information parsed in {te - ts} [s].")
 
 
 if not TAXONOMY_JSON.exists():
@@ -124,7 +127,7 @@ class Taxonomy(object):
                 }
                 del data
             te = time.time()
-            logging.warning(f"Taxonomy loaded in {te - ts} [s].")
+            logger.warning(f"Taxonomy loaded in {te - ts} [s].")
 
     @staticmethod
     def _tax_id_clean(tax_id):
@@ -142,7 +145,7 @@ class Taxonomy(object):
         :return: NBCI taxonomy id or None if not existing in taxonomy
         """
         if name not in self.name_tid_dict:
-            logging.warning(
+            logger.warning(
                 f"Taxonomy id could not be resolved for species/organism: {name}"
             )
         return self.name_tid_dict.get(name, None)
@@ -172,7 +175,7 @@ class Taxonomy(object):
             try:
                 parent_id = self.node_parent_dict[tid]
             except KeyError:
-                logging.error(f"taxonomy id not found: {tax_id}")
+                logger.error(f"taxonomy id not found: {tax_id}")
                 return None
 
             nodes.append(parent_id)

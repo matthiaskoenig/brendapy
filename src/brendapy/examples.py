@@ -1,13 +1,15 @@
 """Examples of using brendapy."""
-import logging
 from collections import OrderedDict
 
 import pandas as pd
 
 from brendapy import BrendaParser
+from brendapy.console import console
+from brendapy.log import get_logger
 from brendapy.taxonomy import Taxonomy
 
 
+logger = get_logger(__name__)
 BRENDA_PARSER = BrendaParser()
 
 
@@ -24,13 +26,13 @@ def parse_human_proteins_for_ec(ec="1.1.1.1"):
     """
     proteins = BRENDA_PARSER.get_proteins(ec)
 
-    print(f"{len(proteins)} proteins for EC {ec} in BRENDA")
-    print(f"Protein identifier: {proteins.keys()}")
-    print("-" * 80)
+    console.print(f"{len(proteins)} proteins for EC {ec} in BRENDA")
+    console.print(f"Protein identifier: {proteins.keys()}")
+    console.rule()
     for p in proteins.values():
         if p.organism == "Homo sapiens":
-            print(p)
-            print("-" * 80)
+            console.print(p)
+            console.rule()
 
 
 def parse_proteins_by_taxonomy():
@@ -47,7 +49,7 @@ def parse_proteins_by_taxonomy():
     results = []
     for key, p in proteins.items():
         if p.taxonomy is None:
-            logging.error(
+            logger.error(
                 f"Taxonomy could not be resolved for protein "
                 f"<{p.protein_id}>: '{p.organism}': '{p.taxonomy}'"
             )
@@ -71,9 +73,9 @@ def parse_proteins_by_taxonomy():
     # sorted data frame
     df = pd.DataFrame(results)
     df = df.sort_values(by=["common_dist"])
-    print("-" * 80)
-    print(df)
-    print("-" * 80)
+    console.rule()
+    console.print(df)
+    console.rule()
 
 
 def parse_all_proteins_for_all_ecs():

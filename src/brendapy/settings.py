@@ -6,12 +6,16 @@ These resources have to be loaded from online resources on
 first import.
 """
 
-import logging
 import shutil
 from pathlib import Path
 from zipfile import ZipFile
 
 import requests
+
+from brendapy.log import get_logger
+
+
+logger = get_logger(__name__)
 
 
 BASE_PATH = Path(__file__).parent
@@ -25,12 +29,12 @@ TAXONOMY_JSON = RESOURCES_PATH / "data" / "taxonomy" / "taxonomy.json"
 def download_file(url: str, directory: Path):
     """Download resource."""
     local_filename = directory / url.split("/")[-1]
-    logging.warning(f"Download {url}")
+    logger.warning(f"Download {url}")
     with requests.get(url, stream=True) as r:
         with open(local_filename, "wb") as f:
             shutil.copyfileobj(r.raw, f)
 
-    logging.info("Download finished")
+    logger.info("Download finished")
     return local_filename
 
 
@@ -40,11 +44,11 @@ if not ZIP_PATH.exists():
     url = f"http://141.20.66.64/brendapy/{ZIP_FILENAME}"
     download_file(url=url, directory=RESOURCES_PATH)
     if not ZIP_PATH.exists():
-        logging.error("brendapy data could not be downloaded")
+        logger.error("brendapy data could not be downloaded")
         raise IOError(f"{ZIP_PATH} does not exist.")
 
     # extract resources
-    logging.warning(f"Extraction {ZIP_PATH} ...")
+    logger.warning(f"Extraction {ZIP_PATH} ...")
     with ZipFile(ZIP_PATH, "r") as zipObj:
         zipObj.extractall(RESOURCES_PATH)
-    logging.warning(f"Extraction finished.")
+    logger.warning(f"Extraction finished.")

@@ -28,12 +28,16 @@ and the following methods:
 
 """
 import json
-import logging
 from pathlib import Path
 from typing import Any, Dict
 
 from owlready2 import *
 from owlready2.entity import ThingClass
+
+from brendapy.log import get_logger
+
+
+logger = get_logger(__name__)
 
 
 RESOURCES_PATH = Path(__file__).parent / "resources"
@@ -103,7 +107,7 @@ def parse_bto_owl(
                 if name in d_label:
                     bto_key_duplicate = d_label[name]["key"]
                     if bto_key != bto_key_duplicate:
-                        logging.error(
+                        logger.error(
                             f"Duplicate synonym: '{name}', "
                             f"mismatch bto: '{bto_key}' vs "
                             f"'{bto_key_duplicate}'"
@@ -187,7 +191,7 @@ def parse_chebi_owl(
                 if name in d_label:
                     chebi_key_duplicate = d_label[name]["key"]
                     if chebi_key != chebi_key_duplicate:
-                        logging.error(
+                        logger.error(
                             f"Duplicate synonym: '{name}', "
                             f"mismatch chebi: '{chebi_key}' "
                             f"vs '{chebi_key_duplicate}'"
