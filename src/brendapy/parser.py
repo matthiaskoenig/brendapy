@@ -49,7 +49,7 @@ The following information is available:
 """
 import re
 from collections import OrderedDict, defaultdict
-from typing import Dict
+from typing import Dict, List
 
 from brendapy import utils
 from brendapy.log import get_logger

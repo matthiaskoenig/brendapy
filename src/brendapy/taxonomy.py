@@ -189,9 +189,7 @@ class Taxonomy(object):
             tax_id=self.get_taxonomy_id(name), tax_id_ref=self.get_taxonomy_id(name_ref)
         )
 
-    def find_common_node(
-        self, tax_id, tax_id_ref
-    ) -> List[Optional[str], Optional[str], int]:
+    def find_common_node(self, tax_id, tax_id_ref) -> List:
         """Find the first ancestor node of the species with reference organism.
 
         :param tax_id:
