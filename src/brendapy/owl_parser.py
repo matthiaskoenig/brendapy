@@ -72,9 +72,7 @@ def parse_bto_owl(
         ancestors = {
             c.name for c in c.ancestors() if c.name not in ["owl.Thing", "Thing"]
         }
-        _ = {
-            c.name for c in c.descendants() if c.name not in ["owl.Thing", "Thing"]
-        }
+        _ = {c.name for c in c.descendants() if c.name not in ["owl.Thing", "Thing"]}
         synonyms = c.hasRelatedSynonym
 
         description = ThingClass.__getattr__(c, "IAO_0000115")

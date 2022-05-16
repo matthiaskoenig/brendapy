@@ -95,7 +95,7 @@ def parse_taxonomy_data():
         ujson.dump(data, f_out)
 
     te = time.time()
-    logging.warning("... taxonomy information parsed in {} s.".format((te - ts)))
+    logging.warning(f"... taxonomy information parsed in {te - ts} [s].")
 
 
 if not os.path.exists(TAXONOMY_JSON):
@@ -125,7 +125,7 @@ class Taxonomy(object):
                 }
                 del data
             te = time.time()
-            logging.warning("Taxonomy loaded in {} s.".format((te - ts)))
+            logging.warning(f"Taxonomy loaded in {te - ts} [s].")
 
     @staticmethod
     def _tax_id_clean(tax_id):
