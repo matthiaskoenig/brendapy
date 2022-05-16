@@ -3,7 +3,7 @@
 
 import json
 
-from brendapy.owl_parser import CHEBI_JSON
+from brendapy.ontologies.owl_parser import CHEBI_JSON
 
 
 with open(CHEBI_JSON, "r") as fin:

@@ -38,17 +38,17 @@ def download_file(url: str, directory: Path):
     return local_filename
 
 
-ZIP_FILENAME = "brendapy-data-v0.5.0.zip"
-ZIP_PATH = RESOURCES_PATH / ZIP_FILENAME
-if not ZIP_PATH.exists():
-    url = f"http://141.20.66.64/brendapy/{ZIP_FILENAME}"
-    download_file(url=url, directory=RESOURCES_PATH)
-    if not ZIP_PATH.exists():
-        logger.error("brendapy data could not be downloaded")
-        raise IOError(f"{ZIP_PATH} does not exist.")
-
-    # extract resources
-    logger.warning(f"Extraction {ZIP_PATH} ...")
-    with ZipFile(ZIP_PATH, "r") as zipObj:
-        zipObj.extractall(RESOURCES_PATH)
-    logger.warning(f"Extraction finished.")
+# ZIP_FILENAME = "brendapy-data-v0.5.0.zip"
+# ZIP_PATH = RESOURCES_PATH / ZIP_FILENAME
+# if not ZIP_PATH.exists():
+#     url = f"http://141.20.66.64/brendapy/{ZIP_FILENAME}"
+#     download_file(url=url, directory=RESOURCES_PATH)
+#     if not ZIP_PATH.exists():
+#         logger.error("brendapy data could not be downloaded")
+#         raise IOError(f"{ZIP_PATH} does not exist.")
+#
+#     # extract resources
+#     logger.warning(f"Extraction {ZIP_PATH} ...")
+#     with ZipFile(ZIP_PATH, "r") as zipObj:
+#         zipObj.extractall(RESOURCES_PATH)
+#     logger.warning(f"Extraction finished.")

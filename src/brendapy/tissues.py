@@ -2,7 +2,7 @@
 
 import json
 
-from brendapy.owl_parser import BTO_JSON
+from brendapy.ontologies.owl_parser import BTO_JSON
 
 
 with open(BTO_JSON, "r") as fin:
