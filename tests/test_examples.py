@@ -1,6 +1,6 @@
 import pytest
 
-from src.brendapy.examples import *
+from brendapy.examples import *
 
 
 def test_parse_proteins_for_ec():

@@ -1,6 +1,6 @@
 import pytest
 
-from src.brendapy.taxonomy import Taxonomy
+from brendapy.taxonomy import Taxonomy
 
 
 TAXONOMY = Taxonomy()

@@ -2,8 +2,8 @@ import logging
 
 import pytest
 
-from src.brendapy import BrendaParser, BrendaProtein
-from src.brendapy.settings import BRENDA_FILE
+from brendapy import BrendaParser, BrendaProtein
+from brendapy.settings import BRENDA_FILE
 
 
 BRENDA_PARSER = BrendaParser()

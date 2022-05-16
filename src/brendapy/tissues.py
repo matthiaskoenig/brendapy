@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import json
 
-from src.brendapy.settings import BTO_DATA
+from brendapy.settings import BTO_DATA
 
 
 with open(BTO_DATA, "r") as fin:

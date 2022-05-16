@@ -54,11 +54,11 @@ import re
 from collections import OrderedDict, defaultdict
 from pprint import pprint
 
-from src.brendapy import utils
-from src.brendapy.settings import BRENDA_FILE
-from src.brendapy.substances import CHEBI
-from src.brendapy.taxonomy import Taxonomy
-from src.brendapy.tissues import BTO
+from brendapy import utils
+from brendapy.settings import BRENDA_FILE
+from brendapy.substances import CHEBI
+from brendapy.taxonomy import Taxonomy
+from brendapy.tissues import BTO
 
 
 TAXONOMY = Taxonomy()
