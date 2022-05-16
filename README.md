@@ -41,34 +41,6 @@ within the research network Systems Medicine of the Liver (**LiSyM**, grant numb
 pip install brendapy
 ```
 
-## Release notes
-### 0.4.1
-* downloading online resources instead of pypi packaging
-
-### 0.4.0
-* resolving uniprot and swissprot information
-* removing redundant information
-* fixing references in entries
-* mapping to BRENDA tissue ontology (BTO)
-* mapping to chebi ontology
-* bugfixes (encoding issues, organism parsing, taxonomy, ...)
-* removing git-lfs dependencies
-
-### 0.3.0
-* taxonomy information added
-* parsing of all BRENDA fields
-* extracting values and substrates for kinetic parameters
-* multitude of bug-fixes (e.g., correct references, species, ...)
-* testing of all examples
-
-### 0.2.0
-* unittests and continuous integration
-* complete refactoring of parser
-* supporting full set of information
-
-### 0.1.0
-* initial release of updated parser
-
 ## Usage
 Examples are provided in [./brendapy/examples.py](./brendapy/examples.py) or in the tests [./brendapy/tests/test_brenda.py](./brendapy/tests/test_brenda.py) 
 
@@ -11200,4 +11172,4 @@ OrderedDict([('protein_id', 8),
 ```
 
 ---
-&copy; 2019 Matthias König (https://livermetabolism.com)
+&copy; 2019-2022 Matthias König (https://livermetabolism.com)
