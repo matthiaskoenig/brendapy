@@ -146,7 +146,7 @@ if __name__ == "__main__":
     # )
     parse_owl_map(
         # owl_url="https://www.ebi.ac.uk/ols/ontologies/chebi/download",
-        owl_path=RESOURCES_PATH / "data" / "chebi" / "chebi.obo",
+        owl_path=RESOURCES_PATH / "data" / "chebi" / "chebi_lite.owl",
         json_path=RESOURCES_PATH / "data" / "chebi" / "chebi.json"
     )
 

@@ -16,6 +16,7 @@ Download the `taxdmp.zip` to `resources/data/taxonomy/taxdmp.zip`.
 ## ChEBI
 Ontologies have been downloaded from https://www.ebi.ac.uk/ols/ontologies/chebi as OWL format
 * Downloaded on 2022-05-16 with version 25:03:2022 01:58
+* https://ftp.ebi.ac.uk/pub/databases/chebi/ontology/
 
 ## BTO
 Ontologies have been downloaded from https://www.ebi.ac.uk/ols/ontologies/bto as OWL format
